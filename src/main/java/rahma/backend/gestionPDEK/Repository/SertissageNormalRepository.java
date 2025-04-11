@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.SertissageNormal;
+import rahma.backend.gestionPDEK.Entity.Soudure;
 
 @Repository
 
@@ -28,6 +29,9 @@ public interface SertissageNormalRepository extends JpaRepository<SertissageNorm
 
      /*******************************************************************************************/
     Optional<SertissageNormal> findTopByPagePDEK_IdOrderByNumCycleDesc(Long pageId);
+    
+	List<SertissageNormal> findByPdekSertissageNormal_IdAndPagePDEK_PageNumber(Long pdekId, int pageNumber);
+
      
 }
 

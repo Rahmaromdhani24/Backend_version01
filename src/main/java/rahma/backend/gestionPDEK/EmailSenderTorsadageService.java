@@ -14,19 +14,19 @@ import java.time.Year;
 import java.time.format.DateTimeFormatter;
 
 @Service
-public class EmailSenderService {
+public class EmailSenderTorsadageService {
 
     private final JavaMailSender mailSender;
 
     @Autowired
-    public EmailSenderService(JavaMailSender mailSender) {
+    public EmailSenderTorsadageService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
     /************************************ Erreur *********************************************************************/
 
     @Async
-    public void sendEmailErreurToAgentQualite(String toEmail ,String nomResponsable ,String localisation, String nomProcess , String sectionFil ,
-    		String posteErreur,  String descriptionErreur, String valeurMesuree, String limitesAcceptables) {
+    public void sendEmailErreurToAgentQualite(String toEmail ,String nomResponsable ,String localisation,String nomProcess , String pas ,
+    		String posteErreur,  String descriptionErreur,  String valeurMesuree, String limitesAcceptables) {
         try {
             String subject = "[URGENT] Dépasse des limites de contrôle - Zone Rouge détectée";
             
@@ -37,7 +37,7 @@ public class EmailSenderService {
             helper.setSubject(subject);
             helper.setFrom("pdekgestion@gmail.com", "Système Alerte Qualité PDEK");
             
-            String htmlContent = buildEmailErreurContent(nomResponsable,localisation ,nomProcess, sectionFil , posteErreur, 
+            String htmlContent = buildEmailErreurContent(nomResponsable,localisation ,nomProcess, pas , posteErreur, 
             		descriptionErreur,  valeurMesuree, limitesAcceptables);
             helper.setText(htmlContent, true);
             
@@ -51,7 +51,7 @@ public class EmailSenderService {
         }
     }
 
-    private String buildEmailErreurContent(String nomResponsable,String localisation, String nomProcess,  String sectionFil , String posteErreur, 
+    private String buildEmailErreurContent(String nomResponsable,String localisation, String nomProcess,  String pas , String posteErreur, 
             String descriptionErreur,  String valeurMesuree, String limitesAcceptables) {
         return String.format("""
             <!DOCTYPE html>
@@ -91,7 +91,7 @@ public class EmailSenderService {
                     <div class="details">
                         <div class="detail-item"><strong>Localisation :</strong> %s</div>
                         <div class="detail-item"><strong>Process :</strong> %s</div>
-                        <div class="detail-item"><strong>Section de Fil :</strong> %s</div>
+                        <div class="detail-item"><strong>Spécification de mesure :</strong> %s</div>
                         <div class="detail-item"><strong>Poste/Machine :</strong> %s</div>
                         <div class="detail-item"><strong>Valeur mesurée :</strong> <span class="value-critical">%s</span></div>
                         <div class="detail-item"><strong>Limites acceptables :</strong> %s</div>
@@ -120,7 +120,7 @@ public class EmailSenderService {
             nomResponsable, 
             localisation,
             nomProcess ,
-            sectionFil ,
+            pas ,
             posteErreur, 
             valeurMesuree,
             limitesAcceptables,
@@ -131,7 +131,7 @@ public class EmailSenderService {
     /************************************************* Warning *************************************************/
     @Async
     public void sendEmailWarningToAgentQualite(String toEmail, String nomResponsable,  String localisation, String nomProcess,
-    		String sectionFil, String posteWarning,  String descriptionWarning,String valeurMesuree, String limitesAcceptables) {
+    		String pas, String posteWarning,  String descriptionWarning,String valeurMesuree, String limitesAcceptables) {
         try {
             String subject = "[URGENT] Dépasse les limites d'alarme - Zone Jaune détectée";
             
@@ -142,7 +142,7 @@ public class EmailSenderService {
             helper.setSubject(subject);
             helper.setFrom("pdekgestion@gmail.com", "Système Alerte Qualité PDEK");
             
-            String htmlContent = buildEmailWarningContent(nomResponsable,localisation , nomProcess, sectionFil ,
+            String htmlContent = buildEmailWarningContent(nomResponsable,localisation , nomProcess, pas ,
             		posteWarning, descriptionWarning, valeurMesuree, limitesAcceptables);
             helper.setText(htmlContent, true);
             
@@ -156,7 +156,7 @@ public class EmailSenderService {
         }
     }
 
-    private String buildEmailWarningContent(String nomResponsable,String localisation, String nomProcess, String sectionFil ,
+    private String buildEmailWarningContent(String nomResponsable,String localisation, String nomProcess, String pas ,
     		String posteWarning, String descriptionWarning,  String valeurMesuree, String limitesAcceptables) {
         return String.format("""
             <!DOCTYPE html>
@@ -191,19 +191,18 @@ public class EmailSenderService {
                            ⚠ Une valeur hors limites d'alarme a été détectée  (Zone jaune).
                         </p>
                     </div>
-                    
-                   <h3 style="color: #d9534f;">Détails du non-conformité :</h3>
+                     
+               <h3 style="color: #d9534f;">Détails du non-conformité :</h3>
                     <div class="details">
                         <div class="detail-item"><strong>Localisation :</strong> %s</div>
                         <div class="detail-item"><strong>Process :</strong> %s</div>
-                        <div class="detail-item"><strong>Section de Fil :</strong> %s</div>
+                        <div class="detail-item"><strong>Spécification de mesure :</strong> %s</div>
                         <div class="detail-item"><strong>Poste/Machine :</strong> %s</div>
                         <div class="detail-item"><strong>Valeur mesurée :</strong> <span class="value-critical">%s</span></div>
                         <div class="detail-item"><strong>Limites acceptables :</strong> %s</div>
                         <div class="detail-item"><strong>Description :</strong> %s</div>
                         <div class="detail-item"><strong>Date/Heure :</strong> %s</div>
                     </div>
-                    
                     <h3 style="color: #003d89;">Actions recommandées :</h3>
                     <ol class="actions">
                         <li>Vérification immédiate du processus concerné</li>
@@ -225,7 +224,7 @@ public class EmailSenderService {
             nomResponsable, 
             localisation,
             nomProcess, 
-            sectionFil ,
+            pas ,
             posteWarning, 
             valeurMesuree,
             limitesAcceptables,
@@ -235,7 +234,7 @@ public class EmailSenderService {
     }
     /******************************** Chef de ligne erreur ***********************************************/
     @Async
-    public void sendEmailErreurToChefDeLigne(String toEmail, String nomResponsable,  String localisation, String nomProcess, String sectionFil ,
+    public void sendEmailErreurToChefDeLigne(String toEmail, String nomResponsable,  String localisation, String nomProcess, String pas ,
             String posteErreur, String descriptionErreur, String valeurMesuree, String limitesAcceptables) {
         try {
             String subject = "[URGENT] Dépasse des limites de contrôle - Zone Rouge détectée";
@@ -248,7 +247,7 @@ public class EmailSenderService {
             helper.setFrom("pdekgestion@gmail.com", "Système Alerte PDEK");
             
             String htmlContent = buildEmailErreurChefLigneContent(
-                nomResponsable, localisation ,nomProcess,sectionFil ,  posteErreur, 
+                nomResponsable, localisation ,nomProcess,pas ,  posteErreur, 
                 descriptionErreur, valeurMesuree, limitesAcceptables);
             
             helper.setText(htmlContent, true);
@@ -265,7 +264,7 @@ public class EmailSenderService {
     }
 
     private String buildEmailErreurChefLigneContent(String nomResponsable, String localisation , String nomProcess,
-            String sectionFil , String posteErreur, String description, 
+            String pas , String posteErreur, String description, 
             String valeurMesuree, String limitesAcceptables) {
         
         String currentDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
@@ -337,16 +336,17 @@ public class EmailSenderService {
                     <p style="margin: 0; font-weight: bold;">Une valeur hors limites de contrôle a été détectée (Zone Rouge).</p>
                 </div>
                 
-                <h3 style="color: #d9534f;">Détails du problème :</h3>
-                <div class="detail-item"><span class="detail-label">Localisation :</span> %s</div>
-                <div class="detail-item"><span class="detail-label">Process :</span> %s</div>
-                <div class="detail-item"><span class="detail-label">Section de Fil :</span> %s</div>
-                <div class="detail-item"><span class="detail-label">Poste/Machine :</span> %s</div>
-                <div class="detail-item"><span class="detail-label">Valeur mesurée :</span> <span class="critical-value">%s</span></div>
-                <div class="detail-item"><span class="detail-label">Limites acceptables :</span> %s</div>
-                <div class="detail-item"><span class="detail-label">Description :</span> %s</div>
-                <div class="detail-item"><span class="detail-label">Date/Heure :</span> %s</div>
-                <div class="detail-item"><span class="detail-label">Temps d'arrêt :</span> À évaluer</div>
+               <h3 style="color: #d9534f;">Détails du non-conformité :</h3>
+                    <div class="details">
+                        <div class="detail-item"><strong>Localisation :</strong> %s</div>
+                        <div class="detail-item"><strong>Process :</strong> %s</div>
+                        <div class="detail-item"><strong>Spécification de mesure :</strong> %s</div>
+                        <div class="detail-item"><strong>Poste/Machine :</strong> %s</div>
+                        <div class="detail-item"><strong>Valeur mesurée :</strong> <span class="value-critical">%s</span></div>
+                        <div class="detail-item"><strong>Limites acceptables :</strong> %s</div>
+                        <div class="detail-item"><strong>Description :</strong> %s</div>
+                        <div class="detail-item"><strong>Date/Heure :</strong> %s</div>
+                    </div>
                 
                 <h3 style="color: #d9534f; margin-top: 20px;">Actions requises :</h3>
                 <ol>
@@ -367,7 +367,7 @@ public class EmailSenderService {
                 nomResponsable,
                 localisation,
                 nomProcess,
-                sectionFil ,
+                pas ,
                 posteErreur,
                 valeurMesuree,
                 limitesAcceptables,
@@ -380,7 +380,7 @@ public class EmailSenderService {
 			    /*********************************** Chef de ligne email de warning *****************/
 			    @Async
 			    public void sendEmailWarningToChefDeLigne(String toEmail, String nomResponsable, String localisation ,String nomProcess, 
-			    		String sectionFil ,String posteWarning, String descriptionWarning,  String valeurMesuree, String limitesAcceptables) {
+			    		String pas ,String posteWarning, String descriptionWarning,  String valeurMesuree, String limitesAcceptables) {
 			        try {
 			            String subject = "[URGENT] Dépasse les limites d'alarme - Zone Jaune détectée";
 			            
@@ -391,7 +391,7 @@ public class EmailSenderService {
 			            helper.setSubject(subject);
 			            helper.setFrom("pdekgestion@gmail.com", "Système Alerte Qualité PDEK");
 			            
-			            String htmlContent = buildEmailWarningContentChefLigne(nomResponsable,localisation , nomProcess,sectionFil ,
+			            String htmlContent = buildEmailWarningContentChefLigne(nomResponsable,localisation , nomProcess,pas ,
 			            		posteWarning, descriptionWarning,  valeurMesuree, limitesAcceptables);
 			            helper.setText(htmlContent, true);
 			            
@@ -405,7 +405,7 @@ public class EmailSenderService {
 			        }
 			    }
 			    private String buildEmailWarningContentChefLigne(String nomResponsable, String nomProcess,String localisation, 
-			    		String sectionFil , String posteWarning,  String descriptionWarning,  String valeurMesuree, String limitesAcceptables) {
+			    		String pas , String posteWarning,  String descriptionWarning,  String valeurMesuree, String limitesAcceptables) {
 			        return String.format("""
 			            <!DOCTYPE html>
 			            <html>
@@ -442,10 +442,9 @@ public class EmailSenderService {
 			                    
 			                    <h3 style="color: #003d89;">Détails de l'alerte :</h3>
 			                    <div class="details">
-			                       <div class="detail-item"><strong>Localisation :</strong> %s</div>
 			                        <div class="detail-item"><strong>Process :</strong> %s</div>
-			                        <div class="detail-item"><strong>Section de Fil :</strong> %s</div>
 			                        <div class="detail-item"><strong>Poste/Machine :</strong> %s</div>
+			                        <div class="detail-item"><strong>Localisation :</strong> %s</div>
 			                        <div class="detail-item"><strong>Valeur mesurée :</strong> <span class="value-warning">%s</span></div>
 			                        <div class="detail-item"><strong>Limites acceptables :</strong> %s</div>
 			                        <div class="detail-item"><strong>Description :</strong> %s</div>
@@ -473,7 +472,7 @@ public class EmailSenderService {
 			            nomResponsable, 
 			            localisation ,
 			            nomProcess, 
-			            sectionFil ,
+			            pas ,
 			            posteWarning, 
 			            valeurMesuree,
 			            limitesAcceptables,
@@ -481,7 +480,7 @@ public class EmailSenderService {
 			            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
 			            Year.now().toString());
 			    }
-                /************************************************************ */
+                /***************************************Validtion PDEK  **********************/
                 @Async
                 public void sendEmailValidationToAgentQualite(String toEmail, String nomResponsable, String localisation, String nomProcess,
                         String sectionFil, String posteMachine, String descriptionPDEK, String dateRemplissage, String heureRemplissage) {
@@ -541,7 +540,7 @@ public class EmailSenderService {
                                 <div class="details">
                                     <div class="detail-item"><strong>Localisation :</strong> %s</div>
                                     <div class="detail-item"><strong>Process :</strong> %s</div>
-                                    <div class="detail-item"><strong>Section de Fil :</strong> %s</div>
+                                    <div class="detail-item"><strong>Spécification de mesure  :</strong> %s</div>
                                     <div class="detail-item"><strong>Description du PDEK :</strong> %s</div>
                                     <div class="detail-item"><strong>Date de remplissage :</strong> %s</div>
                                     <div class="detail-item"><strong>Heure de remplissage :</strong> %s</div>
@@ -566,4 +565,5 @@ public class EmailSenderService {
                         heureRemplissage,
                         Year.now().toString());
                 }
-            }                
+            
+}

@@ -2,13 +2,18 @@ package rahma.backend.gestionPDEK.Controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import rahma.backend.gestionPDEK.DTO.AjoutSertissageNormalResultDTO;
+import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
 import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
+import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
 import rahma.backend.gestionPDEK.ServicesImplementation.PDEK_ServiceImplimenetation;
@@ -43,8 +48,10 @@ public ResponseEntity<String> ajouterSertissageNormal(
          @RequestParam String nomProjet,
          @RequestBody SertissageNormal sertissageNormal) {
     try {
-        serviceSertissageNormal.ajoutPDEK_SertissageNormal( sertissageNormal , matricule, nomProjet);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Sertissage IDC ajouté avec succès");
+    	 AjoutSertissageNormalResultDTO result = serviceSertissageNormal.ajoutPDEK_SertissageNormal( sertissageNormal , matricule, nomProjet);
+    	  // Retourner un objet JSON structuré avec l'ID du PDEK et le numéro de la page
+         String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage() + "\" }";
+         return ResponseEntity.ok(jsonResponse);
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur : " + e.getMessage());
     }
@@ -235,5 +242,34 @@ public ResponseEntity<String> ajouterSertissageNormal(
             @RequestParam Plant plant) {
         return serviceSertissageNormal.recupererSertissagesNormalesParPDEKGroupéesParPage(sectionFil ,segment, plant, nomProjet);
     }
+ 
+ @GetMapping("/sertissages-par-pdek-et-page")
+ public ResponseEntity<List<SertissageNormal_DTO>> getSertissagesParPdekEtPage(
+         @RequestParam Long pdekId,
+         @RequestParam int pageNumber) {
+
+     List<SertissageNormal> sertissages = sertissageNormalRepository.findByPdekSertissageNormal_IdAndPagePDEK_PageNumber(pdekId, pageNumber);
+
+     List<SertissageNormal_DTO> sertissagesDTOs = sertissages.stream().map(s ->
+         new SertissageNormal_DTO(
+             s.getId(),
+             s.getCodeControle(),
+             s.getSectionFil(),
+             s.getNumeroOutils(),
+             s.getNumeroContacts(), 
+             s.getDate(),
+             s.getNumCycle(),
+             s.getUserSertissageNormal().getMatricule(),
+             s.getHauteurSertissageEch1(),
+             s.getHauteurSertissageEch2() ,
+             s.getHauteurSertissageEch3() ,
+             s.getHauteurSertissageEchFin()
+         )
+     ).collect(Collectors.toList());
+
+     return ResponseEntity.ok(sertissagesDTOs);
+ }
+
+
   }
 

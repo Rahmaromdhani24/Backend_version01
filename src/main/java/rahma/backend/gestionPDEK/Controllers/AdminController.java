@@ -4,7 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rahma.backend.gestionPDEK.EmailSenderService;
+import rahma.backend.gestionPDEK.EmailSenderTorsadageService;
 import rahma.backend.gestionPDEK.Configuration.EmailRequest;
+import rahma.backend.gestionPDEK.Configuration.EmailValidationPDEK;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
 import java.util.*;
@@ -19,13 +21,17 @@ public class AdminController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final EmailSenderService emailSenderService;
+    private final EmailSenderTorsadageService emailSenderTorsadageService;
+
 
 
     
-    public AdminController(UserRepository userRepository, RoleRepository roleRepository , EmailSenderService emailSenderService) {
+    public AdminController(UserRepository userRepository, RoleRepository roleRepository , EmailSenderService emailSenderService
+    		, EmailSenderTorsadageService emailSenderTorsadageService ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.emailSenderService = emailSenderService;
+        this.emailSenderTorsadageService = emailSenderTorsadageService;
     }
     @GetMapping("/getUser/{matricule}")
     public ResponseEntity<?> getUser(@PathVariable int matricule) {
@@ -136,16 +142,59 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur non trouvé");
         }
     }
+    @PostMapping("/validerPdekAgentQualite")
+public ResponseEntity<String> sendMailValidationPdek(@RequestBody EmailValidationPDEK request) {
+    try {
+        emailSenderService.sendEmailValidationToAgentQualite(
+            request.getToEmail(),
+            request.getNomResponsable(),
+            request.getLocalisation(),
+            request.getNomProcess() , 
+            request.getSectionFil() ,
+            request.getPosteMachine(),
+            request.getDescriptionPDEK(),
+            request.getDateRemplissage() ,
+            request.getHeureRemplissage()
+        );
+        return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
+    } catch (Exception e) {
+        return ResponseEntity.internalServerError()
+            .body("Erreur lors de l'envoi de l'email d'alerte: " + e.getMessage());
+    }
+}    
+/*********************** Valider PDEK Torsadage **************************************/
+@PostMapping("/validerPdekTorsadageAgentQualite")
+public ResponseEntity<String> sendMailValidationPdekTorsadage(@RequestBody EmailValidationPDEK request) {
+    try {
+        emailSenderTorsadageService.sendEmailValidationToAgentQualite(
+            request.getToEmail(),
+            request.getNomResponsable(),
+            request.getLocalisation(),
+            request.getNomProcess() , 
+            request.getSectionFil() ,
+            request.getPosteMachine(),
+            request.getDescriptionPDEK(),
+            request.getDateRemplissage() ,
+            request.getHeureRemplissage()
+        );
+        return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
+    } catch (Exception e) {
+        return ResponseEntity.internalServerError()
+            .body("Erreur lors de l'envoi de l'email d'alerte: " + e.getMessage());
+    }
+}    
+/************************************************************************************/
     @PostMapping("/AgentQualiteSendMailErreur")
     public ResponseEntity<String> sendErrorNotification(@RequestBody EmailRequest request) {
         try {
             emailSenderService.sendEmailErreurToAgentQualite(
                 request.getToEmail(),
                 request.getNomResponsable(),
-                request.getNomProcess() , 
-                request.getPosteErreur(),
-                request.getDescriptionErreur(),
                 request.getLocalisation(),
+                request.getNomProcess() , 
+                request.getSectionFil() ,
+                request.getPosteMachine(),
+                request.getDescriptionErreur(),
                 request.getValeurMesuree(),    // Nouveau paramètre
                 request.getLimitesAcceptables() // Nouveau paramètre
             );
@@ -160,14 +209,15 @@ public class AdminController {
     public ResponseEntity<String> sendWarningNotification(@RequestBody EmailRequest request) {
         try {
             emailSenderService.sendEmailWarningToAgentQualite(
-                request.getToEmail(),
-                request.getNomResponsable(),
-                request.getNomProcess() , 
-                request.getPosteErreur(),
-                request.getDescriptionErreur(),
-                request.getLocalisation(),
-                request.getValeurMesuree(),    // Nouveau paramètre
-                request.getLimitesAcceptables() // Nouveau paramètre
+            		   request.getToEmail(),
+                       request.getNomResponsable(),
+                       request.getLocalisation(),
+                       request.getNomProcess() , 
+                       request.getSectionFil() ,
+                       request.getPosteMachine(),
+                       request.getDescriptionErreur(),
+                       request.getValeurMesuree(),    // Nouveau paramètre
+                       request.getLimitesAcceptables() // Nouveau paramètre
             );
             return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
         } catch (Exception e) {
@@ -179,14 +229,15 @@ public class AdminController {
     public ResponseEntity<String> sendErrorNotificationChefDeLigne(@RequestBody EmailRequest request) {
         try {
             emailSenderService.sendEmailErreurToChefDeLigne(
-                request.getToEmail(),
-                request.getNomResponsable(),
-                request.getNomProcess() , 
-                request.getPosteErreur(),
-                request.getDescriptionErreur(),
-                request.getLocalisation(),
-                request.getValeurMesuree(),    // Nouveau paramètre
-                request.getLimitesAcceptables() // Nouveau paramètre
+            		   request.getToEmail(),
+                       request.getNomResponsable(),
+                       request.getLocalisation(),
+                       request.getNomProcess() , 
+                       request.getSectionFil() ,
+                       request.getPosteMachine(),
+                       request.getDescriptionErreur(),
+                       request.getValeurMesuree(),    // Nouveau paramètre
+                       request.getLimitesAcceptables() // Nouveau paramètre
             );
             return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
         } catch (Exception e) {
@@ -199,14 +250,99 @@ public class AdminController {
     public ResponseEntity<String> sendEmailWarningToChefDeLigne(@RequestBody EmailRequest request) {
         try {
             emailSenderService.sendEmailWarningToAgentQualite(
+            		   request.getToEmail(),
+                       request.getNomResponsable(),
+                       request.getLocalisation(),
+                       request.getNomProcess() , 
+                       request.getSectionFil() ,
+                       request.getPosteMachine(),
+                       request.getDescriptionErreur(),
+                       request.getValeurMesuree(),    // Nouveau paramètre
+                       request.getLimitesAcceptables() // Nouveau paramètre
+            );
+            return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                .body("Erreur lors de l'envoi de l'email d'alerte: " + e.getMessage());
+        }
+    }
+/************************************ Torsadage *********************************************************/
+
+@PostMapping("/AgentQualiteSendMailTorsadageErreur")
+    public ResponseEntity<String> sendErrorTorsadageNotification(@RequestBody EmailRequest request) {
+        try {
+        	emailSenderTorsadageService.sendEmailErreurToAgentQualite(
                 request.getToEmail(),
                 request.getNomResponsable(),
-                request.getNomProcess() , 
-                request.getPosteErreur(),
-                request.getDescriptionErreur(),
                 request.getLocalisation(),
+                request.getNomProcess() , 
+                request.getSectionFil() ,
+                request.getPosteMachine(),
+                request.getDescriptionErreur(),
                 request.getValeurMesuree(),    // Nouveau paramètre
                 request.getLimitesAcceptables() // Nouveau paramètre
+            );
+            return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                .body("Erreur lors de l'envoi de l'email d'alerte: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/AgentQualiteSendMailTorsadageWarning")
+    public ResponseEntity<String> sendWarningTorsadageNotification(@RequestBody EmailRequest request) {
+        try {
+        	emailSenderTorsadageService.sendEmailWarningToAgentQualite(
+            		   request.getToEmail(),
+                       request.getNomResponsable(),
+                       request.getLocalisation(),
+                       request.getNomProcess() , 
+                       request.getSectionFil() ,
+                       request.getPosteMachine(),
+                       request.getDescriptionErreur(),
+                       request.getValeurMesuree(),    // Nouveau paramètre
+                       request.getLimitesAcceptables() // Nouveau paramètre
+            );
+            return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                .body("Erreur lors de l'envoi de l'email d'alerte: " + e.getMessage());
+        }
+    }
+    @PostMapping("/chefLigneSendMailTorsadageErreur")
+    public ResponseEntity<String> sendErrorTorsadageNotificationChefDeLigne(@RequestBody EmailRequest request) {
+        try {
+        	emailSenderTorsadageService.sendEmailErreurToChefDeLigne(
+            		   request.getToEmail(),
+                       request.getNomResponsable(),
+                       request.getLocalisation(),
+                       request.getNomProcess() , 
+                       request.getSectionFil() ,
+                       request.getPosteMachine(),
+                       request.getDescriptionErreur(),
+                       request.getValeurMesuree(),    // Nouveau paramètre
+                       request.getLimitesAcceptables() // Nouveau paramètre
+            );
+            return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                .body("Erreur lors de l'envoi de l'email d'alerte: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/chefLigneSendMailTorsadageWarning")
+    public ResponseEntity<String> sendEmailTorsadageWarningToChefDeLigne(@RequestBody EmailRequest request) {
+        try {
+        	emailSenderTorsadageService.sendEmailWarningToAgentQualite(
+            		   request.getToEmail(),
+                       request.getNomResponsable(),
+                       request.getLocalisation(),
+                       request.getNomProcess() , 
+                       request.getSectionFil() ,
+                       request.getPosteMachine(),
+                       request.getDescriptionErreur(),
+                       request.getValeurMesuree(),    // Nouveau paramètre
+                       request.getLimitesAcceptables() // Nouveau paramètre
             );
             return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
         } catch (Exception e) {

@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import rahma.backend.gestionPDEK.DTO.AjoutSertissageNormalResultDTO;
+import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
 import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
 import rahma.backend.gestionPDEK.Entity.OutilContact;
 import rahma.backend.gestionPDEK.Entity.PDEK;
@@ -162,7 +165,7 @@ public class SertissageNormalServiceImplimentation {
 	    }
 
 		/******************************************************************************************************************************/
-		public void ajoutPDEK_SertissageNormal (SertissageNormal sertissageNormal, int matriculeOperateur , String projet) {
+		public AjoutSertissageNormalResultDTO ajoutPDEK_SertissageNormal (SertissageNormal sertissageNormal, int matriculeOperateur , String projet) {
 			
 		    String sectionFilSelectionner = sertissageNormal.getSectionFil() ; 
 		    User user = userRepository.findByMatricule(matriculeOperateur).get() ; 
@@ -237,7 +240,7 @@ public class SertissageNormalServiceImplimentation {
 		         sertissageNormalRepository.save(instance1) ;
 		        
 		   
-		      
+		     	return new AjoutSertissageNormalResultDTO(pdek.getId(), pagePDEK.getPageNumber());
 
 
 		    } else {
@@ -269,6 +272,8 @@ public class SertissageNormalServiceImplimentation {
 		    	sertissageNormalRepository.save(instance1) ;   	
 
 			      }
+		     	return new AjoutSertissageNormalResultDTO(newPDEK.getId(), newPage.getPageNumber());
+
 		    }
 			 }
 
@@ -292,7 +297,11 @@ public class SertissageNormalServiceImplimentation {
 											 s.getNumeroContacts() , 
 	                                         s.getDate().toString(),
 	                                         s.getNumCycle() ,
-											 s.getUserSertissageNormal().getMatricule()),
+											 s.getUserSertissageNormal().getMatricule(),
+											 s.getHauteurSertissageEch1(),
+											 s.getHauteurSertissageEch2(),
+											 s.getHauteurSertissageEch3(),
+											 s.getHauteurSertissageEchFin()),
 	                                 Collectors.toList()
 	                         )
 	                 ));

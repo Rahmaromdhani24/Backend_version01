@@ -3,6 +3,8 @@ package rahma.backend.gestionPDEK.Controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
 import java.util.*;
@@ -65,5 +67,53 @@ public ResponseEntity<?> getProjetsByPlant(@PathVariable String plantName) {
         return ResponseEntity.badRequest().body("Plant invalide : " + plantName);
     }
 }
+@GetMapping("AgentQualiteParPlant")
+public ResponseEntity<List<UserDTO>> getAgentsQualiteByPlant(@RequestParam String nomPlant) {
+    Role agentQualiteRole = roleRepository.findByNom("AGENT_QUALITE")
+                                          .orElseThrow(() -> new RuntimeException("Role not found"));
 
+    Plant plant;
+    try {
+        plant = Plant.valueOf(nomPlant); // Cela va convertir la chaîne en l'énumération correspondante
+    } catch (IllegalArgumentException e) {
+        throw new RuntimeException("Invalid Plant name: " + nomPlant);
+    }
+
+    List<User> agents = userRepository.findByRoleAndPlant(agentQualiteRole, plant);
+
+    List<UserDTO> dtos = agents.stream()
+            .map(UserDTO::fromEntity)
+            .collect(Collectors.toList());
+
+    return ResponseEntity.ok(dtos);
+}
+@GetMapping("ChefLigneParPlantEtSegment")
+public ResponseEntity<List<UserDTO>> getAgentsQualiteByPlantEtSegment(@RequestParam String nomPlant 
+                                                                     , @RequestParam int segment
+                                                                     , @RequestParam String operation) {
+    Role chefDeLigne = roleRepository.findByNom("CHEF_DE_LIGNE")
+                                          .orElseThrow(() -> new RuntimeException("Role not found"));
+
+    Plant plant;
+    try {
+        plant = Plant.valueOf(nomPlant); // Cela va convertir la chaîne en l'énumération correspondante
+    } catch (IllegalArgumentException e) {
+        throw new RuntimeException("Invalid Plant name: " + nomPlant);
+    }
+
+    TypesOperation typeOperation  ; 
+    try {
+    	typeOperation = TypesOperation.valueOf(operation); // Cela va convertir la chaîne en l'énumération correspondante
+    } catch (IllegalArgumentException e) {
+        throw new RuntimeException("Invalid nom type operation : " + operation );
+    }
+
+    List<User> agents = userRepository.findByRoleAndPlantAndSegment(chefDeLigne, plant , segment);
+
+    List<UserDTO> dtos = agents.stream()
+            .map(UserDTO::fromEntity)
+            .collect(Collectors.toList());
+
+    return ResponseEntity.ok(dtos);
+}
 }

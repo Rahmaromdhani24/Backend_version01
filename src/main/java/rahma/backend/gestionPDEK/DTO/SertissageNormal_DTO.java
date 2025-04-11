@@ -15,5 +15,10 @@ public class SertissageNormal_DTO {
     private String date;
     private int numCycle;
     private int userSertissageNormal ; 
+    private double hauteurSertissageEch1 ; 
+    private double hauteurSertissageEch2 ; 
+    private double hauteurSertissageEch3 ; 
+    private double hauteurSertissageEchFin ; 
+
 
 }

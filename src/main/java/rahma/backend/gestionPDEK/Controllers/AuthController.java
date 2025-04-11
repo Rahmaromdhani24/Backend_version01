@@ -85,6 +85,8 @@ public class AuthController {
             response.put("poste", user.getPoste());
             response.put("segment", user.getSegment());
             response.put("machine", user.getMachine());
+            response.put("operation", user.getTypeOperation());
+
             
 
             return ResponseEntity.ok(response);
