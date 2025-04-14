@@ -235,4 +235,17 @@ public class TorsadageServiceImplimentation implements ServiceTorsadage {
 	
 		return List.of(); // Si rien trouvé
 	}
+
+	@Override
+	public List<TorsadageDTO> getTorsadagsNonValidees() {
+		// TODO Auto-generated method stub
+        return torsadageRepository.findByDecision(0);
+	}
+	
+	@Override
+	public List<TorsadageDTO> getTorsadagsValidees() {
+		// TODO Auto-generated method stub
+        return torsadageRepository.findByDecision(1);
+	}
+	 
 }

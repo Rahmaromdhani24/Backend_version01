@@ -11,4 +11,6 @@ public interface ServiceSoudure {
 
 public AjoutSoudureResultDTO ajoutPDEKSoudure (Soudure instanceSoudure ,  int matriculeOperateur , String projet) ; 
 public Map<Integer, List<SoudureDTO>> recupererSouduresParPDEKGroupéesParPage(String sectionFil, int segment, Plant plant, String nomProjet);
+public List<SoudureDTO> getSouduresNonValidees() ; 
+public List<SoudureDTO> getSouduresValidees() ; 
 }

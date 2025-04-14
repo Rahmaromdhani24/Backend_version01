@@ -5,7 +5,6 @@ import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
 import rahma.backend.gestionPDEK.Entity.Plant;
 import rahma.backend.gestionPDEK.Entity.TypePistolet;
-import rahma.backend.gestionPDEK.Entity.TypesOperation;
 
 public interface PDEKService {
 	
@@ -27,18 +26,6 @@ public interface PDEKService {
 	
 
 
-  	/****** torsadage *****/
-/*public boolean verifierExistencePDEK(String sectionFil, int segment ,Plant plant , String nomProjet ) ; 
-public PdekDTO recupererPdekDTO(String sectionFil, int segment ,Plant plant , String nomProjet) ; 
-
-
-
-public boolean verifierExistencePDEK(String sectionFil, int segment ,Plant plant , String nomProjet ) ; 
-public PdekDTO recupererPdekDTO(String sectionFil, int segment ,Plant plant , String nomProjet) ; 
-
-
-public boolean verifierExistencePDEK(String sectionFil, int segment ,Plant plant , String nomProjet ) ; 
-public PdekDTO recupererPdekDTO(String sectionFil, int segment ,Plant plant , String nomProjet) ; */
 
 
 	

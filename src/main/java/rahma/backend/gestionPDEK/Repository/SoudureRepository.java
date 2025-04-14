@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import rahma.backend.gestionPDEK.DTO.SoudureDTO;
+import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.Soudure;
 
@@ -29,6 +31,8 @@ public interface SoudureRepository extends JpaRepository<Soudure, Long> {
 */
 	Optional<Soudure> findTopByPagePDEK_IdOrderByNumeroCycleDesc(Long pageId);
 	List<Soudure> findByPdekSoudure_IdAndPagePDEK_PageNumber(Long pdekId, int pageNumber);
+	 List<SoudureDTO> findByDecision(int i);
+
 
 }
 

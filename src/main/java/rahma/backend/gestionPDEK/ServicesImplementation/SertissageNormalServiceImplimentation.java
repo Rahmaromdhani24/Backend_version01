@@ -25,9 +25,10 @@ import rahma.backend.gestionPDEK.Repository.PdekRepository;
 import rahma.backend.gestionPDEK.Repository.ProjetRepository;
 import rahma.backend.gestionPDEK.Repository.SertissageNormalRepository;
 import rahma.backend.gestionPDEK.Repository.UserRepository;
+import rahma.backend.gestionPDEK.ServicesInterfaces.ServiceSertissageNormal;
 
 @Service
-public class SertissageNormalServiceImplimentation {
+public class SertissageNormalServiceImplimentation implements ServiceSertissageNormal {
 
 	 @Autowired private OutilsContactRepository  outilContactRepository;
 	 @Autowired    private PdekRepository pdekRepository;
@@ -351,5 +352,17 @@ public class SertissageNormalServiceImplimentation {
 		 // Si aucune soudure n'est trouvée malgré les vérifications, retourner 0
 		 return 0;
 	 }
+
+	@Override
+	public List<SertissageNormal_DTO> getSertissagesNonValidees() {
+		// TODO Auto-generated method stub
+		return sertissageNormalRepository.findByDecision(0);
+	}
+
+	@Override
+	public List<SertissageNormal_DTO> getSertissagesValidees() {
+		// TODO Auto-generated method stub
+		return sertissageNormalRepository.findByDecision(1);
+	}
 	 
 			}

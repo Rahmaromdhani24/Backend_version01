@@ -240,4 +240,18 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
 
     return List.of(); // Si rien trouvé
 }
+
+
+	@Override
+	public List<SoudureDTO> getSouduresNonValidees() {
+		// TODO Auto-generated method stub
+		return soudureRepository.findByDecision(0) ; 
+	}
+
+
+	@Override
+	public List<SoudureDTO> getSouduresValidees() {
+		// TODO Auto-generated method stub
+		return soudureRepository.findByDecision(1);
+	}
 }

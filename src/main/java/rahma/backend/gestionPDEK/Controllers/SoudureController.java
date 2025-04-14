@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
 import rahma.backend.gestionPDEK.DTO.PdekDTO;
+import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
@@ -240,5 +241,18 @@ public ResponseEntity<List<SoudureDTO>> getTorsadagesParPageActuelle(
     } catch (IllegalArgumentException e) {
         return ResponseEntity.badRequest().build(); // Mauvais nom de plant
     }
+}
+@GetMapping("/soudures-non-validees")
+public List<SoudureDTO> getSouduresNonValidees() {
+    return serviceSoudure.getSouduresNonValidees() ; 
+}
+@GetMapping("/nbrNotifications")
+   public int getNombreNotification() {
+       return serviceSoudure.getSouduresNonValidees().size() ; 
+}
+
+@GetMapping("/soudures-validees")
+public List<SoudureDTO>  getSouduresValidees() {
+    return serviceSoudure.getSouduresValidees();
 }
 }

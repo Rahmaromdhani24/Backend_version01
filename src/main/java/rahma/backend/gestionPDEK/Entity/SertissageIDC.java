@@ -106,6 +106,7 @@ public class SertissageIDC extends Operation {
     @Column(name = "force_traction_c2_echFin")
     private double forceTractionC2EchFin ; 
 
+    private int decision ;
     /**************** Relations *********************/
     
     @ManyToOne   // relation "saisir" sertissage idc  

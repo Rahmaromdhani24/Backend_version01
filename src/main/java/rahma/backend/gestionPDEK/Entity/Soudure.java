@@ -79,6 +79,8 @@ public class Soudure extends Operation {
     private int quantiteAtteint; 
     private String code; 
     
+    private int decision ;
+    
     @ManyToOne   // Lien vers la page de PDEK 
     @JoinColumn(name = "page_pdek_id")
     private PagePDEK pagePDEK;

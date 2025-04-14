@@ -91,6 +91,8 @@ public class SertissageNormal extends Operation {
     @Column(name = "numero_machine")
     private String numeroMachine ; 
     
+    private int decision ;
+    
     public static String getDescriptionForCode(String code) {
         return CODES_CONTROLES_DESCRIPTION.getOrDefault(code, "Description non trouvée");
     }

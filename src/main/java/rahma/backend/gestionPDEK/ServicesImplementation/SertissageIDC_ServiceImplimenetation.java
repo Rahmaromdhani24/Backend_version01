@@ -9,13 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
+import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
+import rahma.backend.gestionPDEK.ServicesInterfaces.ServiceSertissageIDC;
+import rahma.backend.gestionPDEK.ServicesInterfaces.ServiceSertissageNormal;
 
 @Service
 @RequiredArgsConstructor
-public class SertissageIDC_ServiceImplimenetation {
+public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageIDC {
 
 	 @Autowired    private PdekRepository pdekRepository;
 	 @Autowired    private SertissageIDCRepository sertissageIDCRepository;	
@@ -205,5 +208,17 @@ public class SertissageIDC_ServiceImplimenetation {
 		 // Si aucune soudure n'est trouvée malgré les vérifications, retourner 0
 		 return 0;
 	 }
+
+	@Override
+	public List<SertissageIDC_DTO> getSertissagesIDCNonValidees() {
+		// TODO Auto-generated method stub
+		return sertissageIDCRepository.findByDecision(0);
+	}
+
+	@Override
+	public List<SertissageIDC_DTO> getSertissagesIDCValidees() {
+		// TODO Auto-generated method stub
+		return sertissageIDCRepository.findByDecision(1);
+	}
 	 
 			}

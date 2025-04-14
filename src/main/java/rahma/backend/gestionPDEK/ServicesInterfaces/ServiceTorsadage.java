@@ -10,4 +10,7 @@ public interface ServiceTorsadage {
 
 	public AjoutTorsadageResultDTO ajoutPDEK_Torsadage (Torsadage instanceTorsadage ,  int matriculeOperateur , String projet) ; 
 	public Map<Integer, List<TorsadageDTO>> recupererTorsadagesParPDEKGroupéesParPage(String specificationMesure, int segment, Plant plant, String nomProjet)  ; 
+	public List<TorsadageDTO> getTorsadagsNonValidees() ; 
+	public List<TorsadageDTO> getTorsadagsValidees() ; 
+
 }

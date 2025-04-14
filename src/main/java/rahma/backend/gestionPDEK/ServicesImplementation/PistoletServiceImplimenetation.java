@@ -1,17 +1,24 @@
 package rahma.backend.gestionPDEK.ServicesImplementation;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import rahma.backend.gestionPDEK.DTO.AjoutPistoletResultDTO;
+import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
+import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
+import rahma.backend.gestionPDEK.ServicesInterfaces.ServicePistolet;
 
 @Service
 @RequiredArgsConstructor
-public class PistoletServiceImplimenetation {
+public class PistoletServiceImplimenetation  implements ServicePistolet {
 
     @Autowired private PistoletRepository pistoletRepository;
     @Autowired private PdekRepository pdekRepository;
@@ -19,7 +26,7 @@ public class PistoletServiceImplimenetation {
     @Autowired private UserRepository userRepository; 
 
     @Transactional
-    public Pistolet ajouterPistolet(int matricule, Pistolet pistolet) {
+    public AjoutPistoletResultDTO ajouterPistolet(int matricule, Pistolet pistolet) {
         // 1. Vérifier si l'utilisateur existe
         User user = userRepository.findById(matricule)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
@@ -38,6 +45,7 @@ public class PistoletServiceImplimenetation {
                     newPdek.setCategoriePistolet(pistolet.getCategorie()) ; 
                     newPdek.setTotalPages(1);
                     return pdekRepository.save(newPdek);
+
                 });
 
         // 3. Trouver la dernière page du PDEK
@@ -73,7 +81,7 @@ public class PistoletServiceImplimenetation {
         pistolet.setNumeroCycle(numeroCycle);
         pistolet.setUserPistolet(user); 
         pistolet.setSegment(user.getSegment()); 
-        Pistolet savedPistolet = pistoletRepository.save(pistolet);
+        pistoletRepository.save(pistolet);
 
         // 6. Associer l'utilisateur au PDEK pour le remplissage (ManyToMany)
         if (pdek.getUsersRempliePDEK() == null) {
@@ -85,30 +93,116 @@ public class PistoletServiceImplimenetation {
             pdekRepository.save(pdek);
         }
 
-        return savedPistolet;
+		return new AjoutPistoletResultDTO(pdek.getId(), pagePDEK.getPageNumber());
     }
-    
-	 ///////
-	 /*public Optional<Integer> getLastNumeroCycle(String sectionFilSelectionne, int segment, Plant nomPlant) {
-	        // 1️⃣ Récupérer le PDEK correspondant
-	        Optional<PDEK> pdekOpt = pdekRepository.findUniquePDEK_MontagePistolet(sectionFilSelectionne, segment, nomPlant);
+    /*********************************************************************************************************************/
+    public int getLastNumeroCycle(String typePistolet, int segment, int numPistolet ,String categorie , Plant nomPlant) {
+		 // 1️⃣ Récupérer le PDEK correspondant
+		 Optional<PDEK> pdekOpt = pdekRepository.findUniquePDEK_MontagePistolet(TypePistolet.valueOf(typePistolet) ,segment , numPistolet , CategoriePistolet.valueOf(categorie) ,nomPlant);
+	 
+		 if (pdekOpt.isEmpty()) {
+			 // Aucun PDEK trouvé → retourner 0
+			 return 0;
+		 }
+	 
+		 PDEK pdek = pdekOpt.get();
+	 
+		 // 2️⃣ Récupérer la dernière page associée au PDEK
+		 Optional<PagePDEK> lastPageOpt = pagePDEKRepository.findFirstByPdekOrderByPageNumberDesc(pdek);
+	 
+		 if (lastPageOpt.isEmpty()) {
+			 // Le PDEK existe, mais aucune page n'est encore créée → retourner 0
+			 return 0;
+		 }
+	 
+		 PagePDEK lastPage = lastPageOpt.get();
+	 
+		 // 3️⃣ Vérifier s'il existe des soudures dans cette page
+		 long nombrePistoletDansPage = pistoletRepository.countByPagePDEK(lastPage);
+	 
+		 if (nombrePistoletDansPage == 0) {
+			 // Si la page est vide, retourner 0
+			 return 0;
+		 }
+	 
+		 // 4️⃣ Récupérer le dernier numéro de cycle
+		 Optional<Pistolet> lastPistoletOpt = pistoletRepository.findTopByPagePDEK_IdOrderByNumeroCycleDesc(lastPage.getId());
+	 
+		 if (lastPistoletOpt.isPresent()) {
+			 // Si une soudure est présente, retourner son numéro de cycle
+			 return lastPistoletOpt.get().getNumeroCycle();
+		 }
+	 
+		 // Si aucune soudure n'est trouvée malgré les vérifications, retourner 0
+		 return 0;
+	 }
+    @Override
+    public List<PistoletDTO> getPistoletsNonValidees() {
+        List<Pistolet> pistolets = pistoletRepository.findByDecision(0);
 
-	        if (pdekOpt.isEmpty()) {
-	            return Optional.empty(); // Aucun PDEK trouvé
-	        }
+        return pistolets.stream()
+            .map(p -> new PistoletDTO( 
+      	          p.getId() ,
+                p.getDateCreation(),
+                p.getTypePistolet(),
+                p.getNumeroPistolet(),
+                p.getLimiteInterventionMax(),
+                p.getLimiteInterventionMin(),
+                "R",
+                p.getCoupePropre(),
+                p.getUserPistolet().getMatricule(),
+                p.getEch1(),
+                p.getEch2(),
+                p.getEch3(),
+                p.getEch4(),
+                p.getEch5(),
+                p.getMoyenne(),
+                p.getEtendu(), 
+                p.getNumeroCycle(),
+                p.getNbrCollierTester(),
+                p.getAxeSerrage(),
+                p.getSemaine(),
+                p.getDecision(),
+                p.getUserPistolet().getMatricule()
+            ))
+            .toList();
+    }
 
-	        PDEK pdek = pdekOpt.get();
 
-	        // 2️⃣ Récupérer la dernière page PDEK
-	        Optional<PagePDEK> lastPageOpt = pagePDEKRepository.findLastPageByPdek(pdek.getId());
+    @Override
+    public List<PistoletDTO> getPistoletsValidees() {
+        List<Pistolet> pistolets = pistoletRepository.findByDecision(1);
 
-	        if (lastPageOpt.isEmpty()) {
-	            return Optional.empty(); // Aucune page trouvée
-	        }
-
-	        PagePDEK lastPage = lastPageOpt.get();
-
-	        //  Récupérer le dernier numéro de cycle de sertissage normal
-	        return pistoletRepository.findLastNumCycleByPage(lastPage.getId());
-	    }*/
+        return pistolets.stream()
+            .map(p -> new PistoletDTO(  
+      	          p.getId() ,
+                p.getDateCreation(),
+                p.getTypePistolet(),
+                p.getNumeroPistolet(),
+                p.getLimiteInterventionMax(),
+                p.getLimiteInterventionMin(),
+                "R",
+                p.getCoupePropre(),
+                p.getUserPistolet().getMatricule(),
+                p.getEch1(),
+                p.getEch2(),
+                p.getEch3(),
+                p.getEch4(),
+                p.getEch5(),
+                p.getMoyenne(),
+                p.getEtendu(), 
+                p.getNumeroCycle(),
+                p.getNbrCollierTester(),
+                p.getAxeSerrage(),
+                p.getSemaine(),
+                p.getDecision(),
+                p.getUserPistolet().getMatricule()
+            ))
+            .toList();
+    }
+	@Override
+	public void validerPistolet(Long id) {
+	    pistoletRepository.validerPistolet(id);
+		
+	}
 }

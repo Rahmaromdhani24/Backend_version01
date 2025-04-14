@@ -91,6 +91,8 @@ public class Torsadage extends Operation {
     private double moyenne;
     private int etendu; 
     
+    private int decision ;
+    
     @ManyToOne   // relation "saisir" 
     @JoinColumn(name = "user_matricule")
     private User userTorsadage;

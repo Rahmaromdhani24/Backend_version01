@@ -1,11 +1,16 @@
 package rahma.backend.gestionPDEK.Repository;
 
+import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import jakarta.transaction.Transactional;
+import rahma.backend.gestionPDEK.DTO.PistoletDTO;
+import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.Pistolet;
 import rahma.backend.gestionPDEK.Entity.User;
@@ -21,4 +26,15 @@ public interface PistoletRepository extends JpaRepository<Pistolet, Long> {
 	 @Query("SELECT s.numeroCycle FROM Pistolet s WHERE s.pagePDEK.id = :pageId ORDER BY s.numeroCycle DESC LIMIT 1")
      Optional<Integer> findLastNumCycleByPage(@Param("pageId") Long pageId);
 
-}
+	 
+	 Optional<Pistolet> findTopByPagePDEK_IdOrderByNumeroCycleDesc(Long pageId);
+     List<Pistolet> findByPdekPistolet_IdAndPagePDEK_PageNumber(Long pdekId, int pageNumber);
+     
+     List<Pistolet> findByDecision(int decision);
+     /********************* Modifier decision a 1 **********************************/
+     @Modifying
+     @Transactional
+     @Query("UPDATE Pistolet p SET p.decision = 1 WHERE p.id = :id")
+     void validerPistolet(@Param("id") Long id);
+
+} 

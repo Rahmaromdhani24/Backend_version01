@@ -31,7 +31,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/login").permitAll()
                 .requestMatchers("/auth/getUser/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
-                .requestMatchers("/pdf/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
+                .requestMatchers("/pdek/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
                 .requestMatchers("/operations/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN" ,"OPERATEUR")
                 .requestMatchers("/operator/**").hasRole("OPERATEUR")

@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
+import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.SertissageIDC;
 import rahma.backend.gestionPDEK.Entity.SertissageNormal;
@@ -28,5 +31,10 @@ public interface SertissageIDCRepository extends JpaRepository<SertissageIDC, Lo
 
      /*******************************************************************************************/
     Optional<SertissageIDC> findTopByPagePDEK_IdOrderByNumCycleDesc(Long pageId);
+    
+
+	public List<SertissageIDC_DTO>  findByDecision(int i);
+
+     
 }
 

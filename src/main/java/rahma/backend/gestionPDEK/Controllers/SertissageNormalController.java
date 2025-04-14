@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import rahma.backend.gestionPDEK.DTO.AjoutSertissageNormalResultDTO;
 import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
+import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
 import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.Entity.*;
@@ -269,7 +270,19 @@ public ResponseEntity<String> ajouterSertissageNormal(
 
      return ResponseEntity.ok(sertissagesDTOs);
  }
+ @GetMapping("/sertissages-non-validees")
+ public List<SertissageNormal_DTO> getSertissagesNonValidees() {
+     return serviceSertissageNormal.getSertissagesNonValidees() ; 
+ }
+@GetMapping("/nbrNotifications")
+ public int getNombresNotificationssertissagesNonValider() {
+     return serviceSertissageNormal.getSertissagesNonValidees().size();
+ }
 
+@GetMapping("/sertissagesIDC-validees")
+ public List<SertissageNormal_DTO> getsertissagesValidees() {
+     return serviceSertissageNormal.getSertissagesNonValidees();
+ }
 
   }
 
