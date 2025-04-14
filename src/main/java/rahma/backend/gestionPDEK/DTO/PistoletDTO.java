@@ -10,6 +10,7 @@ import rahma.backend.gestionPDEK.Entity.TypePistolet;
 public class PistoletDTO {
 
 		private Long id;
+		private int segment ;
 	    private String dateCreation;
 	    private TypePistolet typePistolet ; 
 	    private int  numeroPistolet ; 
@@ -47,11 +48,12 @@ public class PistoletDTO {
 		}
 
 
-		public PistoletDTO(Long id , String dateCreation, TypePistolet typePistolet, int numeroPistolet, String limiteInterventionMax,
+		public PistoletDTO(Long id  , int segment ,  String dateCreation, TypePistolet typePistolet, int numeroPistolet, String limiteInterventionMax,
 				String limiteInterventionMin, String codeRepartiton, String coupePropre, int matriculeAgentQualité,
 				int ech1, int ech2, int ech3, int ech4, int ech5, double moyenne, int etendu,
 				int numCourant, String nbrCollierTester, int axeSerrage, int semaine, int decision , int matricule) {
 			this.id =id ; 
+			this.segment =segment  ; 
 			this.dateCreation = dateCreation;
 			this.typePistolet = typePistolet;
 			this.numeroPistolet = numeroPistolet;

@@ -57,6 +57,7 @@ public class PistoletController {
 	    List<PistoletDTO> pistoletsDTOs = pistolets.stream().map(p ->
 	        new PistoletDTO(
 	          p.getId() ,
+  	          p.getSegment() ,
 	          p.getDateCreation() ,
 	          p.getTypePistolet() ,
 	          p.getNumeroPistolet() ,

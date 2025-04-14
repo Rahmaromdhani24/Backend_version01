@@ -143,6 +143,7 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
         return pistolets.stream()
             .map(p -> new PistoletDTO( 
       	          p.getId() ,
+      	          p.getSegment() ,
                 p.getDateCreation(),
                 p.getTypePistolet(),
                 p.getNumeroPistolet(),
@@ -175,7 +176,8 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
 
         return pistolets.stream()
             .map(p -> new PistoletDTO(  
-      	          p.getId() ,
+      	        p.getId() ,  
+      	        p.getSegment() ,
                 p.getDateCreation(),
                 p.getTypePistolet(),
                 p.getNumeroPistolet(),
