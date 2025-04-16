@@ -7,5 +7,5 @@ public interface ServicePistolet {
 
 	public List<PistoletDTO> getPistoletsNonValidees() ; 
 	public List<PistoletDTO> getPistoletsValidees() ; 
-	public void validerPistolet(Long id)  ; 
+	public void validerPistolet(Long idPistolet, int matriculeUser)  ; 
 }

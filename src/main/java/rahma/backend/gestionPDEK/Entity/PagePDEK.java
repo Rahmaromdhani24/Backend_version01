@@ -48,6 +48,11 @@ public class PagePDEK {
     @OneToMany(mappedBy = "pagePDEK", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SertissageNormal> pageSertissageNormal;
     
+    @OneToOne(mappedBy = "pagePDEK", cascade = CascadeType.ALL)
+    private PlanAction planAction;
+
+    
+    
     public PagePDEK(int pageNumber, boolean status, PDEK pdek) {
  		super();
  		this.pageNumber = pageNumber;

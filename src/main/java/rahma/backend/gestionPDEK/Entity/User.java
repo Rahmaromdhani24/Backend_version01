@@ -53,4 +53,19 @@ public class User {
 	  
 	  @OneToMany(mappedBy = "userSertissageNormal") // relation "saisir" entre user et sertissage idc   
 	    private List<SertissageNormal> sertissagesNormal;
+	  
+	  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	  private List<ControleQualite> controlesQualite = new ArrayList<>();
+	  
+
+	  @ManyToMany
+	  @JoinTable(
+	    name = "user_remplissage_plan_action",
+	    joinColumns = @JoinColumn(name = "user_matricule"),
+	    inverseJoinColumns = @JoinColumn(name = "plan_action_id")
+	  )
+	  private List<PlanAction> plansActionRemplis;
+
+
+
 }

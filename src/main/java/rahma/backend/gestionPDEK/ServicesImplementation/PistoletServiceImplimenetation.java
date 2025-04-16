@@ -1,16 +1,16 @@
 package rahma.backend.gestionPDEK.ServicesImplementation;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import rahma.backend.gestionPDEK.DTO.AjoutPistoletResultDTO;
-import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
 import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
@@ -24,6 +24,7 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
     @Autowired private PdekRepository pdekRepository;
     @Autowired private PdekPageRepository pagePDEKRepository;
     @Autowired private UserRepository userRepository; 
+   @Autowired  private ControleQualiteRepository controleQualiteRepository;
 
     @Transactional
     public AjoutPistoletResultDTO ajouterPistolet(int matricule, Pistolet pistolet) {
@@ -142,9 +143,12 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
 
         return pistolets.stream()
             .map(p -> new PistoletDTO( 
-      	          p.getId() ,
-      	          p.getSegment() ,
+      	        p.getId() ,
+      	        p.getPdekPistolet().getId()  ,
+      	        p.getPagePDEK().getPageNumber() ,
+      	        p.getSegment() ,
                 p.getDateCreation(),
+                p.getHeureCreation() ,
                 p.getTypePistolet(),
                 p.getNumeroPistolet(),
                 p.getLimiteInterventionMax(),
@@ -159,6 +163,7 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
                 p.getEch5(),
                 p.getMoyenne(),
                 p.getEtendu(), 
+  	            p.getCategorie() , 
                 p.getNumeroCycle(),
                 p.getNbrCollierTester(),
                 p.getAxeSerrage(),
@@ -177,8 +182,11 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
         return pistolets.stream()
             .map(p -> new PistoletDTO(  
       	        p.getId() ,  
+      	        p.getPdekPistolet().getId()  ,
+      	        p.getPagePDEK().getPageNumber() ,
       	        p.getSegment() ,
                 p.getDateCreation(),
+                p.getHeureCreation() ,
                 p.getTypePistolet(),
                 p.getNumeroPistolet(),
                 p.getLimiteInterventionMax(),
@@ -193,6 +201,7 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
                 p.getEch5(),
                 p.getMoyenne(),
                 p.getEtendu(), 
+  	            p.getCategorie() , 
                 p.getNumeroCycle(),
                 p.getNbrCollierTester(),
                 p.getAxeSerrage(),
@@ -203,8 +212,37 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
             .toList();
     }
 	@Override
-	public void validerPistolet(Long id) {
-	    pistoletRepository.validerPistolet(id);
-		
+	public void validerPistolet(Long idPistolet, int matriculeUser) {
+		   String heure = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+		   String date  = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+	    // Valider le pistolet
+	    pistoletRepository.validerPistolet(idPistolet);
+
+	    // Récupérer le pistolet concerné
+	    Pistolet pistolet = pistoletRepository.findById(idPistolet)
+	        .orElseThrow(() -> new RuntimeException("Pistolet non trouvé avec ID : " + idPistolet));
+
+	    // Récupérer le PDEK associé
+	    PDEK pdek = pistolet.getPdekPistolet() ; 
+
+	    // Récupérer l'utilisateur via son matricule
+	    User userControleur = userRepository.findByMatricule(matriculeUser)
+	        .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec matricule : " + matriculeUser));
+
+	    // Créer l'entrée de contrôle qualité
+	    ControleQualite controle = ControleQualite.builder()
+	        .user(userControleur)
+	        .pdek(pdek)
+	        .idInstanceOperation(pistolet.getId())
+	        .nombrePage(pdek.getPages() != null ? pdek.getPages().size() : 0)
+	        .dateControle(date)
+	        .heureControle(heure)
+	        .resultat("Validé")
+	        .build();
+
+	    // Sauvegarder le contrôle qualité
+	    controleQualiteRepository.save(controle);
 	}
+
 }

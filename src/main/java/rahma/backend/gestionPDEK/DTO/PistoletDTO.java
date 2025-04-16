@@ -2,7 +2,9 @@ package rahma.backend.gestionPDEK.DTO;
 
 import lombok.Getter;
 import lombok.Setter;
+import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
 import rahma.backend.gestionPDEK.Entity.PDEK;
+import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.TypePistolet;
 
 @Getter
@@ -12,7 +14,8 @@ public class PistoletDTO {
 		private Long id;
 		private int segment ;
 	    private String dateCreation;
-	    private TypePistolet typePistolet ; 
+	    private String heureCreation ; 
+	    private TypePistolet type ; 
 	    private int  numeroPistolet ; 
 	    private String limiteInterventionMax ; 
 	    private String limiteInterventionMin ; 
@@ -33,14 +36,16 @@ public class PistoletDTO {
 	    private int semaine ; 
 	    private int decision ; 
 	    private int matricule ; 
+	    private CategoriePistolet categorie ; 
+	    private long pdekId ; 
+	    private int numPage ; 
 	    
-	    
-		public PistoletDTO(Long id, String dateCreation, TypePistolet typePistolet, int numeroPistolet,
+		public PistoletDTO(Long id, String dateCreation, TypePistolet type, int numeroPistolet,
 				 String limiteInterventionMax, String limiteInterventionMin, PDEK pdek) {
 			super();
 			this.id = id;
 			this.dateCreation = dateCreation;
-			this.typePistolet = typePistolet;
+			this.type = type;
 			this.numeroPistolet = numeroPistolet;
 			this.limiteInterventionMax = limiteInterventionMax;
 			this.limiteInterventionMin = limiteInterventionMin;
@@ -48,14 +53,17 @@ public class PistoletDTO {
 		}
 
 
-		public PistoletDTO(Long id  , int segment ,  String dateCreation, TypePistolet typePistolet, int numeroPistolet, String limiteInterventionMax,
+		public PistoletDTO(Long id  , long pdekId  , int numPage , int segment ,  String dateCreation,String heureCreation , TypePistolet type, int numeroPistolet, String limiteInterventionMax,
 				String limiteInterventionMin, String codeRepartiton, String coupePropre, int matriculeAgentQualité,
-				int ech1, int ech2, int ech3, int ech4, int ech5, double moyenne, int etendu,
+				int ech1, int ech2, int ech3, int ech4, int ech5, double moyenne, int etendu, CategoriePistolet categorie ,
 				int numCourant, String nbrCollierTester, int axeSerrage, int semaine, int decision , int matricule) {
 			this.id =id ; 
+			this.pdekId = pdekId ; 
+			this.numPage = numPage ; 
 			this.segment =segment  ; 
 			this.dateCreation = dateCreation;
-			this.typePistolet = typePistolet;
+			this.heureCreation = heureCreation ; 
+			this.type = type;
 			this.numeroPistolet = numeroPistolet;
 			this.limiteInterventionMax = limiteInterventionMax;
 			this.limiteInterventionMin = limiteInterventionMin;
@@ -75,6 +83,7 @@ public class PistoletDTO {
 			this.semaine = semaine;
 			this.decision = decision;
 			this.matricule= matricule ; 
+			this.categorie = categorie ; 
 					
 		}
 

@@ -106,6 +106,10 @@ public class PDEK {
     @OneToMany(mappedBy = "pdek", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // relation avec PagePDEK 
     private List<PagePDEK> pages;
 
+    @OneToMany(mappedBy = "pdek", cascade = CascadeType.ALL)
+    private List<ControleQualite> controlesQualite = new ArrayList<>();
+
+    
     public List<Pistolet> getPdekPistoles() {
         return pdekPistoles;
     

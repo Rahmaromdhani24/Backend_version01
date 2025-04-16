@@ -57,8 +57,11 @@ public class PistoletController {
 	    List<PistoletDTO> pistoletsDTOs = pistolets.stream().map(p ->
 	        new PistoletDTO(
 	          p.getId() ,
+	 	      p.getPdekPistolet().getId()  ,
+      	      p.getPagePDEK().getPageNumber() ,
   	          p.getSegment() ,
 	          p.getDateCreation() ,
+              p.getHeureCreation() ,
 	          p.getTypePistolet() ,
 	          p.getNumeroPistolet() ,
 	          p.getLimiteInterventionMax() ,
@@ -73,6 +76,7 @@ public class PistoletController {
 	          p.getEch5() ,
 	          p.getMoyenne() ,
 	          p.getEtendu(), 
+	          p.getCategorie() , 
 	          p.getNumeroCycle() ,
 	          p.getNbrCollierTester() ,
 	          p.getAxeSerrage() ,
@@ -100,8 +104,8 @@ public class PistoletController {
 	    }
 	
 	 @PutMapping("/validerPistolet")
-	 public ResponseEntity<?> validerPistolet(@RequestParam Long id) {
-	     pistoletService.validerPistolet(id);
+	 public ResponseEntity<?> validerPistolet(@RequestParam Long id , int matriculeAgentQualite) {
+	     pistoletService.validerPistolet(id , matriculeAgentQualite);
 	     return ResponseEntity.ok().build();
 	 }
 
