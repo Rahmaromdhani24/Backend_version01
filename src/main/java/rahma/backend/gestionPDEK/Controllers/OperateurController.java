@@ -116,4 +116,33 @@ public ResponseEntity<List<UserDTO>> getAgentsQualiteByPlantEtSegment(@RequestPa
 
     return ResponseEntity.ok(dtos);
 }
+@GetMapping("TechniciensParPlantEtSegment")
+public ResponseEntity<List<UserDTO>> getTechniciensByPlantEtSegment(@RequestParam String nomPlant 
+                                                                     , @RequestParam int segment
+                                                                     , @RequestParam String operation) {
+    Role technicien = roleRepository.findByNom("TECHNICIEN")
+                                          .orElseThrow(() -> new RuntimeException("Role not found"));
+
+    Plant plant;
+    try {
+        plant = Plant.valueOf(nomPlant); // Cela va convertir la chaîne en l'énumération correspondante
+    } catch (IllegalArgumentException e) {
+        throw new RuntimeException("Invalid Plant name: " + nomPlant);
+    }
+
+    TypesOperation typeOperation  ; 
+    try {
+    	typeOperation = TypesOperation.valueOf(operation); // Cela va convertir la chaîne en l'énumération correspondante
+    } catch (IllegalArgumentException e) {
+        throw new RuntimeException("Invalid nom type operation : " + operation );
+    }
+
+    List<User> techniciens = userRepository.findByRoleAndPlantAndSegment(technicien, plant , segment);
+
+    List<UserDTO> dtos = techniciens.stream()
+            .map(UserDTO::fromEntity)
+            .collect(Collectors.toList());
+
+    return ResponseEntity.ok(dtos);
+}
 }

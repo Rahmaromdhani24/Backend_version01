@@ -24,7 +24,8 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
     @Autowired private PdekRepository pdekRepository;
     @Autowired private PdekPageRepository pagePDEKRepository;
     @Autowired private UserRepository userRepository; 
-   @Autowired  private ControleQualiteRepository controleQualiteRepository;
+    @Autowired private ControleQualiteRepository controleQualiteRepository;
+    @Autowired private AuditLogRepository auditLogRepository;
 
     @Transactional
     public AjoutPistoletResultDTO ajouterPistolet(int matricule, Pistolet pistolet) {
@@ -94,6 +95,20 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
             pdekRepository.save(pdek);
         }
 
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        AuditLog audit = new AuditLog();
+        audit.setAction("Ajout Pistolet");
+        audit.setDescription("Ajout du pistolet N°" + pistolet.getNumeroPistolet() + " à la page " +
+                             pagePDEK.getPageNumber() + " du PDEK ID " + pdek.getId());
+        
+        audit.setDateCreation(LocalDate.now().format(dateFormatter));
+        audit.setHeureCreation(LocalTime.now().format(timeFormatter));
+        audit.setUser(user);
+        audit.setPdek_id(pdek.getId());
+        audit.setPistolet_id(pistolet.getId());
+        auditLogRepository.save(audit);
+        
 		return new AjoutPistoletResultDTO(pdek.getId(), pagePDEK.getPageNumber());
     }
     /*********************************************************************************************************************/
@@ -227,8 +242,7 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
 	    PDEK pdek = pistolet.getPdekPistolet() ; 
 
 	    // Récupérer l'utilisateur via son matricule
-	    User userControleur = userRepository.findByMatricule(matriculeUser)
-	        .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec matricule : " + matriculeUser));
+	    User userControleur = userRepository.findByMatricule(matriculeUser).get() ;
 
 	    // Créer l'entrée de contrôle qualité
 	    ControleQualite controle = ControleQualite.builder()
@@ -244,5 +258,6 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
 	    // Sauvegarder le contrôle qualité
 	    controleQualiteRepository.save(controle);
 	}
+	
 
 }

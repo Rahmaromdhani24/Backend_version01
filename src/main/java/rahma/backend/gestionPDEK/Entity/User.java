@@ -55,7 +55,7 @@ public class User {
 	    private List<SertissageNormal> sertissagesNormal;
 	  
 	  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	  private List<ControleQualite> controlesQualite = new ArrayList<>();
+	  private List<ControleQualite> controlesQualite = new ArrayList<ControleQualite>();
 	  
 
 	  @ManyToMany
@@ -66,6 +66,8 @@ public class User {
 	  )
 	  private List<PlanAction> plansActionRemplis;
 
+	  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	  private List<AuditLog> auditLogs;
 
 
 }

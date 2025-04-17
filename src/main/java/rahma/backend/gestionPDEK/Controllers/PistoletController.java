@@ -3,8 +3,10 @@ package rahma.backend.gestionPDEK.Controllers;
 import rahma.backend.gestionPDEK.ServicesImplementation.PistoletServiceImplimenetation;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rahma.backend.gestionPDEK.DTO.AjoutPistoletResultDTO;
@@ -104,10 +106,51 @@ public class PistoletController {
 	    }
 	
 	 @PutMapping("/validerPistolet")
-	 public ResponseEntity<?> validerPistolet(@RequestParam Long id , int matriculeAgentQualite) {
-	     pistoletService.validerPistolet(id , matriculeAgentQualite);
+	 public ResponseEntity<?> validerPistolet(@RequestParam Long id, @RequestParam Integer matriculeAgentQualite) {
+	     pistoletService.validerPistolet(id, matriculeAgentQualite);
 	     return ResponseEntity.ok().build();
 	 }
+	  @GetMapping("/pistolet/{numeroPistolet}")
+	    public ResponseEntity<PistoletDTO> getPistoletByNumero(@PathVariable int numeroPistolet) {
+	        Optional<Pistolet> pistoletOpt = pistoletRepository.findByNumeroPistolet(numeroPistolet);
 
+	        if (pistoletOpt.isPresent()) {
+	            // Conversion de l'entité Pistolet en PistoletDTO
+	            Pistolet p = pistoletOpt.get();
+	            PistoletDTO pistoletDTO =     new PistoletDTO(
+	      	          p.getId() ,
+	    	 	      p.getPdekPistolet().getId()  ,
+	          	      p.getPagePDEK().getPageNumber() ,
+	      	          p.getSegment() ,
+	    	          p.getDateCreation() ,
+	                  p.getHeureCreation() ,
+	    	          p.getTypePistolet() ,
+	    	          p.getNumeroPistolet() ,
+	    	          p.getLimiteInterventionMax() ,
+	    	          p.getLimiteInterventionMin() ,
+	    	          "R" ,
+	    	          p.getCoupePropre() ,
+	    	          p.getUserPistolet().getMatricule() ,
+	    	          p.getEch1() ,
+	    	          p.getEch2() ,
+	    	          p.getEch3() ,
+	    	          p.getEch4() ,
+	    	          p.getEch5() ,
+	    	          p.getMoyenne() ,
+	    	          p.getEtendu(), 
+	    	          p.getCategorie() , 
+	    	          p.getNumeroCycle() ,
+	    	          p.getNbrCollierTester() ,
+	    	          p.getAxeSerrage() ,
+	    	          p.getSemaine() ,
+	    	          p.getDecision()	,
+	    	          p.getUserPistolet().getMatricule()
+	    	        ) ; 
+
+	            return ResponseEntity.ok(pistoletDTO);
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	        }
+	    }
 
 }

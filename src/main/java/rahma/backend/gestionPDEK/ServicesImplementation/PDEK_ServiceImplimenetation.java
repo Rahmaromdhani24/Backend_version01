@@ -2,15 +2,14 @@ package rahma.backend.gestionPDEK.ServicesImplementation;
 
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
 import rahma.backend.gestionPDEK.DTO.PdekDTO;
 import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
 import rahma.backend.gestionPDEK.Entity.PDEK;
 import rahma.backend.gestionPDEK.Entity.Plant;
 import rahma.backend.gestionPDEK.Entity.TypePistolet;
-import rahma.backend.gestionPDEK.Entity.TypesOperation;
 import rahma.backend.gestionPDEK.Repository.PdekRepository;
 import rahma.backend.gestionPDEK.Repository.ProjetRepository;
 import rahma.backend.gestionPDEK.ServicesInterfaces.PDEKService;
@@ -21,7 +20,7 @@ public class PDEK_ServiceImplimenetation implements PDEKService {
 	
 	@Autowired PdekRepository pdekRepository ;
 	@Autowired ProjetRepository projetRepository  ;
-
+	@Autowired private JdbcTemplate jdbcTemplate;
 
 
 	public boolean verifierExistencePDEK_soudureUltrason(String sectionFil, int segment ,Plant plant , String nomProjet ) {
@@ -93,5 +92,7 @@ public class PDEK_ServiceImplimenetation implements PDEKService {
 	    // Si aucun PDEK n'est trouvé, retourner null
 	    return null;
 	}
+
+
 
 }

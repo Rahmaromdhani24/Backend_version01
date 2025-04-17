@@ -36,5 +36,6 @@ public interface PistoletRepository extends JpaRepository<Pistolet, Long> {
      @Transactional
      @Query("UPDATE Pistolet p SET p.decision = 1 WHERE p.id = :id")
      void validerPistolet(@Param("id") Long id);
+     Optional<Pistolet> findByNumeroPistolet(int numeroPistolet);
 
 } 
