@@ -39,6 +39,7 @@ public class Pistolet extends Operation {
     private double moyenne;
     private int etendu;
     private int decision ;
+    private int rempliePlanAction ;
 
     @ManyToOne   // relation "saisir" 
     @JoinColumn(name = "user_matricule")

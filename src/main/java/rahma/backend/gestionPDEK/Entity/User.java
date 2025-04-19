@@ -69,5 +69,7 @@ public class User {
 	  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	  private List<AuditLog> auditLogs;
 
+	  @OneToMany(mappedBy = "userPlanAction", cascade = CascadeType.ALL, orphanRemoval = true)
+	    private List<DetailsPlanAction> details = new ArrayList();
 
 }

@@ -11,8 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rahma.backend.gestionPDEK.DTO.AjoutPistoletResultDTO;
 import rahma.backend.gestionPDEK.DTO.PistoletDTO;
+import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
 import rahma.backend.gestionPDEK.Entity.Pistolet;
 import rahma.backend.gestionPDEK.Entity.Plant;
+import rahma.backend.gestionPDEK.Entity.TypePistolet;
 import rahma.backend.gestionPDEK.Repository.PistoletRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -99,7 +101,14 @@ public class PistoletController {
 	    public int getNombresNotificationsPistoletsNonValider() {
 	        return pistoletService.getPistoletsNonValidees().size();
 	    }
-	
+	 @GetMapping("/pistolets-non-validees-plan-action")
+	    public List<PistoletDTO> getPistoletsNonValideesAvecPlanAction() {
+	        return pistoletService.getPistoletsNonValideesAvecPlanAction();
+	    }
+	 @GetMapping("/nbrNotificationsTechniciens")
+	    public int getNombresNotificationsPistoletsNonValiderDePlanAction() {
+	        return pistoletService.getPistoletsNonValideesAvecPlanAction().size();
+	    }
 	 @GetMapping("/pistoles-validees")
 	    public List<PistoletDTO> getPistoletsValidees() {
 	        return pistoletService.getPistoletsValidees();
@@ -110,47 +119,50 @@ public class PistoletController {
 	     pistoletService.validerPistolet(id, matriculeAgentQualite);
 	     return ResponseEntity.ok().build();
 	 }
-	  @GetMapping("/pistolet/{numeroPistolet}")
-	    public ResponseEntity<PistoletDTO> getPistoletByNumero(@PathVariable int numeroPistolet) {
-	        Optional<Pistolet> pistoletOpt = pistoletRepository.findByNumeroPistolet(numeroPistolet);
+	 @GetMapping("/pistolet")
+	 public ResponseEntity<PistoletDTO> getPistoletParInfos(
+	         @RequestParam Integer numeroPistolet,
+	         @RequestParam TypePistolet type,
+	         @RequestParam CategoriePistolet categorie) {
 
-	        if (pistoletOpt.isPresent()) {
-	            // Conversion de l'entité Pistolet en PistoletDTO
-	            Pistolet p = pistoletOpt.get();
-	            PistoletDTO pistoletDTO =     new PistoletDTO(
-	      	          p.getId() ,
-	    	 	      p.getPdekPistolet().getId()  ,
-	          	      p.getPagePDEK().getPageNumber() ,
-	      	          p.getSegment() ,
-	    	          p.getDateCreation() ,
-	                  p.getHeureCreation() ,
-	    	          p.getTypePistolet() ,
-	    	          p.getNumeroPistolet() ,
-	    	          p.getLimiteInterventionMax() ,
-	    	          p.getLimiteInterventionMin() ,
-	    	          "R" ,
-	    	          p.getCoupePropre() ,
-	    	          p.getUserPistolet().getMatricule() ,
-	    	          p.getEch1() ,
-	    	          p.getEch2() ,
-	    	          p.getEch3() ,
-	    	          p.getEch4() ,
-	    	          p.getEch5() ,
-	    	          p.getMoyenne() ,
-	    	          p.getEtendu(), 
-	    	          p.getCategorie() , 
-	    	          p.getNumeroCycle() ,
-	    	          p.getNbrCollierTester() ,
-	    	          p.getAxeSerrage() ,
-	    	          p.getSemaine() ,
-	    	          p.getDecision()	,
-	    	          p.getUserPistolet().getMatricule()
-	    	        ) ; 
+	     Optional<Pistolet> pistoletOpt = pistoletRepository.findTopByNumeroPistoletAndTypeAndCategorieOrderByDateCreationDescHeureCreationDesc(numeroPistolet, type, categorie);
 
-	            return ResponseEntity.ok(pistoletDTO);
-	        } else {
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-	        }
-	    }
+	     if (pistoletOpt.isPresent()) {
+	         Pistolet p = pistoletOpt.get();
+	    
+	         return ResponseEntity.ok(  new PistoletDTO(
+		   	          p.getId() ,
+		   	 	      p.getPdekPistolet().getId()  ,
+		         	      p.getPagePDEK().getPageNumber() ,
+		     	          p.getSegment() ,
+		   	          p.getDateCreation() ,
+		                 p.getHeureCreation() ,
+		   	          p.getTypePistolet() ,
+		   	          p.getNumeroPistolet() ,
+		   	          p.getLimiteInterventionMax() ,
+		   	          p.getLimiteInterventionMin() ,
+		   	          "R" ,
+		   	          p.getCoupePropre() ,
+		   	          p.getUserPistolet().getMatricule() ,
+		   	          p.getEch1() ,
+		   	          p.getEch2() ,
+		   	          p.getEch3() ,
+		   	          p.getEch4() ,
+		   	          p.getEch5() ,
+		   	          p.getMoyenne() ,
+		   	          p.getEtendu(), 
+		   	          p.getCategorie() , 
+		   	          p.getNumeroCycle() ,
+		   	          p.getNbrCollierTester() ,
+		   	          p.getAxeSerrage() ,
+		   	          p.getSemaine() ,
+		   	          p.getDecision()	,
+		   	          p.getUserPistolet().getMatricule()
+		   	        )) ; 
+	     } else {
+	         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	     }
+	 }
+
 
 }

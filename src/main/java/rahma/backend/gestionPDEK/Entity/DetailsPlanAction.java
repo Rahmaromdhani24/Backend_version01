@@ -35,5 +35,9 @@ public class DetailsPlanAction {
     @JoinColumn(name = "plan_action_id")
     private PlanAction planAction;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User userPlanAction;
+
 }
 

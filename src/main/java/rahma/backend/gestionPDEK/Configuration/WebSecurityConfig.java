@@ -33,8 +33,9 @@ public class WebSecurityConfig {
                 .requestMatchers("/auth/getUser/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
                 .requestMatchers("/pdek/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
                 .requestMatchers("/operations/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
-                .requestMatchers("/admin/**").hasAnyRole("ADMIN" ,"OPERATEUR")
+                .requestMatchers("/admin/**").hasAnyRole("ADMIN" ,"OPERATEUR" ,"AGENT_QUALITE")
                 .requestMatchers("/operator/**").hasRole("OPERATEUR")
+                .requestMatchers("/planAction/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

@@ -83,6 +83,7 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
         pistolet.setNumeroCycle(numeroCycle);
         pistolet.setUserPistolet(user); 
         pistolet.setSegment(user.getSegment()); 
+        pistolet.setRempliePlanAction(pistolet.getRempliePlanAction()); 
         pistoletRepository.save(pistolet);
 
         // 6. Associer l'utilisateur au PDEK pour le remplissage (ManyToMany)
@@ -154,7 +155,7 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
 	 }
     @Override
     public List<PistoletDTO> getPistoletsNonValidees() {
-        List<Pistolet> pistolets = pistoletRepository.findByDecision(0);
+        List<Pistolet> pistolets = pistoletRepository.findByDecisionAndRempliePlanAction(0, 0);
 
         return pistolets.stream()
             .map(p -> new PistoletDTO( 
@@ -189,6 +190,42 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
             .toList();
     }
 
+    @Override
+    public List<PistoletDTO> getPistoletsNonValideesAvecPlanAction() {
+    	List<Pistolet> pistolets = pistoletRepository.findByDecisionAndRempliePlanAction(0, 1);
+
+        return pistolets.stream()
+            .map(p -> new PistoletDTO( 
+      	        p.getId() ,
+      	        p.getPdekPistolet().getId()  ,
+      	        p.getPagePDEK().getPageNumber() ,
+      	        p.getSegment() ,
+                p.getDateCreation(),
+                p.getHeureCreation() ,
+                p.getTypePistolet(),
+                p.getNumeroPistolet(),
+                p.getLimiteInterventionMax(),
+                p.getLimiteInterventionMin(),
+                "R",
+                p.getCoupePropre(),
+                p.getUserPistolet().getMatricule(),
+                p.getEch1(),
+                p.getEch2(),
+                p.getEch3(),
+                p.getEch4(),
+                p.getEch5(),
+                p.getMoyenne(),
+                p.getEtendu(), 
+  	            p.getCategorie() , 
+                p.getNumeroCycle(),
+                p.getNbrCollierTester(),
+                p.getAxeSerrage(),
+                p.getSemaine(),
+                p.getDecision(),
+                p.getUserPistolet().getMatricule()
+            ))
+            .toList();
+    }
 
     @Override
     public List<PistoletDTO> getPistoletsValidees() {

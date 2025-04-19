@@ -3,8 +3,11 @@ package rahma.backend.gestionPDEK.Controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import rahma.backend.gestionPDEK.EmailSenderPistoletService;
 import rahma.backend.gestionPDEK.EmailSenderService;
 import rahma.backend.gestionPDEK.EmailSenderTorsadageService;
+import rahma.backend.gestionPDEK.Configuration.EmailPistoletRequest;
 import rahma.backend.gestionPDEK.Configuration.EmailRequest;
 import rahma.backend.gestionPDEK.Configuration.EmailValidationPDEK;
 import rahma.backend.gestionPDEK.Entity.*;
@@ -21,17 +24,19 @@ public class AdminController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final EmailSenderService emailSenderService;
+    private final EmailSenderPistoletService emailSenderPistoletService;
     private final EmailSenderTorsadageService emailSenderTorsadageService;
 
 
 
     
     public AdminController(UserRepository userRepository, RoleRepository roleRepository , EmailSenderService emailSenderService
-    		, EmailSenderTorsadageService emailSenderTorsadageService ) {
+    		, EmailSenderTorsadageService emailSenderTorsadageService , EmailSenderPistoletService emailSenderPistoletService ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.emailSenderService = emailSenderService;
         this.emailSenderTorsadageService = emailSenderTorsadageService;
+        this.emailSenderPistoletService = emailSenderPistoletService;
     }
     @GetMapping("/getUser/{matricule}")
     public ResponseEntity<?> getUser(@PathVariable int matricule) {
@@ -343,6 +348,45 @@ public ResponseEntity<String> sendMailValidationPdekTorsadage(@RequestBody Email
                        request.getDescriptionErreur(),
                        request.getValeurMesuree(),    // Nouveau paramètre
                        request.getLimitesAcceptables() // Nouveau paramètre
+            );
+            return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                .body("Erreur lors de l'envoi de l'email d'alerte: " + e.getMessage());
+        }
+    }
+/**********************************************  Pistolet *******************************************************************/
+    @PostMapping("/TechnicienSendMailWarning")
+    public ResponseEntity<String> sendWarningNotificationPistolet(@RequestBody EmailPistoletRequest request) {
+        try {
+        	emailSenderPistoletService.sendEmailWarningToTechniciens(
+            		   request.getToEmail(),
+                       request.getNomResponsable(),
+                       request.getLocalisation(),
+                       request.getNumPistolet() ,
+                       request.getCouleurPistolet(),
+                       request.getTypePistolet(),
+                       request.getValeurMesuree(),    
+                       request.getLimitesAcceptables() 
+            );
+            return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                .body("Erreur lors de l'envoi de l'email d'alerte: " + e.getMessage());
+        }
+    }
+    @PostMapping("/TechnicienSendMailErreur")
+    public ResponseEntity<String> sendErreurNotificationPistolet(@RequestBody EmailPistoletRequest request) {
+        try {
+        	emailSenderPistoletService.sendEmailErreurToTechniciens(
+        			   request.getToEmail(),
+                       request.getNomResponsable(),
+                       request.getLocalisation(),
+                       request.getNumPistolet() ,
+                       request.getCouleurPistolet(),
+                       request.getTypePistolet(),
+                       request.getValeurMesuree(),    
+                       request.getLimitesAcceptables() 
             );
             return ResponseEntity.accepted().body("Notification d'alerte qualité envoyée avec succès");
         } catch (Exception e) {
