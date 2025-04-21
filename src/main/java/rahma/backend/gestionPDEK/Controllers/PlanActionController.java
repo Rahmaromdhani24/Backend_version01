@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rahma.backend.gestionPDEK.DTO.AjoutPistoletResultDTO;
+import rahma.backend.gestionPDEK.DTO.DetailsPlanActionDTO;
 import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
 import rahma.backend.gestionPDEK.Entity.DetailsPlanAction;
@@ -30,16 +31,39 @@ public class PlanActionController {
 	 @Autowired  private  PlanActionImplimenetation planActionService ;
 	 @Autowired  private  PlanActionRepository planActionRepository ;
 	 
-	 @PostMapping("/addPlanAtcion/{pagePdekId}/ajouter/{userId}")
-	 public ResponseEntity<PlanAction> ajouterOuMettreAJour(
-	     @PathVariable Long pagePdekId,
-	     @PathVariable Integer userId,
+	 @PostMapping("/addPlanAction/{pdekId}/{numeroPage}/{userId}/{numeroPistolet}/{typePistolet}/{categoriePistolet}")
+	 public ResponseEntity<?> ajouterOuMettreAJour(
+	     @PathVariable Long pdekId,
+	     @PathVariable int numeroPage,
+	     @PathVariable int userId,
+	     @PathVariable int numeroPistolet,
+	     @PathVariable String typePistolet,
+	     @PathVariable String categoriePistolet,
 	     @RequestBody DetailsPlanAction dto
 	 ) {
-	     PlanAction pa = planActionService.ajouterPlanActionOuDetails(pagePdekId, dto, userId);
-	     return ResponseEntity.ok(pa);
+	     try {
+	         // Conversion des chaînes vers les enums (en majuscules)
+	         TypePistolet typeEnum = TypePistolet.valueOf(typePistolet);
+	         CategoriePistolet categorieEnum = CategoriePistolet.valueOf(categoriePistolet);
+
+	         DetailsPlanActionDTO dtoResponse = planActionService.ajouterPlanActionOuDetails(
+	                 pdekId,
+	                 numeroPage,
+	                 dto,
+	                 userId,
+	                 numeroPistolet,
+	                 typeEnum,
+	                 categorieEnum
+	             );
+
+	         return ResponseEntity.ok(dtoResponse);
+	     } catch (IllegalArgumentException e) {
+	         String messageErreur = String.format(
+	             "Valeur invalide : typePistolet='%s' ou categoriePistolet='%s' ne correspond pas aux valeurs attendues.",
+	             typePistolet, categoriePistolet
+	         );
+	         return ResponseEntity.badRequest().body(messageErreur);
+	     }
 	 }
-
-
 
 }

@@ -86,28 +86,29 @@ public class PistoletController {
 	          p.getAxeSerrage() ,
 	          p.getSemaine() ,
 	          p.getDecision()	,
-	          p.getUserPistolet().getMatricule()
+	          p.getUserPistolet().getMatricule() , 
+	          p.getRempliePlanAction()
 	        )
 	    ).collect(Collectors.toList());
 
 	    return ResponseEntity.ok(pistoletsDTOs);
 	}
 	
-	 @GetMapping("/pistolets-non-validees")
-	    public List<PistoletDTO> getPistoletsNonValidees() {
-	        return pistoletService.getPistoletsNonValidees();
+	 @GetMapping("/pistolets-non-validees-agents-Qualite")
+	    public List<PistoletDTO> getPistoletsNonValideesAgentsQualite() {
+	        return pistoletService.getPistoletsNonValideesAgentsQualite();
 	    }
-	 @GetMapping("/nbrNotifications")
-	    public int getNombresNotificationsPistoletsNonValider() {
-	        return pistoletService.getPistoletsNonValidees().size();
+	 @GetMapping("/nbrNotificationsAgentsQualite")
+	    public int getNombresNotificationsPistoletsNonValideesAgentsQualite() {
+	        return pistoletService.getPistoletsNonValideesAgentsQualite().size();
 	    }
 	 @GetMapping("/pistolets-non-validees-plan-action")
 	    public List<PistoletDTO> getPistoletsNonValideesAvecPlanAction() {
-	        return pistoletService.getPistoletsNonValideesAvecPlanAction();
+	        return pistoletService.getPistoletsNonValideesTechniciens();
 	    }
 	 @GetMapping("/nbrNotificationsTechniciens")
 	    public int getNombresNotificationsPistoletsNonValiderDePlanAction() {
-	        return pistoletService.getPistoletsNonValideesAvecPlanAction().size();
+	        return pistoletService.getPistoletsNonValideesTechniciens().size();
 	    }
 	 @GetMapping("/pistoles-validees")
 	    public List<PistoletDTO> getPistoletsValidees() {
@@ -157,7 +158,9 @@ public class PistoletController {
 		   	          p.getAxeSerrage() ,
 		   	          p.getSemaine() ,
 		   	          p.getDecision()	,
-		   	          p.getUserPistolet().getMatricule()
+		   	          p.getUserPistolet().getMatricule() ,
+			          p.getRempliePlanAction()
+
 		   	        )) ; 
 	     } else {
 	         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

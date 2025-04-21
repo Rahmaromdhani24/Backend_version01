@@ -20,11 +20,10 @@ public class PlanAction {
     private Long id;
     private String dateCreation;
     private String heureCreation;
-    private TypesOperation type_operation ;
-    private String description_decision ; 
-    private int signature_qualite ; 
-    private int signature_maintenance ; 
-    private int signature_contermetre  ; 
+    @Enumerated(EnumType.STRING)
+    private TypesOperation type_operation;
+
+  
 
     // User qui a rempli le plan d'action
     @ManyToMany(mappedBy = "plansActionRemplis")

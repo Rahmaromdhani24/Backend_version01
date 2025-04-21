@@ -23,6 +23,8 @@ public interface PdekPageRepository extends JpaRepository<PagePDEK , Long> {
 
     Optional<PagePDEK> findPageActuelleByPdekId(Long pdekId);
    
+    Optional<PagePDEK> findByPdekIdAndPageNumber(Long pdekId, int numeroPage);
+
         
 }
 

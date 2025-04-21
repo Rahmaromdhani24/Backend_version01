@@ -39,6 +39,7 @@ public class PistoletDTO {
 	    private CategoriePistolet categorie ; 
 	    private long pdekId ; 
 	    private int numPage ; 
+	    private int rempliePlanAction ; 
 	    
 		public PistoletDTO(Long id, String dateCreation, TypePistolet type, int numeroPistolet,
 				 String limiteInterventionMax, String limiteInterventionMin, PDEK pdek) {
@@ -56,7 +57,7 @@ public class PistoletDTO {
 		public PistoletDTO(Long id  , long pdekId  , int numPage , int segment ,  String dateCreation,String heureCreation , TypePistolet type, int numeroPistolet, String limiteInterventionMax,
 				String limiteInterventionMin, String codeRepartiton, String coupePropre, int matriculeAgentQualité,
 				int ech1, int ech2, int ech3, int ech4, int ech5, double moyenne, int etendu, CategoriePistolet categorie ,
-				int numCourant, String nbrCollierTester, int axeSerrage, int semaine, int decision , int matricule) {
+				int numCourant, String nbrCollierTester, int axeSerrage, int semaine, int decision , int matricule , int rempliePlanAction) {
 			this.id =id ; 
 			this.pdekId = pdekId ; 
 			this.numPage = numPage ; 
@@ -84,16 +85,8 @@ public class PistoletDTO {
 			this.decision = decision;
 			this.matricule= matricule ; 
 			this.categorie = categorie ; 
-					
-		}
+			this.rempliePlanAction =rempliePlanAction ; 
+			}
 
-
-		
-
-
-	
-
-	
-	
 	    
 }

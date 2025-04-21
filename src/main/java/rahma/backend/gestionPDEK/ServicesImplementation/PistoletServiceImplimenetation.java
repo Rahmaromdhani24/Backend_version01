@@ -153,9 +153,10 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
 		 // Si aucune soudure n'est trouvée malgré les vérifications, retourner 0
 		 return 0;
 	 }
+    // pour agent de qualite
     @Override
-    public List<PistoletDTO> getPistoletsNonValidees() {
-        List<Pistolet> pistolets = pistoletRepository.findByDecisionAndRempliePlanAction(0, 0);
+    public List<PistoletDTO> getPistoletsNonValideesAgentsQualite() {
+        List<Pistolet> pistolets = pistoletRepository.findByDecisionAndRempliePlanAction(0 , 0);
 
         return pistolets.stream()
             .map(p -> new PistoletDTO( 
@@ -185,14 +186,16 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
                 p.getAxeSerrage(),
                 p.getSemaine(),
                 p.getDecision(),
-                p.getUserPistolet().getMatricule()
+                p.getUserPistolet().getMatricule() ,
+  	            p.getRempliePlanAction()
+
             ))
             .toList();
     }
-
+    // pour les techniciens 
     @Override
-    public List<PistoletDTO> getPistoletsNonValideesAvecPlanAction() {
-    	List<Pistolet> pistolets = pistoletRepository.findByDecisionAndRempliePlanAction(0, 1);
+    public List<PistoletDTO> getPistoletsNonValideesTechniciens() {
+        List<Pistolet> pistolets = pistoletRepository.findByDecisionAndRempliePlanAction(0, 1) ; 
 
         return pistolets.stream()
             .map(p -> new PistoletDTO( 
@@ -222,7 +225,9 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
                 p.getAxeSerrage(),
                 p.getSemaine(),
                 p.getDecision(),
-                p.getUserPistolet().getMatricule()
+                p.getUserPistolet().getMatricule() ,
+  	            p.getRempliePlanAction()
+
             ))
             .toList();
     }
@@ -259,7 +264,9 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
                 p.getAxeSerrage(),
                 p.getSemaine(),
                 p.getDecision(),
-                p.getUserPistolet().getMatricule()
+                p.getUserPistolet().getMatricule() ,
+  	            p.getRempliePlanAction()
+
             ))
             .toList();
     }

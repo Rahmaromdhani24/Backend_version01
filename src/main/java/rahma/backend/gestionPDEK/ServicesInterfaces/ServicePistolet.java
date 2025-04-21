@@ -5,8 +5,8 @@ import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 
 public interface ServicePistolet {
 
-	public List<PistoletDTO> getPistoletsNonValidees() ; 
+	public List<PistoletDTO> getPistoletsNonValideesAgentsQualite() ; 
+	public List<PistoletDTO> getPistoletsNonValideesTechniciens() ; 
 	public List<PistoletDTO> getPistoletsValidees() ; 
 	public void validerPistolet(Long idPistolet, int matriculeUser)  ; 
-	public List<PistoletDTO> getPistoletsNonValideesAvecPlanAction() ; 
 }
