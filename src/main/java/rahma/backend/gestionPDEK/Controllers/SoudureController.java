@@ -217,7 +217,22 @@ public ResponseEntity<List<SoudureDTO>> getSouduresParPdekEtPage(
             s.getNumeroCycle(),
             s.getUserSoudure().getMatricule(),
             s.getMoyenne(),
-            s.getEtendu() 
+            s.getEtendu() ,
+            s.getPelageX1() ,
+            s.getPelageX2() ,
+            s.getPelageX3() ,
+            s.getPelageX4() ,
+            s.getPelageX5() ,
+            s.getPliage(),
+            s.getDistanceBC() ,
+            s.getTraction() , 
+            s.getNombreKanban() ,
+            s.getNombreNoeud() ,
+            s.getGrendeurLot() ,
+            s.getUserSoudure().getMatricule() ,
+            s.getUserSoudure().getMatricule() ,
+            s.getDecision() , 
+            s.getRempliePlanAction()
         )
     ).collect(Collectors.toList());
 

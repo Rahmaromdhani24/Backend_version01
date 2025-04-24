@@ -1,5 +1,6 @@
 package rahma.backend.gestionPDEK.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
@@ -28,6 +29,9 @@ public interface PdekPageRepository extends JpaRepository<PagePDEK , Long> {
     Optional<PagePDEK> findByPdekId(Long pdekId);
     
     Optional<PagePDEK> findById(Long pageID);
+    
+    List<PagePDEK> findAllByPdekId(Long pdekId);
+
 
 }
 

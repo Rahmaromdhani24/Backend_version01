@@ -110,63 +110,6 @@ public class PlanActionImplimenetation implements PlanActionService {
 	    return mapToDTO(savedDetails);
 	}
 
-
-/*	@Override
-	@Transactional
-	public DetailsPlanActionDTO ajouterPlanActionOuDetails(Long pdekId, int numeroPage, DetailsPlanAction dto, int userId, 
-            int numeroPistolet, TypePistolet typePistolet, 
-            CategoriePistolet categoriePistolet) {
-		
-		PagePDEK pagePDEK = pagePDEKRepository.findByPdekIdAndPageNumber(pdekId, numeroPage)
-		.orElseThrow(() -> new RuntimeException("PagePDEK introuvable pour le PDEK ID " + pdekId + " et numéro de page " + numeroPage));
-		
-		PlanAction planAction = planActionRepository.findByPagePDEK(pagePDEK).orElse(null);
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-		
-		if (planAction == null) {
-		planAction = PlanAction.builder()
-		.dateCreation(LocalDate.now().format(dateFormatter))
-		.heureCreation(LocalTime.now().format(timeFormatter))
-		.type_operation(TypesOperation.Montage_Pistolet) 
-		.pagePDEK(pagePDEK)
-		.utilisateursRemplisseurs(new ArrayList<>())
-		.details(new ArrayList<>())
-		.build();
-		planAction = planActionRepository.save(planAction);
-		}
-		// modifier etat de pistolet
-		
-		Optional<Pistolet> optionalPistolet = pistoletRepository
-		.findTopByNumeroPistoletAndTypeAndCategorieOrderByDateCreationDescHeureCreationDesc(
-		numeroPistolet, typePistolet, categoriePistolet);
-		
-		optionalPistolet.ifPresent(pistolet -> {
-		pistoletRepository.ajoutPlanActionByTechnicien(pistolet.getId());
-		});
-		
-		User user = userRepository.findByMatricule(userId).get();
-		
-		dto.setPlanAction(planAction);
-		dto.setUserPlanAction(user);
-		dto.setDateCreation(LocalDate.now().format(dateFormatter));
-		dto.setHeureCreation(LocalTime.now().format(timeFormatter));
-		dto.setSignature_maintenance(1);
-		dto.setSignature_contermetre(0);
-		dto.setSignature_qualite(0);
-		
-		DetailsPlanAction savedDetails = detailsPlanActionRepository.save(dto);
-		
-		planAction.getDetails().add(savedDetails);
-		if (!planAction.getUtilisateursRemplisseurs().contains(user)) {
-		planAction.getUtilisateursRemplisseurs().add(user);
-		}
-		
-		planActionRepository.save(planAction);
-		
-		return mapToDTO(savedDetails);
-    }
-	*/
 	@Override
 	public PlanActionDTO testerPdekPistoletPossedePlanAction(long pdekId) {
 	    // 1. Chercher la page PDEK par pdekId
@@ -260,5 +203,25 @@ public class PlanActionImplimenetation implements PlanActionService {
                 .collect(Collectors.toList());
 
     }
+
+	@Override
+	public List<PlanActionDTO> testerPdeksProcessPossedePlanAction(long pdekId) {
+		  List<PagePDEK> pages = pagePDEKRepository.findAllByPdekId(pdekId);
+		    List<PlanActionDTO> result = new ArrayList<>();
+
+		    for (PagePDEK page : pages) {
+		        List<PlanAction> plans = planActionRepository.findAllByPagePDEK(page);
+
+		        for (PlanAction plan : plans) {
+		            PlanActionDTO dto = new PlanActionDTO();
+		            dto.setId(plan.getId());
+		            dto.setDateCreation(plan.getDateCreation());
+		            dto.setHeureCreation(plan.getHeureCreation());
+		            result.add(dto);
+		        }
+		    }
+
+		    return result;
+		}
 
 }

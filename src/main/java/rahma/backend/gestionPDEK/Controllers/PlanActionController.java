@@ -60,7 +60,7 @@ public class PlanActionController {
 	     }
 	 }
 	 
-	 @GetMapping("/testerPdek/{pdekId}")
+	@GetMapping("/testerPdek/{pdekId}")
 	    public ResponseEntity<PlanActionDTO> testerPdekPossedePlanAction(@PathVariable long pdekId) {
 	        PlanActionDTO dto = planActionService.testerPdekPistoletPossedePlanAction(pdekId);
 
@@ -69,6 +69,18 @@ public class PlanActionController {
 	        } else {
 	            return ResponseEntity.noContent().build(); // 204 No Content si aucun plan trouvé
 	        }
+	    }
+	 
+	
+	 @GetMapping("/testerAllTypesPdeksSaufPistolet/{pdekId}")
+	    public ResponseEntity<List<PlanActionDTO>> testerPdeksProcessPossedePlanAction(@PathVariable Long pdekId) {
+	        List<PlanActionDTO> result = planActionService.testerPdeksProcessPossedePlanAction(pdekId);
+
+	        if (result.isEmpty()) {
+	            return ResponseEntity.noContent().build(); // 204 No Content
+	        }
+
+	        return ResponseEntity.ok(result); // 200 OK avec les données
 	    }
 	 
 	 @GetMapping("/{id}/details")

@@ -23,4 +23,6 @@ public interface PlanActionRepository extends JpaRepository<PlanAction, Long> {
 	 @Query("SELECT p FROM PlanAction p WHERE p.type_operation = :type")
 	 List<PlanAction> getByTypeOperation(@Param("type") TypesOperation typeOperation);
 	 
+	List<PlanAction> findAllByPagePDEK(PagePDEK pagePDEK);
+
 }

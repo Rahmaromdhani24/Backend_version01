@@ -115,9 +115,8 @@ public class PDEK_ServiceImplimenetation implements PDEKService {
 	    Optional<PDEK> pdekOptional = pdekRepository.findById(pdekId);
 
 	    if (pdekOptional.isEmpty()) {
-	        throw new RuntimeException("PDEK non trouvé avec ID: " + pdekId);
-	    }
-
+	        throw new RuntimeException("PDEK non trouvé avec ID: " + pdekId);}
+	    
 	    PDEK pdek = pdekOptional.get();
 	    List<ContenuPagePdekDTO> result = new ArrayList<>();
 
@@ -127,18 +126,42 @@ public class PDEK_ServiceImplimenetation implements PDEKService {
 	            List<Object> contenu = new ArrayList<>();
 
 	            if (pdek.getPdekSoudures() != null) {
-	                pdek.getPdekSoudures().stream()
-	                    .filter(s -> s.getPagePDEK() != null && s.getPagePDEK().getPageNumber() == numeroPage)
-	                    .forEach(contenu::add);
-	            }
+	            	  pdek.getPdekSoudures().stream()
+                      .filter(p -> p.getPagePDEK() != null && p.getPagePDEK().getPageNumber() == numeroPage)
+                      .map(p -> new SoudureDTO(
+                          p.getId(),
+                          p.getCode() ,
+                          p.getSectionFil() ,
+                          p.getDate() ,
+                          p.getNumeroCycle() ,
+                          p.getUserSoudure().getMatricule() ,
+                          p.getMoyenne() ,
+                          p.getEtendu() ,
+                          p.getPelageX1() , 
+                          p.getPelageX2() , 
+                          p.getPelageX3() , 
+                          p.getPelageX4() , 
+                          p.getPelageX5() ,
+                          p.getPliage(),
+                          p.getDistanceBC() ,
+                          p.getTraction() ,
+                          p.getNombreKanban() ,
+                          p.getNombreNoeud() ,
+                          p.getGrendeurLot() ,
+                          p.getUserSoudure().getMatricule() ,
+                          p.getUserSoudure().getMatricule() ,
+                          p.getDecision() , 
+                          p.getRempliePlanAction()
+                      ))
+                      .forEach(contenu::add);
+              }
+
 
 	            if (pdek.getPdekTorsadages() != null) {
 	                pdek.getPdekTorsadages().stream()
 	                    .filter(t -> t.getPagePDEK() != null && t.getPagePDEK().getPageNumber() == numeroPage)
 	                    .forEach(contenu::add);
 	            }
-
-
 	                    // 🎯 Filtrage des pistolets liés à cette page
 	                    if (pdek.getPdekPistoles() != null) {
 	                        pdek.getPdekPistoles().stream()

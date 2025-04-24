@@ -162,9 +162,25 @@ public class SoudureServiceImplimentation implements ServiceSoudure {
 	                                         s.getSectionFil(),
 	                                         s.getDate().toString(),
 	                                         s.getNumeroCycle(),
-											 s.getUserSoudure().getMatricule(),
-											 s.getMoyenne(),
-											 s.getEtendu()),
+	                                         s.getUserSoudure().getMatricule(),
+	                                         s.getMoyenne(),
+	                                         s.getEtendu(),
+	                                         s.getPelageX1(),
+	                                         s.getPelageX2(),
+	                                         s.getPelageX3(),
+	                                         s.getPelageX4(),
+	                                         s.getPelageX5() ,
+	                                         s.getPliage(),
+	                                         s.getDistanceBC() ,
+	                                         s.getTraction() ,
+	                                         s.getNombreKanban() ,
+	                                         s.getNombreNoeud() ,
+	                                         s.getGrendeurLot() ,
+	                                         s.getUserSoudure().getMatricule() ,
+	                                         s.getUserSoudure().getMatricule()  ,
+	                                         s.getDecision() , 
+	                                         s.getRempliePlanAction()
+	                                 ),
 	                                 Collectors.toList()
 	                         )
 	                 ));
@@ -172,7 +188,6 @@ public class SoudureServiceImplimentation implements ServiceSoudure {
 	         return Map.of();
 	     }
 	 }
-
 
 	 ///////
 	 public int getLastNumeroCycle(String sectionFilSelectionne, int segment, Plant nomPlant, String projetName) {
@@ -243,7 +258,22 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
                             s.getNumeroCycle(),
                             s.getUserSoudure().getMatricule(),
 							s.getMoyenne(),
-							s.getEtendu() ))
+							s.getEtendu(),
+							s.getPelageX1() , 
+	                        s.getPelageX2() , 
+	                        s.getPelageX3() , 
+	                        s.getPelageX4() , 
+	                        s.getPelageX5() ,
+	                        s.getPliage(),
+	                        s.getDistanceBC() ,
+	                        s.getTraction(),
+	                        s.getNombreKanban() ,
+	                        s.getNombreNoeud() ,
+	                        s.getGrendeurLot() ,
+	                        s.getUserSoudure().getMatricule() ,
+	                        s.getUserSoudure().getMatricule() ,
+	                        s.getDecision() , 
+	                        s.getRempliePlanAction()))
                     .collect(Collectors.toList());
         }
     }
@@ -265,7 +295,22 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
 	                s.getNumeroCycle(),
 	                s.getUserSoudure().getMatricule() ,
 	                s.getMoyenne(),
-	                s.getEtendu()
+	                s.getEtendu(),
+	                s.getPelageX1() , 
+                    s.getPelageX2() , 
+                    s.getPelageX3() , 
+                    s.getPelageX4() , 
+                    s.getPelageX5() ,
+                    s.getPliage(),
+                    s.getDistanceBC() ,
+                    s.getTraction() ,
+                    s.getNombreKanban() ,
+                    s.getNombreNoeud() ,
+                    s.getGrendeurLot() ,
+                    s.getUserSoudure().getMatricule() ,
+                    s.getUserSoudure().getMatricule() ,
+                    s.getDecision() , 
+                    s.getRempliePlanAction()
 	            ))
 	            .toList();
 	    
@@ -284,7 +329,22 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
 	                s.getNumeroCycle(),
 	                s.getUserSoudure().getMatricule() ,
 	                s.getMoyenne(),
-	                s.getEtendu()
+	                s.getEtendu(),
+	                s.getPelageX1() , 
+                    s.getPelageX2() , 
+                    s.getPelageX3() , 
+                    s.getPelageX4() , 
+                    s.getPelageX5() ,
+                    s.getPliage(),
+                    s.getDistanceBC() ,
+                    s.getTraction() ,
+                    s.getNombreKanban() ,
+                    s.getNombreNoeud() ,
+                    s.getGrendeurLot() ,
+                    s.getUserSoudure().getMatricule() ,
+                    s.getUserSoudure().getMatricule()  ,
+                    s.getDecision() , 
+                    s.getRempliePlanAction()
 	            ))
 	            .toList();
 	    
@@ -302,7 +362,22 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
 	                s.getNumeroCycle(),
 	                s.getUserSoudure().getMatricule() ,
 	                s.getMoyenne(),
-	                s.getEtendu()
+	                s.getEtendu(),
+	                s.getPelageX1() , 
+                    s.getPelageX2() , 
+                    s.getPelageX3() , 
+                    s.getPelageX4() , 
+                    s.getPelageX5() ,
+                    s.getPliage(),
+                    s.getDistanceBC() ,
+                    s.getTraction() ,
+                    s.getNombreKanban() ,
+                    s.getNombreNoeud() ,
+                    s.getGrendeurLot() ,
+                    s.getUserSoudure().getMatricule() ,
+                    s.getUserSoudure().getMatricule()  ,
+                    s.getDecision() , 
+                    s.getRempliePlanAction()
 	            ))
 	            .toList();
 	    

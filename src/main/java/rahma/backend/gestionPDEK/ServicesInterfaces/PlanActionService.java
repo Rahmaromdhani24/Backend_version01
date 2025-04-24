@@ -19,6 +19,10 @@ public interface PlanActionService {
     public List<DetailsPlanActionDTO> getDetailsByPlanActionId(Long id)  ; 
     public List<PlanActionDTO> getPlansActionByTypeOperation(TypesOperation typeOperation) ; 
     public List<UserDTO> getUsersByPlanActionId(Long planActionId) ; 
+    
+    
+	public List<PlanActionDTO> testerPdeksProcessPossedePlanAction(long pdekId) ; 
+
     /*public void ajouterPlanActionTorsadage() ; 
     public void ajouterPlanActionSertissageNormal() ; 
     public void ajouterPlanActionSertissageIDC() ;*/

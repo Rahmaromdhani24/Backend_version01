@@ -14,6 +14,20 @@ public class SoudureDTO {
     private int numeroCycle;
     private int userSoudure ;
     private double moyenne ; 
-    private int etendu ;  
-
+    private int etendu ;
+    private double ech1 ; 
+    private double ech2 ; 
+    private double ech3 ;
+    private double ech4 ; 
+    private double ech5 ; 
+    private String pliage ; 
+    private String distanceBC ; 
+    private String traction ; 
+    private long nbrKanban  ; 
+    private String nbrNoeud ; 
+    private long grendeurLot ; 
+    private int matriculeOperateur ; 
+    private int matriculeAgentQualite ; 
+    private int decision ; 
+    private int rempliePlanAction ; 
 }
