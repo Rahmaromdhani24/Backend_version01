@@ -1,5 +1,9 @@
 package rahma.backend.gestionPDEK.ServicesInterfaces;
 
+import java.util.List;
+import java.util.Map;
+
+import rahma.backend.gestionPDEK.DTO.ContenuPagePdekDTO;
 import rahma.backend.gestionPDEK.DTO.PdekDTO;
 import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
@@ -26,8 +30,8 @@ public interface PDEKService {
 	public PistoletDTO recupererPdek_Pistolet(TypePistolet typePistolet , CategoriePistolet categoriePistolet , int numeroPistolet ) ; 
 	
 
-
-
+/*************************************************** Tous *********************************************************************/
+	public List<ContenuPagePdekDTO> getContenuParPage(Long pdekId)  ; 
 	
 	
 	

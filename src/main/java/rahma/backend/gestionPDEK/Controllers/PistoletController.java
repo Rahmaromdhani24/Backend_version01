@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rahma.backend.gestionPDEK.DTO.AjoutPistoletResultDTO;
 import rahma.backend.gestionPDEK.DTO.PistoletDTO;
+import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
 import rahma.backend.gestionPDEK.Entity.Pistolet;
 import rahma.backend.gestionPDEK.Entity.Plant;
@@ -112,14 +113,14 @@ public class PistoletController {
 	    }
 	 @GetMapping("/pistoles-validees")
 	    public List<PistoletDTO> getPistoletsValidees() {
-	        return pistoletService.getPistoletsValidees();
-	    }
+	        return pistoletService.getPistoletsValidees(); }
+	   
 	
 	 @PutMapping("/validerPistolet")
 	 public ResponseEntity<?> validerPistolet(@RequestParam Long id, @RequestParam Integer matriculeAgentQualite) {
 	     pistoletService.validerPistolet(id, matriculeAgentQualite);
-	     return ResponseEntity.ok().build();
-	 }
+	     return ResponseEntity.ok().build(); }
+	
 	 @GetMapping("/pistolet")
 	 public ResponseEntity<PistoletDTO> getPistoletParInfos(
 	         @RequestParam Integer numeroPistolet,
@@ -167,5 +168,9 @@ public class PistoletController {
 	     }
 	 }
 
-
+	 @GetMapping("/users-by-pdek/{id}")
+	    public ResponseEntity<List<UserDTO>> getUserDTOsByPdek(@PathVariable Long id) {
+	        List<UserDTO> userDTOs = pistoletService.getUserDTOsByPdek(id);
+	        return ResponseEntity.ok(userDTOs);
+	    }
 }

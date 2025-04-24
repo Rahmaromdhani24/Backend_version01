@@ -107,6 +107,7 @@ public class SertissageIDC extends Operation {
     private double forceTractionC2EchFin ; 
 
     private int decision ;
+    private int rempliePlanAction ;
     /**************** Relations *********************/
     
     @ManyToOne   // relation "saisir" sertissage idc  

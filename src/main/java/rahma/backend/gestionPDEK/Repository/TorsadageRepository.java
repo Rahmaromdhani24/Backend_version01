@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.Soudure;
@@ -31,7 +32,8 @@ public interface TorsadageRepository extends JpaRepository<Torsadage, Long> {
 	 Optional<Torsadage> findTopByPagePDEK_IdOrderByNumeroCycleDesc(Long pageId);
      List<Torsadage> findByPdekTorsadage_IdAndPagePDEK_PageNumber(Long pdekId, int pageNumber);
 
-	 List<TorsadageDTO> findByDecision(int i);
+	 List<TorsadageDTO> findByDecision(int decision);
+	 List<TorsadageDTO> findByDecisionAndRempliePlanAction(int decision, int rempliePlanAction);
      
 }
 

@@ -1,5 +1,8 @@
 package rahma.backend.gestionPDEK.ServicesImplementation;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -7,7 +10,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
+import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
+import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
 import rahma.backend.gestionPDEK.ServicesInterfaces.ServiceSoudure;
@@ -20,6 +25,10 @@ public class SoudureServiceImplimentation implements ServiceSoudure {
 	 @Autowired    private UserRepository userRepository;	
 	 @Autowired    private ProjetRepository projetRepository;	
 	 @Autowired    private PdekPageRepository pdekPageRepository;	
+	 @Autowired    private ControleQualiteRepository controleQualiteRepository;
+	 @Autowired    private AuditLogRepository auditLogRepository;
+     @Autowired private PlanActionRepository planActionRepository ; 
+     @Autowired private DetailsPlanActionRepository detailsPlanActionRepository ; 
 
 	 
 	 @Override
@@ -39,6 +48,7 @@ public class SoudureServiceImplimentation implements ServiceSoudure {
 		instance1.setCode(instanceSoudure.getCode());
 		instance1.setSectionFil(sectionFilSelectionner);
 		instance1.setDate(instanceSoudure.getDate());
+		instance1.setHeureCreation(instanceSoudure.getHeureCreation());
 		instance1.setDistanceBC(instanceSoudure.getDistanceBC());
 		instance1.setGrendeurLot(instanceSoudure.getGrendeurLot());
 		instance1.setLimitePelage(instanceSoudure.getLimitePelage());
@@ -97,7 +107,7 @@ public class SoudureServiceImplimentation implements ServiceSoudure {
 			instance1.setNumeroCycle(numeroCycle);
 			soudureRepository.save(instance1);
 	
-			return new AjoutSoudureResultDTO(pdek.getId(), pagePDEK.getPageNumber());
+			return new AjoutSoudureResultDTO(pdek.getId(), pagePDEK.getPageNumber() , instance1.getId());
 	
 		} else {
 			// ⚙️ Cas nouveau PDEK
@@ -128,7 +138,7 @@ public class SoudureServiceImplimentation implements ServiceSoudure {
 			instance1.setNumeroCycle(1);
 			soudureRepository.save(instance1);
 	
-			return new AjoutSoudureResultDTO(newPDEK.getId(), newPage.getPageNumber());
+			return new AjoutSoudureResultDTO(newPDEK.getId(), newPage.getPageNumber() , instance1.getId());
 		}
 	}
 	
@@ -240,18 +250,141 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
 
     return List.of(); // Si rien trouvé
 }
-
+// pour agent de qualite
 
 	@Override
 	public List<SoudureDTO> getSouduresNonValidees() {
-		// TODO Auto-generated method stub
-		return soudureRepository.findByDecision(0) ; 
+		   List<Soudure> soudures = soudureRepository.findByDecisionAndRempliePlanAction(0 , 0);
+
+	        return soudures.stream()
+	            .map(s -> new SoudureDTO( 
+	      	        s.getId() ,
+	      	        s.getCode()  ,
+	      	        s.getSectionFil() ,
+	      	        s.getDate() ,
+	                s.getNumeroCycle(),
+	                s.getUserSoudure().getMatricule() ,
+	                s.getMoyenne(),
+	                s.getEtendu()
+	            ))
+	            .toList();
+	    
+	}
+
+	@Override
+	public List<SoudureDTO> getSouduresNonValideesTechniciens() {
+		   List<Soudure> soudures = soudureRepository.findByDecisionAndRempliePlanAction(0 , 1);
+
+	        return soudures.stream()
+	            .map(s -> new SoudureDTO( 
+	      	        s.getId() ,
+	      	        s.getCode()  ,
+	      	        s.getSectionFil() ,
+	      	        s.getDate() ,
+	                s.getNumeroCycle(),
+	                s.getUserSoudure().getMatricule() ,
+	                s.getMoyenne(),
+	                s.getEtendu()
+	            ))
+	            .toList();
+	    
+	}
+	@Override
+	public List<SoudureDTO> getSouduresValidees() {
+		   List<Soudure> soudures = soudureRepository.findByDecision(1);
+
+	        return soudures.stream()
+	            .map(s -> new SoudureDTO( 
+	      	        s.getId() ,
+	      	        s.getCode()  ,
+	      	        s.getSectionFil() ,
+	      	        s.getDate() ,
+	                s.getNumeroCycle(),
+	                s.getUserSoudure().getMatricule() ,
+	                s.getMoyenne(),
+	                s.getEtendu()
+	            ))
+	            .toList();
+	    
 	}
 
 
 	@Override
-	public List<SoudureDTO> getSouduresValidees() {
-		// TODO Auto-generated method stub
-		return soudureRepository.findByDecision(1);
+	public void validerSoudure(Long idSoudure, int matriculeUser) {
+		   String heure = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+		   String date  = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+	    // Valider le pistolet
+	    soudureRepository.validerSoudure(idSoudure);
+
+	    // Récupérer le pistolet concerné
+	    Soudure soudure = soudureRepository.findById(idSoudure)
+	        .orElseThrow(() -> new RuntimeException("Pistolet non trouvé avec ID : " + idSoudure));
+
+	    // Récupérer le PDEK associé
+	    PDEK pdek = soudure.getPdekSoudure() ; 
+
+	    // Récupérer l'utilisateur via son matricule
+	    User userControleur = userRepository.findByMatricule(matriculeUser).get() ;
+
+	    // Créer l'entrée de contrôle qualité
+	    ControleQualite controle = ControleQualite.builder()
+	        .user(userControleur)
+	        .pdek(pdek)
+	        .idInstanceOperation(soudure.getId())
+	        .nombrePage(pdek.getPages() != null ? pdek.getPages().size() : 0)
+	        .dateControle(date)
+	        .heureControle(heure)
+	        .resultat("Validé")
+	        .build();
+
+	    // Sauvegarder le contrôle qualité
+	    controleQualiteRepository.save(controle);
+	    
+	    
+	    //valider Plan action si existe 
+	    
+	    // Étape 1 : récupérer la page PDEK du pistolet
+	    PagePDEK page = soudureRepository.findPDEKByPagePDEK(idSoudure);
+	    if (page == null) return;
+
+	    // Étape 2 : récupérer le plan d’action
+	    Optional<PlanAction> planOpt = planActionRepository.findByPagePDEKId(page.getId());
+	    if (planOpt.isEmpty()) return;
+
+	    PlanAction plan = planOpt.get();
+
+	    // Étape 3 : récupérer les détails
+	    List<DetailsPlanAction> detailsList = detailsPlanActionRepository.findByPlanActionId(plan.getId());
+
+	    // Étape 4 : modifier les signatures si nécessaire
+	    for (DetailsPlanAction detail : detailsList) {
+	        if (detail.getMatricule_operateur() == (matriculeUser) && detail.getSignature_qualite() == 0) {
+	            detail.setSignature_qualite(1);
+	            detailsPlanActionRepository.save(detail); // sauvegarde
+	        }
+	    }
+	}
+	
+	@Override
+	public List<UserDTO> getUserDTOsByPdek(Long idPdek) {
+        List<User> users = soudureRepository.findUsersByPdekId(idPdek);
+        return users.stream()
+                    .map(UserDTO::fromEntity)
+                    .toList(); // ou collect(Collectors.toList()) si tu es en Java 8
+    }
+
+
+	@Override
+	public boolean changerAttributRempliePlanActionSoudureDe0a1(Long id) {
+		   Optional<Soudure> optionalSoudure = soudureRepository.findById(id);
+	        if (optionalSoudure.isPresent()) {
+	            Soudure soudure = optionalSoudure.get();
+	            soudure.setRempliePlanAction(1);  // changer à 1
+	            soudureRepository.save(soudure);
+	            return true;
+	        }
+	        return false;
+	    
 	}
 }

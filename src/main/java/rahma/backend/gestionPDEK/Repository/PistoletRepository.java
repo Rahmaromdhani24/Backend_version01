@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
+import rahma.backend.gestionPDEK.Entity.PDEK;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.Pistolet;
 import rahma.backend.gestionPDEK.Entity.TypePistolet;
@@ -31,7 +32,6 @@ public interface PistoletRepository extends JpaRepository<Pistolet, Long> {
 	 
 	 Optional<Pistolet> findTopByPagePDEK_IdOrderByNumeroCycleDesc(Long pageId);
      List<Pistolet> findByPdekPistolet_IdAndPagePDEK_PageNumber(Long pdekId, int pageNumber);
-     
      List<Pistolet> findByDecision(int decision);
      List<Pistolet> findByDecisionAndRempliePlanAction(int decision, int rempliePlanAction);
 
@@ -51,4 +51,9 @@ public interface PistoletRepository extends JpaRepository<Pistolet, Long> {
          TypePistolet type,
          CategoriePistolet categorie
      );
+     
+     @Query("SELECT p.pagePDEK FROM Pistolet p WHERE p.id = :idPistolet")
+     PagePDEK findPDEKByPagePDEK(@Param("idPistolet") Long idPistolet);
+     @Query("SELECT DISTINCT p.userPistolet FROM Pistolet p WHERE p.pdekPistolet.id = :idPdek")
+     List<User> findUsersByPdekId(@Param("idPdek") Long idPdek);
 } 

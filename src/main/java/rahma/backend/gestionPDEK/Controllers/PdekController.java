@@ -4,8 +4,11 @@ import rahma.backend.gestionPDEK.ServicesImplementation.PDEK_ServiceImplimenetat
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import rahma.backend.gestionPDEK.DTO.ContenuPagePdekDTO;
 import rahma.backend.gestionPDEK.DTO.PdekResultat;
 import rahma.backend.gestionPDEK.Entity.PDEK;
 import rahma.backend.gestionPDEK.Entity.TypesOperation;
@@ -30,6 +33,7 @@ public class PdekController {
 	         return pdeks.stream().map(pdek ->
 	         new PdekResultat(
 	             pdek.getId(),
+	             pdek.getNumeroPistolet() ,
 	             pdek.getTypeOperation(),
 	             pdek.getTypePistolet(),
 	             pdek.getCategoriePistolet(),
@@ -52,6 +56,17 @@ public class PdekController {
 	 }
 
 
+	 @GetMapping("/contenu-par-page/{id}")
+	 public ResponseEntity<List<ContenuPagePdekDTO>> getContenuParPage(@PathVariable Long id) {
+	     List<ContenuPagePdekDTO> contenu = pdekService.getContenuParPage(id);
+	     return ResponseEntity.ok(contenu);
+	 }
+
+	 @GetMapping("/{id}")
+	 public ResponseEntity<?> getPdekById(@PathVariable Long id) {
+	     Object dto = pdekService.getPdekDTOById(id);
+	     return ResponseEntity.ok(dto);
+	 }
 
 
 }

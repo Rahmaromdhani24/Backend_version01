@@ -10,6 +10,7 @@ import rahma.backend.gestionPDEK.Entity.TypePistolet;
 @Setter
 public class DetailsPlanActionDTO {
 	
+
 	private Long id;
     private String dateCreation;
 	private String heureCreation;
@@ -22,7 +23,8 @@ public class DetailsPlanActionDTO {
     private int signature_contermetre;
     private long idPlanAction ; 
     private int userPlanAction  ; 
+    private String delais ; 
+    private String responsable ; 
 
-
-	   
+    
 }

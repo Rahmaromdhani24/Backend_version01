@@ -16,6 +16,7 @@ public class PdekResultat {
     private Long id;
     private String typeOperation;
     private String typePistolet;
+    private int numeroPistolet ; 
     private String categorie; 
     private String plant;
     private int segment;
@@ -23,10 +24,11 @@ public class PdekResultat {
     private Object usersMatricules; // ✅ Champ ajouté
 
     // ✅ Constructeur complet avec tous les champs
-    public PdekResultat(Long id, TypesOperation typeOperation, TypePistolet typePistolet,
+    public PdekResultat(Long id, int numeroPistolet , TypesOperation typeOperation, TypePistolet typePistolet,
                         CategoriePistolet categorie, Plant plant, int segment,
-                        int totalPages, Object usersMatricules) {
+                        int totalPages, Object usersMatricules ) {
         this.id = id;
+        this.numeroPistolet = numeroPistolet ;
         this.typeOperation = typeOperation != null ? typeOperation.name() : null;
         this.typePistolet = typePistolet != null ? typePistolet.name() : null;
         this.categorie = categorie != null ? categorie.name() : null;

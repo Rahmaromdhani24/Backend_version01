@@ -12,6 +12,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import rahma.backend.gestionPDEK.DTO.AjoutPistoletResultDTO;
 import rahma.backend.gestionPDEK.DTO.PistoletDTO;
+import rahma.backend.gestionPDEK.DTO.PlanActionDTO;
+import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
 import rahma.backend.gestionPDEK.ServicesInterfaces.ServicePistolet;
@@ -26,6 +28,8 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
     @Autowired private UserRepository userRepository; 
     @Autowired private ControleQualiteRepository controleQualiteRepository;
     @Autowired private AuditLogRepository auditLogRepository;
+    @Autowired private PlanActionRepository planActionRepository ; 
+    @Autowired private DetailsPlanActionRepository detailsPlanActionRepository ; 
 
     @Transactional
     public AjoutPistoletResultDTO ajouterPistolet(int matricule, Pistolet pistolet) {
@@ -188,7 +192,6 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
                 p.getDecision(),
                 p.getUserPistolet().getMatricule() ,
   	            p.getRempliePlanAction()
-
             ))
             .toList();
     }
@@ -301,7 +304,39 @@ public class PistoletServiceImplimenetation  implements ServicePistolet {
 
 	    // Sauvegarder le contrôle qualité
 	    controleQualiteRepository.save(controle);
+	    
+	    
+	    //valider Plan action si existe 
+	    
+	    // Étape 1 : récupérer la page PDEK du pistolet
+	    PagePDEK page = pistoletRepository.findPDEKByPagePDEK(idPistolet);
+	    if (page == null) return;
+
+	    // Étape 2 : récupérer le plan d’action
+	    Optional<PlanAction> planOpt = planActionRepository.findByPagePDEKId(page.getId());
+	    if (planOpt.isEmpty()) return;
+
+	    PlanAction plan = planOpt.get();
+
+	    // Étape 3 : récupérer les détails
+	    List<DetailsPlanAction> detailsList = detailsPlanActionRepository.findByPlanActionId(plan.getId());
+
+	    // Étape 4 : modifier les signatures si nécessaire
+	    for (DetailsPlanAction detail : detailsList) {
+	        if (detail.getMatricule_operateur() == (matriculeUser) && detail.getSignature_qualite() == 0) {
+	            detail.setSignature_qualite(1);
+	            detailsPlanActionRepository.save(detail); // sauvegarde
+	        }
+	    }
 	}
+	@Override
+	public List<UserDTO> getUserDTOsByPdek(Long idPdek) {
+        List<User> users = pistoletRepository.findUsersByPdekId(idPdek);
+        return users.stream()
+                    .map(UserDTO::fromEntity)
+                    .toList(); // ou collect(Collectors.toList()) si tu es en Java 8
+    }
+	
 	
 
 }

@@ -55,7 +55,8 @@ public class AdminController {
             response.put("poste", user.getPoste());
             response.put("segment", user.getSegment());
             response.put("machine", user.getMachine());
-            
+            response.put("sexe", user.getSexe());
+
 
             return ResponseEntity.ok(response);
         } else {
@@ -81,6 +82,7 @@ public class AdminController {
             userMap.put("poste", user.getPoste());
             userMap.put("segment", user.getSegment());
             userMap.put("machine", user.getMachine());
+            userMap.put("sexe", user.getSexe());
 
             return userMap;
         }).collect(Collectors.toList());
@@ -157,7 +159,7 @@ public ResponseEntity<String> sendMailValidationPdek(@RequestBody EmailValidatio
             request.getNomProcess() , 
             request.getSectionFil() ,
             request.getPosteMachine(),
-            request.getDescriptionPDEK(),
+            "Veuillez valider le PDEK récemment soumis pour finalisation du processus.",
             request.getDateRemplissage() ,
             request.getHeureRemplissage()
         );
@@ -178,7 +180,7 @@ public ResponseEntity<String> sendMailValidationPdekTorsadage(@RequestBody Email
             request.getNomProcess() , 
             request.getSectionFil() ,
             request.getPosteMachine(),
-            request.getDescriptionPDEK(),
+          "Veuillez valider le PDEK récemment soumis pour finalisation du processus.",
             request.getDateRemplissage() ,
             request.getHeureRemplissage()
         );

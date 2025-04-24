@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
 import rahma.backend.gestionPDEK.DTO.PdekDTO;
+import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
+import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
 import rahma.backend.gestionPDEK.ServicesImplementation.*;
@@ -177,7 +179,8 @@ public ResponseEntity<String> getTractionBySections(@PathVariable String section
         try {
             AjoutSoudureResultDTO result = serviceSoudure.ajoutPDEKSoudure(soudure, matriculeOperateur, projet);
             // Retourner un objet JSON structuré avec l'ID du PDEK et le numéro de la page
-            String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage() + "\" }";
+            String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage() +
+            		"\", \"idSoudure\": \"" + result.getIdSoudure() +"\" }";
             return ResponseEntity.ok(jsonResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Erreur lors de l'ajout : " + e.getMessage());
@@ -242,17 +245,48 @@ public ResponseEntity<List<SoudureDTO>> getTorsadagesParPageActuelle(
         return ResponseEntity.badRequest().build(); // Mauvais nom de plant
     }
 }
-@GetMapping("/soudures-non-validees")
-public List<SoudureDTO> getSouduresNonValidees() {
-    return serviceSoudure.getSouduresNonValidees() ; 
-}
-@GetMapping("/nbrNotifications")
-   public int getNombreNotification() {
-       return serviceSoudure.getSouduresNonValidees().size() ; 
-}
+	@GetMapping("/soudures-non-validees-agents-Qualite")
+	public List<SoudureDTO> getSouduresNonValidees() {
+	    return serviceSoudure.getSouduresNonValidees() ; 
+	}
+	@GetMapping("/nbrNotificationsAgentsQualite")
+	   public int getNombreNotification() {
+	       return serviceSoudure.getSouduresNonValidees().size() ; 
+	}
+	
+	@GetMapping("/soudures-validees")
+	public List<SoudureDTO>  getSouduresValidees() {
+	    return serviceSoudure.getSouduresValidees();
+	}
+	 @GetMapping("/soudures-non-validees-plan-action")
+	    public List<SoudureDTO> getPistoletsNonValideesAvecPlanAction() {
+	        return serviceSoudure.getSouduresNonValideesTechniciens();
+	    }
+	 
+	 @GetMapping("/nbrNotificationsTechniciens")
+	    public int getNombresNotificationsPistoletsNonValiderDePlanAction() {
+	        return serviceSoudure.getSouduresNonValideesTechniciens().size(); }
+	   
+	 @PutMapping("/validerSoudure")
+	 public ResponseEntity<?> validerPistolet(@RequestParam Long id, @RequestParam Integer matriculeAgentQualite) {
+		 serviceSoudure.validerSoudure(id, matriculeAgentQualite);
+	     return ResponseEntity.ok().build(); }
+	
+	
 
-@GetMapping("/soudures-validees")
-public List<SoudureDTO>  getSouduresValidees() {
-    return serviceSoudure.getSouduresValidees();
+	 @GetMapping("/users-by-pdek/{id}")
+	    public ResponseEntity<List<UserDTO>> getUserDTOsByPdek(@PathVariable Long id) {
+	        List<UserDTO> userDTOs = serviceSoudure.getUserDTOsByPdek(id);
+	        return ResponseEntity.ok(userDTOs);
+	    }
+	 
+	 @PutMapping("/remplir-plan-action/{id}")
+public ResponseEntity<String> remplirPlanAction(@PathVariable Long id) {
+        boolean success = serviceSoudure.changerAttributRempliePlanActionSoudureDe0a1(id);
+        if (success) {
+            return ResponseEntity.ok("Attribut rempliePlanAction mis à jour !");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Soudure non trouvée.");
+        }
 }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
 import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
@@ -36,6 +37,7 @@ public interface SertissageNormalRepository extends JpaRepository<SertissageNorm
 	List<SertissageNormal> findByPdekSertissageNormal_IdAndPagePDEK_PageNumber(Long pdekId, int pageNumber);
 
 
-	public List<SertissageNormal_DTO>  findByDecision(int i);
+	List<SertissageNormal_DTO> findByDecision(int decision);
+	List<SertissageNormal_DTO> findByDecisionAndRempliePlanAction(int decision, int rempliePlanAction);
 }
 

@@ -74,12 +74,14 @@ public class Soudure extends Operation {
     private int etendu;
    
     private String date;
+    private String heureCreation ; 
     
     @Column(name = "quantite_atteint")
     private int quantiteAtteint; 
     private String code; 
     
     private int decision ;
+    private int rempliePlanAction ;
     
     @ManyToOne   // Lien vers la page de PDEK 
     @JoinColumn(name = "page_pdek_id")

@@ -20,6 +20,14 @@ public class DetailsPlanAction {
     @Column(length = 10000)
     private String description_probleme;
 
+    @Lob
+    @Column(length = 10000)
+    private String delais;
+    
+    @Lob
+    @Column(length = 10000)
+    private String responsable;
+    
     private int matricule_operateur;
     private int matricule_chef_ligne;
 

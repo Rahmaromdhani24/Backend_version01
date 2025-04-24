@@ -58,13 +58,9 @@ public class User {
 	  private List<ControleQualite> controlesQualite = new ArrayList<ControleQualite>();
 	  
 
-	  @ManyToMany
-	  @JoinTable(
-	    name = "user_remplissage_plan_action",
-	    joinColumns = @JoinColumn(name = "user_matricule"),
-	    inverseJoinColumns = @JoinColumn(name = "plan_action_id")
-	  )
-	  private List<PlanAction> plansActionRemplis;
+	  // Relation OneToMany avec PlanAction
+	    @OneToMany(mappedBy = "userPlanAction", cascade = CascadeType.ALL, orphanRemoval = true)
+	    private List<PlanAction> plansAction = new ArrayList<>();
 
 	  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	  private List<AuditLog> auditLogs;

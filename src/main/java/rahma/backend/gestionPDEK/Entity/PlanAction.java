@@ -26,8 +26,10 @@ public class PlanAction {
   
 
     // User qui a rempli le plan d'action
-    @ManyToMany(mappedBy = "plansActionRemplis")
-    private List<User> utilisateursRemplisseurs;
+    @ManyToOne
+    @JoinColumn(name = "user_id")  // La colonne de jointure dans la table PlanAction
+    private User userPlanAction;
+
 
     // Page du PDEK concernée
     @OneToOne

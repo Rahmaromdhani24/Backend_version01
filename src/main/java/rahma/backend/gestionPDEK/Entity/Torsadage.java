@@ -92,6 +92,7 @@ public class Torsadage extends Operation {
     private int etendu; 
     
     private int decision ;
+    private int rempliePlanAction ;
     
     @ManyToOne   // relation "saisir" 
     @JoinColumn(name = "user_matricule")

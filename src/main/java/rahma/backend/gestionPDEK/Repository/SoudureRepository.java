@@ -4,14 +4,20 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import jakarta.transaction.Transactional;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
+import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
+import rahma.backend.gestionPDEK.Entity.Pistolet;
 import rahma.backend.gestionPDEK.Entity.Soudure;
+import rahma.backend.gestionPDEK.Entity.TypePistolet;
+import rahma.backend.gestionPDEK.Entity.User;
 
 
 @Repository
@@ -31,8 +37,23 @@ public interface SoudureRepository extends JpaRepository<Soudure, Long> {
 */
 	Optional<Soudure> findTopByPagePDEK_IdOrderByNumeroCycleDesc(Long pageId);
 	List<Soudure> findByPdekSoudure_IdAndPagePDEK_PageNumber(Long pdekId, int pageNumber);
-	 List<SoudureDTO> findByDecision(int i);
-
-
+	List<Soudure> findByDecision(int decision);
+	List<Soudure> findByDecisionAndRempliePlanAction(int decision, int rempliePlanAction);
+    /********************* Modifier decision a 1 **********************************/
+    @Modifying
+    @Transactional
+    @Query("UPDATE Soudure p SET p.decision = 1 WHERE p.id = :id")
+    void validerSoudure(@Param("id") Long id);
+    
+    @Modifying
+    @Transactional
+    @Query("UPDATE Soudure p SET p.rempliePlanAction = 0 WHERE p.id = :id")
+    void ajoutPlanActionByChefLigne(@Param("id") Long id);
+    
+    
+    @Query("SELECT p.pagePDEK FROM Soudure p WHERE p.id = :idSoudure")
+    PagePDEK findPDEKByPagePDEK(@Param("idSoudure") Long idPistolet);
+    @Query("SELECT DISTINCT p.userSoudure FROM Soudure p WHERE p.pdekSoudure.id = :idPdek")
+    List<User> findUsersByPdekId(@Param("idPdek") Long idPdek);
 }
 

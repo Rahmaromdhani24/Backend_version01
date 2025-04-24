@@ -86,6 +86,7 @@ public class AuthController {
             response.put("segment", user.getSegment());
             response.put("machine", user.getMachine());
             response.put("operation", user.getTypeOperation());
+            response.put("sexe", user.getSexe());
 
             
 
