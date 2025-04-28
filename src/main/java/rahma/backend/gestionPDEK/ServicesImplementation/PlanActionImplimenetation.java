@@ -21,6 +21,8 @@ import rahma.backend.gestionPDEK.Entity.DetailsPlanAction;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.Pistolet;
 import rahma.backend.gestionPDEK.Entity.PlanAction;
+import rahma.backend.gestionPDEK.Entity.Soudure;
+import rahma.backend.gestionPDEK.Entity.Torsadage;
 import rahma.backend.gestionPDEK.Entity.TypePistolet;
 import rahma.backend.gestionPDEK.Entity.TypesOperation;
 import rahma.backend.gestionPDEK.Entity.User;
@@ -28,6 +30,8 @@ import rahma.backend.gestionPDEK.Repository.DetailsPlanActionRepository;
 import rahma.backend.gestionPDEK.Repository.PdekPageRepository;
 import rahma.backend.gestionPDEK.Repository.PistoletRepository;
 import rahma.backend.gestionPDEK.Repository.PlanActionRepository;
+import rahma.backend.gestionPDEK.Repository.SoudureRepository;
+import rahma.backend.gestionPDEK.Repository.TorsadageRepository;
 import rahma.backend.gestionPDEK.Repository.UserRepository;
 import rahma.backend.gestionPDEK.ServicesInterfaces.PlanActionService;
 
@@ -39,12 +43,19 @@ public class PlanActionImplimenetation implements PlanActionService {
 	@Autowired  DetailsPlanActionRepository detailsPlanActionRepository;
 	@Autowired  UserRepository userRepository;
 	@Autowired  private PistoletRepository pistoletRepository;
+	@Autowired  private SoudureRepository soudureRepository;
+
+	@Autowired  private TorsadageRepository torsadageRepository;
+
+
 
 	@Override
 	@Transactional
 	public DetailsPlanActionDTO ajouterPlanActionOuDetails(Long pdekId, int numeroPage, DetailsPlanAction dto, int userId, 
 	        int numeroPistolet, TypePistolet typePistolet, CategoriePistolet categoriePistolet) {
-	    
+		
+	    User user = userRepository.findByMatricule(userId).get();
+
 	    // Récupérer la page PDEK
 	    PagePDEK pagePDEK = pagePDEKRepository.findByPdekIdAndPageNumber(pdekId, numeroPage)
 	        .orElseThrow(() -> new RuntimeException("PagePDEK introuvable pour le PDEK ID " + pdekId + " et numéro de page " + numeroPage));
@@ -62,16 +73,17 @@ public class PlanActionImplimenetation implements PlanActionService {
 	            .type_operation(TypesOperation.Montage_Pistolet) 
 	            .pagePDEK(pagePDEK)
 	            .userPlanAction(null)  // L'utilisateur sera défini plus tard
-	            .details(new ArrayList<>())  // Liste de détails vide
+	            .details(new ArrayList<>())  
+	            .machine(user.getMachine())
+	            .poste(user.getPoste())
+	            .plant(user.getPlant().toString())
+	            .segment(user.getSegment())
 	            .build();
 	        
 	        // Sauvegarder le nouveau plan d'action
 	        planAction = planActionRepository.save(planAction);
 	    }
-
-	    // Récupérer l'utilisateur par matricule
-	    User user = userRepository.findByMatricule(userId).get();
-	    
+   
 	    // Associer l'utilisateur au plan d'action
 	    planAction.setUserPlanAction(user);
 	    
@@ -170,6 +182,11 @@ public class PlanActionImplimenetation implements PlanActionService {
 	        dto.setId(plan.getId());
 	        dto.setDateCreation(plan.getDateCreation());
 	        dto.setHeureCreation(plan.getHeureCreation());
+	        dto.setPlant(plan.getPlant());
+	        dto.setSegment(plan.getSegment());
+	        dto.setMachine(plan.getMachine()) ;
+	        dto.setPoste(plan.getPoste()) ;
+	        dto.setSectionFil(plan.getSectionFil()) ;
 	        dto.setType_operation(plan.getType_operation());
 	        if (plan.getPagePDEK() != null) {
 	            dto.setPagePdekId(plan.getPagePDEK().getId());
@@ -223,5 +240,174 @@ public class PlanActionImplimenetation implements PlanActionService {
 
 		    return result;
 		}
+
+	@Override
+	public DetailsPlanActionDTO ajouterPlanActionOuDetailsSoudure(Long pdekId, int numeroPage, DetailsPlanAction dto,
+			int userId, long idSoudure) {
+		// TODO Auto-generated method stub
+		 
+	    // Récupérer la page PDEK
+	    PagePDEK pagePDEK = pagePDEKRepository.findByPdekIdAndPageNumber(pdekId, numeroPage)
+	        .orElseThrow(() -> new RuntimeException("PagePDEK introuvable pour le PDEK ID " + pdekId + " et numéro de page " + numeroPage));
+	    
+	    // Chercher le plan d'action associé à cette page
+	    PlanAction planAction = planActionRepository.findByPagePDEK(pagePDEK).orElse(null);
+	    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+	    
+	    Soudure instance = soudureRepository.findById(idSoudure).get() ; 
+	    // Si aucun plan d'action n'existe pour cette page, on en crée un nouveau
+	    if (planAction == null) {
+	        planAction = PlanAction.builder()
+	            .dateCreation(LocalDate.now().format(dateFormatter))
+	            .heureCreation(LocalTime.now().format(timeFormatter))
+	            .type_operation(TypesOperation.Soudure) 
+	            .pagePDEK(pagePDEK)
+	            .userPlanAction(null)  // L'utilisateur sera défini plus tard
+	            .details(new ArrayList<>()) 
+	            .machine(instance.getUserSoudure().getMachine())
+	            .poste(instance.getUserSoudure().getPoste())
+	            .plant(instance.getUserSoudure().getPlant().toString())
+	            .segment(instance.getUserSoudure().getSegment())
+	            .sectionFil(instance.getSectionFil())
+	            .build();
+	        
+	        // Sauvegarder le nouveau plan d'action
+	        planAction = planActionRepository.save(planAction);
+	    }
+
+	    // Récupérer l'utilisateur par matricule
+	    User user = userRepository.findByMatricule(userId).get();
+	    
+	    // Associer l'utilisateur au plan d'action
+	    planAction.setUserPlanAction(user);
+	    
+	    // Sauvegarder les changements dans le plan d'action (y compris la relation avec l'utilisateur)
+	    planActionRepository.save(planAction);
+	    
+	    // Ajouter les informations dans le DTO
+	    dto.setPlanAction(planAction);
+	    dto.setUserPlanAction(user);
+	    dto.setDateCreation(LocalDate.now().format(dateFormatter));
+	    dto.setHeureCreation(LocalTime.now().format(timeFormatter));
+	    dto.setSignature_maintenance(1);  // Exemple de valeur pour la signature
+	    dto.setSignature_contermetre(0);
+	    dto.setSignature_qualite(0);
+	    dto.setMatricule_chef_ligne(userId);
+	    // Sauvegarder les détails du plan d'action
+	    DetailsPlanAction savedDetails = detailsPlanActionRepository.save(dto);
+	    
+	    // Ajouter les détails au plan d'action
+	    planAction.getDetails().add(savedDetails);
+	    
+	    // Sauvegarder les détails dans le plan d'action
+	    planActionRepository.save(planAction);
+	    
+	       // modifier etat de pistolet
+		
+	 		Soudure optionalSoudure = soudureRepository.findById(idSoudure).get();
+	 		optionalSoudure.setRempliePlanAction(0);
+	 		soudureRepository.save(optionalSoudure) ;
+	 		
+	    // Retourner le DTO des détails
+	    return mapToDTO(savedDetails);
+	}
+
+	@Override
+	public PlanActionDTO testerPdekSoudrePossedePlanAction(long pdekId) {
+		   // 1. Chercher la page PDEK par pdekId
+	    Optional<PagePDEK> optionalPagePDEK = pagePDEKRepository.findByPdekId(pdekId);
+
+	    if (optionalPagePDEK.isPresent()) {
+	        PagePDEK pagePDEK = optionalPagePDEK.get();
+
+	        // 2. Vérifier si un plan d'action est associé à cette page
+	        Optional<PlanAction> optionalPlanAction = planActionRepository.findByPagePDEK(pagePDEK);
+
+	        if (optionalPlanAction.isPresent()) {
+	            PlanAction planAction = optionalPlanAction.get();
+
+	            // 3. Mapper vers le DTO
+	            PlanActionDTO dto = new PlanActionDTO();
+	            dto.setId(planAction.getId());
+	            dto.setDateCreation(planAction.getDateCreation());
+	            dto.setHeureCreation(planAction.getHeureCreation());
+
+	            return dto;
+	        }
+	    }
+
+	    // Aucun plan d'action trouvé pour cette page
+	    return null;
+	}
+
+	@Override
+	public DetailsPlanActionDTO ajouterPlanActionOuDetailsTorsadage(Long pdekId, int numeroPage, DetailsPlanAction dto,
+			int userId, long idTorsadage) {
+		// TODO Auto-generated method stub
+		 
+	    // Récupérer la page PDEK
+	    PagePDEK pagePDEK = pagePDEKRepository.findByPdekIdAndPageNumber(pdekId, numeroPage)
+	        .orElseThrow(() -> new RuntimeException("PagePDEK introuvable pour le PDEK ID " + pdekId + " et numéro de page " + numeroPage));
+	    
+	    // Chercher le plan d'action associé à cette page
+	    PlanAction planAction = planActionRepository.findByPagePDEK(pagePDEK).orElse(null);
+	    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+	    
+	    // Si aucun plan d'action n'existe pour cette page, on en crée un nouveau
+	    if (planAction == null) {
+	        planAction = PlanAction.builder()
+	            .dateCreation(LocalDate.now().format(dateFormatter))
+	            .heureCreation(LocalTime.now().format(timeFormatter))
+	            .type_operation(TypesOperation.Torsadage) 
+	            .pagePDEK(pagePDEK)
+	            .userPlanAction(null)  // L'utilisateur sera défini plus tard
+	            .details(new ArrayList<>())  // Liste de détails vide
+	            .build();
+	        
+	        // Sauvegarder le nouveau plan d'action
+	        planAction = planActionRepository.save(planAction);
+	    }
+
+	    // Récupérer l'utilisateur par matricule
+	    User user = userRepository.findByMatricule(userId).get();
+	    
+	    // Associer l'utilisateur au plan d'action
+	    planAction.setUserPlanAction(user);
+	    
+	    // Sauvegarder les changements dans le plan d'action (y compris la relation avec l'utilisateur)
+	    planActionRepository.save(planAction);
+	    
+	    // Ajouter les informations dans le DTO
+	    dto.setPlanAction(planAction);
+	    dto.setUserPlanAction(user);
+	    dto.setDateCreation(LocalDate.now().format(dateFormatter));
+	    dto.setHeureCreation(LocalTime.now().format(timeFormatter));
+	    dto.setSignature_maintenance(1);  // Exemple de valeur pour la signature
+	    dto.setSignature_contermetre(0);
+	    dto.setSignature_qualite(0);
+	    dto.setMatricule_chef_ligne(userId);
+
+	    // Sauvegarder les détails du plan d'action
+	    DetailsPlanAction savedDetails = detailsPlanActionRepository.save(dto);
+	    
+	    // Ajouter les détails au plan d'action
+	    planAction.getDetails().add(savedDetails);
+	    
+	    // Sauvegarder les détails dans le plan d'action
+	    planActionRepository.save(planAction);
+	    
+	       // modifier etat de pistolet
+		
+	 		Optional<Torsadage> optionalSoudure = torsadageRepository.findById(idTorsadage);
+	 		
+	 		optionalSoudure.ifPresent(soudure -> {
+	 			torsadageRepository.ajoutPlanActionByChefLigne(idTorsadage);
+	 		});
+	 		
+	    // Retourner le DTO des détails
+	    return mapToDTO(savedDetails);
+	}
 
 }

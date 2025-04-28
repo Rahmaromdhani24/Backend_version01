@@ -39,7 +39,7 @@ public class SertissageIDC extends Operation {
     
     @Column(name = "date_creation")
     private String date;
-    
+    private String heureCreation ; 
     
     @Column(name = "hauteur_Sertissage_c1_echantillon1")
     private double hauteurSertissageC1Ech1;

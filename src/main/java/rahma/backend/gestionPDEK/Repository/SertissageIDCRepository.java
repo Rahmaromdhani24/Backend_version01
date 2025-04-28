@@ -1,16 +1,19 @@
 package rahma.backend.gestionPDEK.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import jakarta.transaction.Transactional;
 import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
 import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.SertissageIDC;
 import rahma.backend.gestionPDEK.Entity.SertissageNormal;
+import rahma.backend.gestionPDEK.Entity.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,11 +36,26 @@ public interface SertissageIDCRepository extends JpaRepository<SertissageIDC, Lo
      /*******************************************************************************************/
     Optional<SertissageIDC> findTopByPagePDEK_IdOrderByNumCycleDesc(Long pageId);
     
+	List<SertissageIDC> findByPdekSertissageIDC_IdAndPagePDEK_PageNumber(Long pdekId, int pageNumber);
 
-	 List<SertissageIDC_DTO> findByDecision(int decision);
-	 List<SertissageIDC_DTO> findByDecisionAndRempliePlanAction(int decision, int rempliePlanAction);
+
+	 List<SertissageIDC> findByDecision(int decision);
+	 List<SertissageIDC> findByDecisionAndRempliePlanAction(int decision, int rempliePlanAction);
      
-
-     
-}
-
+	 /********************* Modifier decision a 1 **********************************/
+	    @Modifying
+	    @Transactional
+	    @Query("UPDATE SertissageIDC p SET p.decision = 1 WHERE p.id = :id")
+	    void validerSertissageIDC(@Param("id") Long id);
+	    
+	    @Modifying
+	    @Transactional
+	    @Query("UPDATE SertissageIDC p SET p.rempliePlanAction = 0 WHERE p.id = :id")
+	    void ajoutPlanActionByChefLigne(@Param("id") Long id);
+	    
+	    
+	    @Query("SELECT p.pagePDEK FROM SertissageIDC p WHERE p.id = :idSertissageIDC")
+	    PagePDEK findPDEKByPagePDEK(@Param("idSertissageIDC") Long idSertissageIDC);
+	    @Query("SELECT DISTINCT p.userSertissageIDC FROM SertissageIDC p WHERE p.pdekSertissageIDC.id = :idPdek")
+	    List<User> findUsersByPdekId(@Param("idPdek") Long idPdek);
+	}

@@ -22,8 +22,13 @@ public class PlanAction {
     private String heureCreation;
     @Enumerated(EnumType.STRING)
     private TypesOperation type_operation;
+    
+    private String plant;
+    private int segment ;
+    private String  sectionFil ;
+    private String poste;
+    private String machine;
 
-  
 
     // User qui a rempli le plan d'action
     @ManyToOne

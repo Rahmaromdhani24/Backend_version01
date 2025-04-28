@@ -2,16 +2,13 @@ package rahma.backend.gestionPDEK.Controllers;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
 import rahma.backend.gestionPDEK.DTO.PdekDTO;
 import rahma.backend.gestionPDEK.DTO.PistoletDTO;
-import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
@@ -24,7 +21,8 @@ public class SoudureController {
     @Autowired  private SoudureServiceImplimentation serviceSoudure;
     @Autowired  private SoudureRepository soudureRepository ; 
     @Autowired  private PDEK_ServiceImplimenetation servicePDEK ; 
-    @Autowired  private PdekRepository repositoryPDEK ; 
+    @Autowired  private ServiceControleQualiteImplemenets  serviceControleQualite ; 
+
     
     @GetMapping("/sectionsFils")
     public List<String> getSortedSections() {
@@ -201,43 +199,56 @@ public ResponseEntity<String> getTractionBySections(@PathVariable String section
         return ResponseEntity.ok(dernierNumeroCycle);
     }
     
-@GetMapping("/soudures-par-pdek-et-page")
-public ResponseEntity<List<SoudureDTO>> getSouduresParPdekEtPage(
-        @RequestParam Long pdekId,
-        @RequestParam int pageNumber) {
+    @GetMapping("/soudures-par-pdek-et-page")
+    public ResponseEntity<List<SoudureDTO>> getSouduresParPdekEtPage(
+            @RequestParam Long pdekId,
+            @RequestParam int pageNumber) {
 
-    List<Soudure> soudures = soudureRepository.findByPdekSoudure_IdAndPagePDEK_PageNumber(pdekId, pageNumber);
+        List<Soudure> soudures = soudureRepository.findByPdekSoudure_IdAndPagePDEK_PageNumber(pdekId, pageNumber);
 
-    List<SoudureDTO> soudureDTOs = soudures.stream().map(s ->
-        new SoudureDTO(
-            s.getId(),
-            s.getCode(),
-            s.getSectionFil(),
-            s.getDate(),
-            s.getNumeroCycle(),
-            s.getUserSoudure().getMatricule(),
-            s.getMoyenne(),
-            s.getEtendu() ,
-            s.getPelageX1() ,
-            s.getPelageX2() ,
-            s.getPelageX3() ,
-            s.getPelageX4() ,
-            s.getPelageX5() ,
-            s.getPliage(),
-            s.getDistanceBC() ,
-            s.getTraction() , 
-            s.getNombreKanban() ,
-            s.getNombreNoeud() ,
-            s.getGrendeurLot() ,
-            s.getUserSoudure().getMatricule() ,
-            s.getUserSoudure().getMatricule() ,
-            s.getDecision() , 
-            s.getRempliePlanAction()
-        )
-    ).collect(Collectors.toList());
+        // Appel à la méthode qui récupère le matricule de l'agent qualité
 
-    return ResponseEntity.ok(soudureDTOs);
-}
+        // Mapper les soudures en SoudureDTO
+        List<SoudureDTO> soudureDTOs = soudures.stream().map(s -> 
+            new SoudureDTO(
+            		  s.getId(),
+            	        s.getClass().getSimpleName(),
+            	        s.getUserSoudure().getSegment() ,
+                      s.getUserSoudure().getPlant().toString() ,
+            	        s.getUserSoudure().getMachine() ,
+                      s.getCode(),
+                      s.getSectionFil(),
+                      s.getDate(),
+                      s.getHeureCreation() ,
+                      s.getNumeroCycle(),
+                      s.getUserSoudure().getMatricule(),
+                      s.getMoyenne(),
+                      s.getEtendu() ,
+                      s.getPelageX1() ,
+                      s.getPelageX2() ,
+                      s.getPelageX3() ,
+                      s.getPelageX4() ,
+                      s.getPelageX5() ,
+                      s.getPliage(),
+                      s.getDistanceBC() ,
+                      s.getTraction() , 
+                      s.getNombreKanban() ,
+                      s.getNombreNoeud() ,
+                      s.getGrendeurLot() ,
+                      s.getUserSoudure().getMatricule() ,
+                      serviceControleQualite.getUserIdByPdekIdAndPageAndOperation(pdekId ,   s.getId()) ,
+                      s.getDecision() , 
+                      s.getRempliePlanAction(),
+                      s.getPdekSoudure().getId()  ,
+           	          s.getPagePDEK().getPageNumber() , 
+           	          s.getQuantiteAtteint() ,
+           	          s.getZone()
+            )
+        ).collect(Collectors.toList());
+
+        return ResponseEntity.ok(soudureDTOs);
+    }
+
 
 
 @GetMapping("/page-actuelle")
@@ -304,4 +315,18 @@ public ResponseEntity<String> remplirPlanAction(@PathVariable Long id) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Soudure non trouvée.");
         }
 }
+	 
+	  @PutMapping("/zone/{zone}/{id}")
+	    public ResponseEntity<String> updateZone(@PathVariable Long id, @PathVariable String zone) {
+	        Optional<Soudure> optionalSoudure = soudureRepository.findById(id);
+	        
+	        if (optionalSoudure.isPresent()) {
+	            Soudure soudure = optionalSoudure.get();
+	            soudure.setZone(zone);
+	            soudureRepository.save(soudure);
+	            return ResponseEntity.ok("Zone mise à jour avec succès.");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Soudure non trouvée avec l'id: " + id);
+	        }
+	    }
 }

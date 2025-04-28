@@ -2,17 +2,15 @@ package rahma.backend.gestionPDEK.Controllers;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import rahma.backend.gestionPDEK.DTO.AjoutTorsadageResultDTO;
 import rahma.backend.gestionPDEK.DTO.PdekDTO;
-import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
+import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
 import rahma.backend.gestionPDEK.ServicesImplementation.PDEK_ServiceImplimenetation;
@@ -25,7 +23,6 @@ public class TorsadageController {
 	@Autowired  private TorsadageServiceImplimentation serviceTorsadage;
     @Autowired  private TorsadageRepository torsadageRepository ; 
     @Autowired  private PDEK_ServiceImplimenetation servicePDEK ; 
-    @Autowired  private PdekRepository repositoryPDEK ; 
 
 
     @GetMapping("/specificationsMesure")
@@ -80,7 +77,8 @@ public class TorsadageController {
 
         try {
         AjoutTorsadageResultDTO result = serviceTorsadage.ajoutPDEK_Torsadage(torsadage, matriculeOperateur, projet);
-           String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage() + "\" }";
+           String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage() +
+           		"\", \"idSoudure\": \"" + result.getIdTorsadage() +"\" }";
            return ResponseEntity.ok(jsonResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Erreur lors de l'ajout : " + e.getMessage());
@@ -129,20 +127,96 @@ public ResponseEntity<List<TorsadageDTO>> getTorsadageParPdekEtPage(
 
     List<TorsadageDTO> soudureDTOs = torsadages.stream().map(s ->
         new TorsadageDTO(
-            s.getId(),
-            s.getCode(),
-            s.getSpecificationMesure(),
-            s.getDate(),
-            s.getNumeroCycle(),
-            s.getUserTorsadage().getMatricule(),
-            s.getMoyenne(),
-            s.getEtendu() 
+        		s.getId(),
+        	    s.getClass().getSimpleName() ,
+        	    s.getUserTorsadage().getSegment() ,
+   	            s.getUserTorsadage().getPlant().toString() ,
+                s.getUserTorsadage().getMachine() ,
+  	            s.getCode(),
+  	            s.getSpecificationMesure(),
+                s.getSpecificationMesure(),
+  	            s.getDate(),
+	            s.getHeureCreation(), 
+  	            s.getNumeroCycle(),
+  	            s.getUserTorsadage().getMatricule(),
+  	            s.getMoyenne(),
+  	            s.getEtendu(),
+  	            s.getEch1(),
+  	            s.getEch2(),
+  	            s.getEch3(),
+  	            s.getEch4(),
+  	            s.getEch5(),
+  	            s.getNumCommande(),
+  	            s.getQuantiteTotale(),
+  	            s.getNumerofil(),
+  	            s.getLongueurFinalDebutCde(),
+  	            s.getLongueurFinalFinCde(),
+  	            s.getLongueurBoutDebutCdeC1(),
+  	            s.getLongueurBoutDebutCdeC2(),
+  	            s.getLongueurBoutFinCdeC1(),
+  	            s.getLongueurBoutFinCdeC2(),
+  	            s.getDecalageMaxDebutCdec1(),
+  	            s.getDecalageMaxDebutCdec2(),
+  	            s.getDecalageMaxFinCdec1(),
+  	            s.getDecalageMaxFinCdec2(),
+  	            s.getQuantiteAtteint(),
+  	            s.getUserTorsadage().getMatricule(),
+  	            s.getDecision(),
+  	            s.getRempliePlanAction() ,
+  	            s.getPdekTorsadage().getId()  ,
+   	            s.getPagePDEK().getPageNumber() ,
+   	            s.getZone()
         )
     ).collect(Collectors.toList());
 
     return ResponseEntity.ok(soudureDTOs);
 }
 
+     @GetMapping("/torsadages-non-validees-agents-Qualite")
+ 	public List<TorsadageDTO> getTorsadagesNonValidees() {
+ 	    return serviceTorsadage.getTorsadagsNonValidees() ; 
+ 	}
+ 	@GetMapping("/nbrNotificationsAgentsQualite")
+ 	   public int getNombreNotification() {
+ 	       return serviceTorsadage.getTorsadagsNonValidees().size() ; 
+ 	}
+ 	
+ 	@GetMapping("/torsadages-validees")
+ 	public List<TorsadageDTO>  getTorsadagesValidees() {
+ 	    return serviceTorsadage.getTorsadagsValidees();
+ 	}
+ 	 @GetMapping("/torsadages-non-validees-plan-action")
+ 	    public List<TorsadageDTO> getPistoletsNonValideesAvecPlanAction() {
+ 	        return serviceTorsadage.getTorsadagesNonValideesTechniciens() ; 
+ 	    }
+ 	 
+ 	 @GetMapping("/nbrNotificationsTechniciens")
+ 	    public int getNombresNotificationsPistoletsNonValiderDePlanAction() {
+ 	        return serviceTorsadage.getTorsadagesNonValideesTechniciens().size(); }
+ 	   
+ 	 @PutMapping("/validerTorsadage")
+ 	 public ResponseEntity<?> validerPistolet(@RequestParam Long id, @RequestParam Integer matriculeAgentQualite) {
+ 		serviceTorsadage.validerTorsadage(id, matriculeAgentQualite);
+ 	     return ResponseEntity.ok().build(); }
+ 	
+ 	
 
+ 	 @GetMapping("/users-by-pdek/{id}")
+ 	    public ResponseEntity<List<UserDTO>> getUserDTOsByPdek(@PathVariable Long id) {
+ 	        List<UserDTO> userDTOs = serviceTorsadage.getUserDTOsByPdek(id);
+ 	        return ResponseEntity.ok(userDTOs);
+ 	    }
+ 	 
+ 	 @PutMapping("/remplir-plan-action/{id}")
+ public ResponseEntity<String> remplirPlanAction(@PathVariable Long id) {
+         boolean success = serviceTorsadage.changerAttributRempliePlanActionTorsadageDe0a1(id);
+         if (success) {
+             return ResponseEntity.ok("Attribut rempliePlanAction mis à jour !");
+         } else {
+             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Soudure non trouvée.");
+         }
  }
+ }
+
+ 
 

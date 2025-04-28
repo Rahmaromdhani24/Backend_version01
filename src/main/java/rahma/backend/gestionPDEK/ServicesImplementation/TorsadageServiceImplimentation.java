@@ -1,15 +1,19 @@
 package rahma.backend.gestionPDEK.ServicesImplementation;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
 import rahma.backend.gestionPDEK.DTO.AjoutTorsadageResultDTO;
+import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
+import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
 import rahma.backend.gestionPDEK.ServicesInterfaces.ServiceTorsadage;
@@ -22,6 +26,10 @@ public class TorsadageServiceImplimentation implements ServiceTorsadage {
 	 @Autowired    private UserRepository userRepository;	
 	 @Autowired    private ProjetRepository projetRepository;	
 	 @Autowired    private PdekPageRepository pdekPageRepository;	
+	 @Autowired    private AuditLogRepository auditLogRepository;
+     @Autowired private PlanActionRepository planActionRepository ; 
+     @Autowired private DetailsPlanActionRepository detailsPlanActionRepository ; 
+	 @Autowired    private ControleQualiteRepository controleQualiteRepository;
 
 	 
 	 @Override
@@ -100,7 +108,7 @@ public class TorsadageServiceImplimentation implements ServiceTorsadage {
          instance1.setPagePDEK(pagePDEK);
          instance1.setNumeroCycle(numeroCycle);
         torsadageRepository.save(instance1) ;
-	    return new AjoutTorsadageResultDTO(pdek.getId(), pagePDEK.getPageNumber());
+	    return new AjoutTorsadageResultDTO(pdek.getId(), pagePDEK.getPageNumber() , instance1.getId());
     } else {
       
     	PDEK newPDEK = new PDEK() ; 
@@ -126,7 +134,7 @@ public class TorsadageServiceImplimentation implements ServiceTorsadage {
     	torsadageRepository.save(instance1) ;   	
 
 	      }
-		  return new AjoutTorsadageResultDTO(newPDEK.getId(), newPage.getPageNumber());
+		  return new AjoutTorsadageResultDTO(newPDEK.getId(), newPage.getPageNumber() , instance1.getId());
 
     }
 	 }
@@ -145,14 +153,46 @@ public class TorsadageServiceImplimentation implements ServiceTorsadage {
 	                         s -> s.getPagePDEK().getPageNumber(), // groupement par numéro de page
 	                         Collectors.mapping(
 	                                 s -> new TorsadageDTO(
-	                                         s.getId(),
-	                                         s.getCode(),
-	                                         s.getSpecificationMesure(),
-	                                         s.getDate().toString(),
-	                                         s.getNumeroCycle(),
-											 s.getUserTorsadage().getMatricule(),
-											 s.getMoyenne(),
-											 s.getEtendu()),
+	                                		s.getId(),
+	                                		s.getClass().getSimpleName() ,
+	                                	    s.getUserTorsadage().getSegment() ,
+	                             	        s.getUserTorsadage().getPlant().toString() ,
+	             	                        s.getUserTorsadage().getMachine() ,
+	                          	            s.getCode(),
+	                          	            s.getSpecificationMesure(),
+	            	                        s.getSpecificationMesure(),
+	                          	            s.getDate(),
+	                        	            s.getHeureCreation(), 
+	                          	            s.getNumeroCycle(),
+	                          	            s.getUserTorsadage().getMatricule(),
+	                          	            s.getMoyenne(),
+	                          	            s.getEtendu(),
+	                          	            s.getEch1(),
+	                          	            s.getEch2(),
+	                          	            s.getEch3(),
+	                          	            s.getEch4(),
+	                          	            s.getEch5(),
+	                          	            s.getNumCommande(),
+	                          	            s.getQuantiteTotale(),
+	                          	            s.getNumerofil(),
+	                          	            s.getLongueurFinalDebutCde(),
+	                          	            s.getLongueurFinalFinCde(),
+	                          	            s.getLongueurBoutDebutCdeC1(),
+	                          	            s.getLongueurBoutDebutCdeC2(),
+	                          	            s.getLongueurBoutFinCdeC1(),
+	                          	            s.getLongueurBoutFinCdeC2(),
+	                          	            s.getDecalageMaxDebutCdec1(),
+	                          	            s.getDecalageMaxDebutCdec2(),
+	                          	            s.getDecalageMaxFinCdec1(),
+	                          	            s.getDecalageMaxFinCdec2(),
+	                          	            s.getQuantiteAtteint(),
+	                          	            s.getUserTorsadage().getMatricule(),
+	                          	            s.getDecision(),
+	                          	            s.getRempliePlanAction(),
+	                          	            s.getPdekTorsadage().getId()  ,
+	                             	        s.getPagePDEK().getPageNumber() ,
+	            	                	    s.getZone() 
+),
 	                                 Collectors.toList()
 	                         )
 	                 ));
@@ -221,31 +261,237 @@ public class TorsadageServiceImplimentation implements ServiceTorsadage {
 	
 				return torsadagesPageActuelle.stream()
 						.map(s -> new TorsadageDTO(
-								s.getId(),
-								s.getCode(),
-								s.getSpecificationMesure(),
-								s.getDate().toString(),
-								s.getNumeroCycle(),
-								s.getUserTorsadage().getMatricule(),
-								s.getMoyenne(),
-								s.getEtendu() ))
+								  s.getId(),
+								    s.getClass().getSimpleName() ,
+								    s.getUserTorsadage().getSegment() ,
+					   	            s.getUserTorsadage().getPlant().toString() ,
+			                        s.getUserTorsadage().getMachine() ,
+						            s.getCode(),
+						            s.getSpecificationMesure(),
+			                        s.getSpecificationMesure(),
+						            s.getDate(),
+						            s.getHeureCreation(), 
+						            s.getNumeroCycle(),
+						            s.getUserTorsadage().getMatricule(),
+						            s.getMoyenne(),
+						            s.getEtendu(),
+						            s.getEch1(),
+						            s.getEch2(),
+						            s.getEch3(),
+						            s.getEch4(),
+						            s.getEch5(),
+						            s.getNumCommande(),
+						            s.getQuantiteTotale(),
+						            s.getNumerofil(),
+						            s.getLongueurFinalDebutCde(),
+						            s.getLongueurFinalFinCde(),
+						            s.getLongueurBoutDebutCdeC1(),
+						            s.getLongueurBoutDebutCdeC2(),
+						            s.getLongueurBoutFinCdeC1(),
+						            s.getLongueurBoutFinCdeC2(),
+						            s.getDecalageMaxDebutCdec1(),
+						            s.getDecalageMaxDebutCdec2(),
+						            s.getDecalageMaxFinCdec1(),
+						            s.getDecalageMaxFinCdec2(),
+						            s.getQuantiteAtteint(),
+						            s.getUserTorsadage().getMatricule(),
+						            s.getDecision(),
+						            s.getRempliePlanAction(),
+						            s.getPdekTorsadage().getId()  ,
+                         	        s.getPagePDEK().getPageNumber() ,
+        	                	    s.getZone() 
+))
 						.collect(Collectors.toList());
 			}
 		}
 	
 		return List.of(); // Si rien trouvé
 	}
-
+	 
+	// pour agent de qualite
 	@Override
 	public List<TorsadageDTO> getTorsadagsNonValidees() {
-		// TODO Auto-generated method stub
-        return torsadageRepository.findByDecision(0);
+	    List<Torsadage> torsadages = torsadageRepository.findByDecisionAndRempliePlanAction(0, 0);
+
+	    return torsadages.stream()
+	       .map(s -> new TorsadageDTO(
+	            s.getId(),
+	            s.getClass().getSimpleName() ,
+	            s.getUserTorsadage().getSegment() ,
+   	            s.getUserTorsadage().getPlant().toString() ,
+                s.getUserTorsadage().getMachine() ,
+	            s.getCode(),
+	            s.getSpecificationMesure(),
+                s.getSpecificationMesure(),
+	            s.getDate(),
+	            s.getHeureCreation(), 
+	            s.getNumeroCycle(),
+	            s.getUserTorsadage().getMatricule(),
+	            s.getMoyenne(),
+	            s.getEtendu(),
+	            s.getEch1(),
+	            s.getEch2(),
+	            s.getEch3(),
+	            s.getEch4(),
+	            s.getEch5(),
+	            s.getNumCommande(),
+	            s.getQuantiteTotale(),
+	            s.getNumerofil(),
+	            s.getLongueurFinalDebutCde(),
+	            s.getLongueurFinalFinCde(),
+	            s.getLongueurBoutDebutCdeC1(),
+	            s.getLongueurBoutDebutCdeC2(),
+	            s.getLongueurBoutFinCdeC1(),
+	            s.getLongueurBoutFinCdeC2(),
+	            s.getDecalageMaxDebutCdec1(),
+	            s.getDecalageMaxDebutCdec2(),
+	            s.getDecalageMaxFinCdec1(),
+	            s.getDecalageMaxFinCdec2(),
+	            s.getQuantiteAtteint(),
+	            s.getUserTorsadage().getMatricule(),
+	            s.getDecision(),
+	            s.getRempliePlanAction() ,
+	            s.getPdekTorsadage().getId()  ,
+     	        s.getPagePDEK().getPageNumber() ,
+        	    s.getZone() 
+
+	        ))
+	        .toList();
 	}
-	
+
+	@Override
+	public List<TorsadageDTO> getTorsadagesNonValideesTechniciens() {
+		   List<Torsadage> torsadages = torsadageRepository.findByDecisionAndRempliePlanAction(0 , 1);
+
+	        return torsadages.stream()
+	        		   .map(s -> new TorsadageDTO(
+	        		            s.getId(),
+	        		            s.getClass().getSimpleName() ,
+	        		            s.getUserTorsadage().getSegment() ,
+	        	   	            s.getUserTorsadage().getPlant().toString() ,
+	        	                s.getUserTorsadage().getMachine() ,
+	        		            s.getCode(),
+	        		            s.getSpecificationMesure(),
+	        	                s.getSpecificationMesure(),
+	        		            s.getDate(),
+	        		            s.getHeureCreation(), 
+	        		            s.getNumeroCycle(),
+	        		            s.getUserTorsadage().getMatricule(),
+	        		            s.getMoyenne(),
+	        		            s.getEtendu(),
+	        		            s.getEch1(),
+	        		            s.getEch2(),
+	        		            s.getEch3(),
+	        		            s.getEch4(),
+	        		            s.getEch5(),
+	        		            s.getNumCommande(),
+	        		            s.getQuantiteTotale(),
+	        		            s.getNumerofil(),
+	        		            s.getLongueurFinalDebutCde(),
+	        		            s.getLongueurFinalFinCde(),
+	        		            s.getLongueurBoutDebutCdeC1(),
+	        		            s.getLongueurBoutDebutCdeC2(),
+	        		            s.getLongueurBoutFinCdeC1(),
+	        		            s.getLongueurBoutFinCdeC2(),
+	        		            s.getDecalageMaxDebutCdec1(),
+	        		            s.getDecalageMaxDebutCdec2(),
+	        		            s.getDecalageMaxFinCdec1(),
+	        		            s.getDecalageMaxFinCdec2(),
+	        		            s.getQuantiteAtteint(),
+	        		            s.getUserTorsadage().getMatricule(),
+	        		            s.getDecision(),
+	        		            s.getRempliePlanAction() ,
+	        		            s.getPdekTorsadage().getId()  ,
+	        	     	        s.getPagePDEK().getPageNumber() ,
+		                	    s.getZone() 
+
+	        		        ))
+	        		        .toList();
+	        		}
+
 	@Override
 	public List<TorsadageDTO> getTorsadagsValidees() {
 		// TODO Auto-generated method stub
-        return torsadageRepository.findByDecision(1);
+		return null;
 	}
+
+	@Override
+	public void validerTorsadage(Long idTorsadage, int matriculeUser) {
+		 String heure = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+		   String date  = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+	    // Valider le pistolet
+	    torsadageRepository.validerTorsadage(idTorsadage);
+
+	    // Récupérer le pistolet concerné
+	    Torsadage torsadage = torsadageRepository.findById(idTorsadage)
+	        .orElseThrow(() -> new RuntimeException("Torsadage non trouvé avec ID : " + idTorsadage));
+
+	    // Récupérer le PDEK associé
+	    PDEK pdek = torsadage.getPdekTorsadage() ; 
+
+	    // Récupérer l'utilisateur via son matricule
+	    User userControleur = userRepository.findByMatricule(matriculeUser).get() ;
+
+	    // Créer l'entrée de contrôle qualité
+	    ControleQualite controle = ControleQualite.builder()
+	        .user(userControleur)
+	        .pdek(pdek)
+	        .idInstanceOperation(torsadage.getId())
+	        .nombrePage(pdek.getPages() != null ? pdek.getPages().size() : 0)
+	        .dateControle(date)
+	        .heureControle(heure)
+	        .resultat("Validé")
+	        .build();
+
+	    // Sauvegarder le contrôle qualité
+	    controleQualiteRepository.save(controle);
+	    
+	    
+	    //valider Plan action si existe 
+	    
+	    // Étape 1 : récupérer la page PDEK du pistolet
+	    PagePDEK page = torsadageRepository.findPDEKByPagePDEK(idTorsadage);
+	    if (page == null) return;
+
+	    // Étape 2 : récupérer le plan d’action
+	    Optional<PlanAction> planOpt = planActionRepository.findByPagePDEKId(page.getId());
+	    if (planOpt.isEmpty()) return;
+
+	    PlanAction plan = planOpt.get();
+
+	    // Étape 3 : récupérer les détails
+	    List<DetailsPlanAction> detailsList = detailsPlanActionRepository.findByPlanActionId(plan.getId());
+
+	    // Étape 4 : modifier les signatures si nécessaire
+	    for (DetailsPlanAction detail : detailsList) {
+	        if (detail.getMatricule_operateur() == (matriculeUser) && detail.getSignature_qualite() == 0) {
+	            detail.setSignature_qualite(1);
+	            detailsPlanActionRepository.save(detail); // sauvegarde
+	        }
+	    }
+	}
+
+	@Override
+	public List<UserDTO> getUserDTOsByPdek(Long idPdek) {
+		  List<User> users = torsadageRepository.findUsersByPdekId(idPdek);
+	        return users.stream()
+	                    .map(UserDTO::fromEntity)
+	                    .toList(); // ou collect(Collectors.toList()) si tu es en Java 8
+	    }
+
+	@Override
+	public boolean changerAttributRempliePlanActionTorsadageDe0a1(Long id) {
+		  Optional<Torsadage> optionalTorsadage = torsadageRepository.findById(id);
+	        if (optionalTorsadage.isPresent()) {
+	            Torsadage torsadage = optionalTorsadage.get();
+	            torsadage.setRempliePlanAction(1);  // changer à 1
+	            torsadageRepository.save(torsadage);
+	            return true;
+	        }
+	        return false;
+	    
+	}
+
 	 
 }

@@ -3,28 +3,22 @@ package rahma.backend.gestionPDEK.Controllers;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import rahma.backend.gestionPDEK.DTO.AjoutSertissageNormalResultDTO;
-import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
-import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
+import rahma.backend.gestionPDEK.DTO.AjoutSertissageResultDTO;
 import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
-import rahma.backend.gestionPDEK.DTO.SoudureDTO;
+import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
-import rahma.backend.gestionPDEK.ServicesImplementation.PDEK_ServiceImplimenetation;
 import rahma.backend.gestionPDEK.ServicesImplementation.SertissageNormalServiceImplimentation;
 
 @RestController
 @RequestMapping("/operations/SertissageNormal")
 public class SertissageNormalController {
 	   @Autowired private SertissageNormalRepository sertissageNormalRepository ; 
-       @Autowired private PDEK_ServiceImplimenetation servicePDEK ; 
        @Autowired  private  SertissageNormalServiceImplimentation serviceSertissageNormal;
 
       
@@ -49,9 +43,10 @@ public ResponseEntity<String> ajouterSertissageNormal(
          @RequestParam String nomProjet,
          @RequestBody SertissageNormal sertissageNormal) {
     try {
-    	 AjoutSertissageNormalResultDTO result = serviceSertissageNormal.ajoutPDEK_SertissageNormal( sertissageNormal , matricule, nomProjet);
+    	 AjoutSertissageResultDTO result = serviceSertissageNormal.ajoutPDEK_SertissageNormal( sertissageNormal , matricule, nomProjet);
     	  // Retourner un objet JSON structuré avec l'ID du PDEK et le numéro de la page
-         String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage() + "\" }";
+         String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage() + 
+        		 + result.getIdSertissage() +"\" }";
          return ResponseEntity.ok(jsonResponse);
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur : " + e.getMessage());
@@ -251,38 +246,89 @@ public ResponseEntity<String> ajouterSertissageNormal(
 
      List<SertissageNormal> sertissages = sertissageNormalRepository.findByPdekSertissageNormal_IdAndPagePDEK_PageNumber(pdekId, pageNumber);
 
-     List<SertissageNormal_DTO> sertissagesDTOs = sertissages.stream().map(s ->
+     List<SertissageNormal_DTO> sertissagesDTOs = sertissages.stream().map(n ->
          new SertissageNormal_DTO(
-             s.getId(),
-             s.getCodeControle(),
-             s.getSectionFil(),
-             s.getNumeroOutils(),
-             s.getNumeroContacts(), 
-             s.getDate(),
-             s.getNumCycle(),
-             s.getUserSertissageNormal().getMatricule(),
-             s.getHauteurSertissageEch1(),
-             s.getHauteurSertissageEch2() ,
-             s.getHauteurSertissageEch3() ,
-             s.getHauteurSertissageEchFin()
+        		 n.getId(),
+                 n.getClass().getSimpleName() ,
+                 n.getUserSertissageNormal().getPlant().toString() , 
+                 n.getCodeControle() ,  
+                 n.getSectionFil(),
+                 n.getNumeroOutils() , 
+                 n.getNumeroContacts()  ,
+                 n.getDate(),
+                 n.getHeureCreation() ,
+                 n.getNumCycle(),
+                 n.getUserSertissageNormal().getMatricule(),  
+                 n.getHauteurSertissageEch1(),
+                 n.getHauteurSertissageEch2(),
+                 n.getHauteurSertissageEch3(),
+                 n.getHauteurSertissageEchFin(),
+                 n.getLargeurSertissage(), 
+                 n.getLargeurSertissageEchFin(), 
+                 n.getHauteurIsolant(),
+                 n.getLargeurIsolant(),
+                 n.getLargeurIsolantEchFin(),
+                 n.getHauteurIsolantEchFin(),
+                 n.getTraction(),
+                 n.getTractionFinEch(),
+                 n.getProduit(),
+                 n.getSerieProduit(),
+                 n.getQuantiteCycle(),
+                 n.getSegment(),
+                 n.getNumeroMachine(),
+                 n.getDecision(),
+                 n.getRempliePlanAction() ,
+                 n.getPdekSertissageNormal().getId()  ,
+      	         n.getPagePDEK().getPageNumber()
          )
      ).collect(Collectors.toList());
 
      return ResponseEntity.ok(sertissagesDTOs);
  }
- @GetMapping("/sertissages-non-validees")
- public List<SertissageNormal_DTO> getSertissagesNonValidees() {
-     return serviceSertissageNormal.getSertissagesNonValidees() ; 
- }
-@GetMapping("/nbrNotifications")
- public int getNombresNotificationssertissagesNonValider() {
-     return serviceSertissageNormal.getSertissagesNonValidees().size();
- }
+ @GetMapping("/sertissages-non-validees-agents-Qualite")
+	public List<SertissageNormal_DTO> getSouduresNonValidees() {
+	    return serviceSertissageNormal.getSertissagesNonValidees() ; 
+	}
+	@GetMapping("/nbrNotificationsAgentsQualite")
+	   public int getNombreNotification() {
+	       return serviceSertissageNormal.getSertissagesNonValidees().size() ; 
+	}
+	
+	@GetMapping("/sertissages-validees")
+	public List<SertissageNormal_DTO>  getSouduresValidees() {
+	    return serviceSertissageNormal.getSertissagesValidees() ; 
+	}
+	 @GetMapping("/sertissages-non-validees-plan-action")
+	    public List<SertissageNormal_DTO> getSertissagesIDCNonValideesAvecPlanAction() {
+	        return serviceSertissageNormal.getSertissagesNonValideesChefLigne() ; 
+	    }
+	 
+	 @GetMapping("/nbrNotificationsChefLigne")
+	    public int getNombresNotificationsPistoletsNonValiderDePlanAction() {
+	        return serviceSertissageNormal.getSertissagesNonValideesChefLigne().size(); }
+	   
+	 @PutMapping("/validerSertissage")
+	 public ResponseEntity<?> validerPistolet(@RequestParam Long id, @RequestParam Integer matriculeAgentQualite) {
+		 serviceSertissageNormal.validerSertissage(id, matriculeAgentQualite);
+	     return ResponseEntity.ok().build(); }
+	
+	
 
-@GetMapping("/sertissagesIDC-validees")
- public List<SertissageNormal_DTO> getsertissagesValidees() {
-     return serviceSertissageNormal.getSertissagesNonValidees();
- }
-
+	 @GetMapping("/users-by-pdek/{id}")
+	    public ResponseEntity<List<UserDTO>> getUserDTOsByPdek(@PathVariable Long id) {
+	        List<UserDTO> userDTOs = serviceSertissageNormal.getUserDTOsByPdek(id);
+	        return ResponseEntity.ok(userDTOs);
+	    }
+	 
+	 @PutMapping("/remplir-plan-action/{id}")
+public ResponseEntity<String> remplirPlanAction(@PathVariable Long id) {
+     boolean success = serviceSertissageNormal.changerAttributRempliePlanActionSertissageeDe0a1(id);
+     if (success) {
+         return ResponseEntity.ok("Attribut rempliePlanAction mis à jour !");
+     } else {
+         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Soudure non trouvée.");
+     }
+     
+	 }
   }
 

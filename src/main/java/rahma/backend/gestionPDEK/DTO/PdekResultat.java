@@ -1,8 +1,5 @@
 package rahma.backend.gestionPDEK.DTO;
 
-import java.util.List;
-import java.util.Objects;
-
 import lombok.*;
 import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
 import rahma.backend.gestionPDEK.Entity.Plant;

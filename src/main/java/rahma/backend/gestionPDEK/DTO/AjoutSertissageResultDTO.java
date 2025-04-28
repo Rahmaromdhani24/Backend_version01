@@ -1,12 +1,14 @@
 package rahma.backend.gestionPDEK.DTO;
 
-public class AjoutSertissageNormalResultDTO {
+public class AjoutSertissageResultDTO {
     private Long pdekId;
     private int numeroPage;
+    private long idSertissage ; 
 
-    public AjoutSertissageNormalResultDTO(Long pdekId, int numeroPage) {
+    public AjoutSertissageResultDTO(Long pdekId, int numeroPage , long idSertissage) {
         this.pdekId = pdekId;
         this.numeroPage = numeroPage;
+        this.idSertissage = idSertissage ; 
     }
 
     public Long getPdekId() {
@@ -15,5 +17,9 @@ public class AjoutSertissageNormalResultDTO {
 
     public int getNumeroPage() {
         return numeroPage;
+    }
+    
+    public long getIdSertissage() {
+        return idSertissage;
     }
 }

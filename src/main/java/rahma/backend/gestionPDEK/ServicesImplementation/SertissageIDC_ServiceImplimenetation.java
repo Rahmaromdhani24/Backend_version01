@@ -1,20 +1,22 @@
 package rahma.backend.gestionPDEK.ServicesImplementation;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
+import rahma.backend.gestionPDEK.DTO.AjoutSertissageResultDTO;
 import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
-import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
+import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
 import rahma.backend.gestionPDEK.ServicesInterfaces.ServiceSertissageIDC;
-import rahma.backend.gestionPDEK.ServicesInterfaces.ServiceSertissageNormal;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +27,12 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
 	 @Autowired    private UserRepository userRepository;	
 	 @Autowired    private ProjetRepository projetRepository;	
 	 @Autowired    private PdekPageRepository pdekPageRepository;	
-
+	 @Autowired    private ControleQualiteRepository controleQualiteRepository;
+	 @Autowired    private AuditLogRepository auditLogRepository;
+     @Autowired    private PlanActionRepository planActionRepository ; 
+     @Autowired    private DetailsPlanActionRepository detailsPlanActionRepository ; 
 	 
-	public void ajoutPDEK_SertissageIDC(SertissageIDC sertissageIDC, int matriculeOperateur , String projet) {
+	public AjoutSertissageResultDTO  ajoutPDEK_SertissageIDC(SertissageIDC sertissageIDC, int matriculeOperateur , String projet) {
 	
     String sectionFilSelectionner = sertissageIDC.getSectionFil() ; 
     User user = userRepository.findByMatricule(matriculeOperateur).get() ; 
@@ -108,7 +113,8 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
          instance1.setNumCycle(numeroCycle);
          sertissageIDCRepository.save(instance1) ;
         
-   
+	     	return new AjoutSertissageResultDTO(pdek.getId(), pagePDEK.getPageNumber()  , instance1.getId());
+
       
 
 
@@ -137,6 +143,8 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
     	sertissageIDCRepository.save(instance1) ;   	
 
 	      }
+   	return new AjoutSertissageResultDTO(newPDEK.getId(), newPage.getPageNumber()  , instance1.getId());
+
     }
 	 }
 
@@ -153,12 +161,37 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
 	                         s -> s.getPagePDEK().getPageNumber(), // groupement par numéro de page
 	                         Collectors.mapping(
 	                                 s -> new SertissageIDC_DTO(
-	                                         s.getId(),
-	                                         s.getCodeControle(),
-	                                         s.getSectionFil(),
-	                                         s.getDate().toString(),
-	                                         s.getNumCycle(),
-											 s.getUserSertissageIDC().getMatricule()),
+	                                		    s.getId(),
+	                                		    s.getCodeControle(),
+	                                		    s.getSectionFil(),
+	                                		    s.getDate().toString(),
+	                                		    s.getNumCycle(),
+	                                		    s.getUserSertissageIDC().getMatricule(),
+	                                		    s.getHauteurSertissageC1Ech1(),
+	                                		    s.getHauteurSertissageC1Ech2(),
+	                                		    s.getHauteurSertissageC1Ech3(),
+	                                		    s.getHauteurSertissageC1EchFin(),
+	                                		    s.getHauteurSertissageC2Ech1(),
+	                                		    s.getHauteurSertissageC2Ech2(),
+	                                		    s.getHauteurSertissageC2Ech3(),
+	                                		    s.getHauteurSertissageC2EchFin(),
+	                                		    s.getProduit(),
+	                                		    s.getSerieProduit(),
+	                                		    s.getQuantiteCycle(),
+	                                		    s.getNumeroMachine(),
+	                                		    s.getForceTractionC1Ech1(),
+	                                		    s.getForceTractionC1Ech2(),
+	                                		    s.getForceTractionC1Ech3(),
+	                                		    s.getForceTractionC1EchFin(),
+	                                		    s.getForceTractionC2Ech1(),
+	                                		    s.getForceTractionC2Ech2(),
+	                                		    s.getForceTractionC2Ech3(),
+	                                		    s.getForceTractionC2EchFin(),
+	                                		    s.getDecision(),
+	                                		    s.getRempliePlanAction() ,
+	                                		    s.getPdekSertissageIDC().getId()  ,
+	                                  	        s.getPagePDEK().getPageNumber() 
+	                                		),
 	                                 Collectors.toList()
 	                         )
 	                 ));
@@ -209,16 +242,207 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
 		 return 0;
 	 }
 
+	// pour agent de qualite
 	@Override
 	public List<SertissageIDC_DTO> getSertissagesIDCNonValidees() {
-		// TODO Auto-generated method stub
-		return sertissageIDCRepository.findByDecision(0);
+		  List<SertissageIDC> sertissagesIDC = sertissageIDCRepository.findByDecisionAndRempliePlanAction(0 , 0);
+
+	        return sertissagesIDC.stream()
+	            .map(s -> new SertissageIDC_DTO( 
+	            		s.getId(),
+              		    s.getCodeControle(),
+              		    s.getSectionFil(),
+              		    s.getDate().toString(),
+              		    s.getNumCycle(),
+              		    s.getUserSertissageIDC().getMatricule(),
+              		    s.getHauteurSertissageC1Ech1(),
+              		    s.getHauteurSertissageC1Ech2(),
+              		    s.getHauteurSertissageC1Ech3(),
+              		    s.getHauteurSertissageC1EchFin(),
+              		    s.getHauteurSertissageC2Ech1(),
+              		    s.getHauteurSertissageC2Ech2(),
+              		    s.getHauteurSertissageC2Ech3(),
+              		    s.getHauteurSertissageC2EchFin(),
+              		    s.getProduit(),
+              		    s.getSerieProduit(),
+              		    s.getQuantiteCycle(),
+              		    s.getNumeroMachine(),
+              		    s.getForceTractionC1Ech1(),
+              		    s.getForceTractionC1Ech2(),
+              		    s.getForceTractionC1Ech3(),
+              		    s.getForceTractionC1EchFin(),
+              		    s.getForceTractionC2Ech1(),
+              		    s.getForceTractionC2Ech2(),
+              		    s.getForceTractionC2Ech3(),
+              		    s.getForceTractionC2EchFin(),
+              		    s.getDecision(),
+              		    s.getRempliePlanAction(),
+              		    s.getPdekSertissageIDC().getId()  ,
+            	        s.getPagePDEK().getPageNumber() 
+	            ))
+	            .toList();
+	    
+	
 	}
 
 	@Override
 	public List<SertissageIDC_DTO> getSertissagesIDCValidees() {
-		// TODO Auto-generated method stub
-		return sertissageIDCRepository.findByDecision(1);
+		 List<SertissageIDC> sertissagesIDC = sertissageIDCRepository.findByDecision(1);
+
+	        return sertissagesIDC.stream()
+	            .map(s -> new SertissageIDC_DTO( 
+	            		s.getId(),
+              		    s.getCodeControle(),
+              		    s.getSectionFil(),
+              		    s.getDate().toString(),
+              		    s.getNumCycle(),
+              		    s.getUserSertissageIDC().getMatricule(),
+              		    s.getHauteurSertissageC1Ech1(),
+              		    s.getHauteurSertissageC1Ech2(),
+              		    s.getHauteurSertissageC1Ech3(),
+              		    s.getHauteurSertissageC1EchFin(),
+              		    s.getHauteurSertissageC2Ech1(),
+              		    s.getHauteurSertissageC2Ech2(),
+              		    s.getHauteurSertissageC2Ech3(),
+              		    s.getHauteurSertissageC2EchFin(),
+              		    s.getProduit(),
+              		    s.getSerieProduit(),
+              		    s.getQuantiteCycle(),
+              		    s.getNumeroMachine(),
+              		    s.getForceTractionC1Ech1(),
+              		    s.getForceTractionC1Ech2(),
+              		    s.getForceTractionC1Ech3(),
+              		    s.getForceTractionC1EchFin(),
+              		    s.getForceTractionC2Ech1(),
+              		    s.getForceTractionC2Ech2(),
+              		    s.getForceTractionC2Ech3(),
+              		    s.getForceTractionC2EchFin(),
+              		    s.getDecision(),
+              		    s.getRempliePlanAction(),
+              		    s.getPdekSertissageIDC().getId()  ,
+          	            s.getPagePDEK().getPageNumber() 
+	            ))
+	            .toList();
+	    
 	}
-	 
-			}
+	@Override
+	public List<SertissageIDC_DTO> getSertissagesIDCNonValideesChefLigne() {
+		 List<SertissageIDC> sertissagesIDC = sertissageIDCRepository.findByDecisionAndRempliePlanAction(0 , 1);
+
+	        return sertissagesIDC.stream()
+	            .map(s -> new SertissageIDC_DTO( 
+	            	s.getId(),
+           		    s.getCodeControle(),
+           		    s.getSectionFil(),
+           		    s.getDate().toString(),
+           		    s.getNumCycle(),
+           		    s.getUserSertissageIDC().getMatricule(),
+           		    s.getHauteurSertissageC1Ech1(),
+           		    s.getHauteurSertissageC1Ech2(),
+           		    s.getHauteurSertissageC1Ech3(),
+           		    s.getHauteurSertissageC1EchFin(),
+           		    s.getHauteurSertissageC2Ech1(),
+           		    s.getHauteurSertissageC2Ech2(),
+           		    s.getHauteurSertissageC2Ech3(),
+           		    s.getHauteurSertissageC2EchFin(),
+           		    s.getProduit(),
+           		    s.getSerieProduit(),
+           		    s.getQuantiteCycle(),
+           		    s.getNumeroMachine(),
+           		    s.getForceTractionC1Ech1(),
+           		    s.getForceTractionC1Ech2(),
+           		    s.getForceTractionC1Ech3(),
+           		    s.getForceTractionC1EchFin(),
+           		    s.getForceTractionC2Ech1(),
+           		    s.getForceTractionC2Ech2(),
+           		    s.getForceTractionC2Ech3(),
+           		    s.getForceTractionC2EchFin(),
+           		    s.getDecision(),
+           		    s.getRempliePlanAction(),
+           		    s.getPdekSertissageIDC().getId()  ,
+     	            s.getPagePDEK().getPageNumber() 
+	            ))
+	            .toList();
+	    
+	
+	}
+
+	@Override
+	public void validerSertissageIDC(Long idSertissageIDc, int matriculeUser) {
+		 String heure = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+		   String date  = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+	    // Valider le pistolet
+	    sertissageIDCRepository.validerSertissageIDC(idSertissageIDc);
+
+	    // Récupérer le pistolet concerné
+	    SertissageIDC  sertissageIDC = sertissageIDCRepository.findById(idSertissageIDc)
+	        .orElseThrow(() -> new RuntimeException("Sertissage IDC  non trouvé avec ID : " + idSertissageIDc));
+
+	    // Récupérer le PDEK associé
+	    PDEK pdek = sertissageIDC.getPdekSertissageIDC() ;  
+
+	    // Récupérer l'utilisateur via son matricule
+	    User userControleur = userRepository.findByMatricule(matriculeUser).get() ;
+
+	    // Créer l'entrée de contrôle qualité
+	    ControleQualite controle = ControleQualite.builder()
+	        .user(userControleur)
+	        .pdek(pdek)
+	        .idInstanceOperation(sertissageIDC.getId())
+	        .nombrePage(pdek.getPages() != null ? pdek.getPages().size() : 0)
+	        .dateControle(date)
+	        .heureControle(heure)
+	        .resultat("Validé")
+	        .build();
+
+	    // Sauvegarder le contrôle qualité
+	    controleQualiteRepository.save(controle);
+	    
+	    
+	    //valider Plan action si existe 
+	    
+	    // Étape 1 : récupérer la page PDEK du pistolet
+	    PagePDEK page = sertissageIDCRepository.findPDEKByPagePDEK(idSertissageIDc);
+	    if (page == null) return;
+
+	    // Étape 2 : récupérer le plan d’action
+	    Optional<PlanAction> planOpt = planActionRepository.findByPagePDEKId(page.getId());
+	    if (planOpt.isEmpty()) return;
+
+	    PlanAction plan = planOpt.get();
+
+	    // Étape 3 : récupérer les détails
+	    List<DetailsPlanAction> detailsList = detailsPlanActionRepository.findByPlanActionId(plan.getId());
+
+	    // Étape 4 : modifier les signatures si nécessaire
+	    for (DetailsPlanAction detail : detailsList) {
+	        if (detail.getMatricule_operateur() == (matriculeUser) && detail.getSignature_qualite() == 0) {
+	            detail.setSignature_qualite(1);
+	            detailsPlanActionRepository.save(detail); // sauvegarde
+	        }
+	    }
+	}
+
+	@Override
+	public List<UserDTO> getUserDTOsByPdek(Long idPdek) {
+		   List<User> users = sertissageIDCRepository.findUsersByPdekId(idPdek);
+	        return users.stream()
+	                    .map(UserDTO::fromEntity)
+	                    .toList(); // ou collect(Collectors.toList()) si tu es en Java 8
+	    }
+
+
+	@Override
+	public boolean changerAttributRempliePlanActionSertissageIDCeDe0a1(Long id) {
+		 Optional<SertissageIDC> optionalSertissage = sertissageIDCRepository.findById(id);
+	        if (optionalSertissage.isPresent()) {
+	            SertissageIDC sertissageIDC = optionalSertissage.get();
+	            sertissageIDC.setRempliePlanAction(1);  // changer à 1
+	            sertissageIDCRepository.save(sertissageIDC);
+	            return true;
+	        }
+	        return false;
+	    
+	}
+}

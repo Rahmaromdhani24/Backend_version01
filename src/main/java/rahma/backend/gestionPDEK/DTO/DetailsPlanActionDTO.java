@@ -2,9 +2,6 @@ package rahma.backend.gestionPDEK.DTO;
 
 import lombok.Getter;
 import lombok.Setter;
-import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
-import rahma.backend.gestionPDEK.Entity.PDEK;
-import rahma.backend.gestionPDEK.Entity.TypePistolet;
 
 @Getter
 @Setter

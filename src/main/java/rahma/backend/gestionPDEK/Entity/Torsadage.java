@@ -78,7 +78,9 @@ public class Torsadage extends Operation {
     private String ech5 ; 
 
     private String date;
-
+    
+    private String heureCreation ; 
+    
     @Column(name = "quantite_totale")
     private int quantiteTotale ; 
     
@@ -87,7 +89,8 @@ public class Torsadage extends Operation {
     
     @Column(name = "code_controle")
     private String code; 
-    
+    private String zone; 
+
     private double moyenne;
     private int etendu; 
     

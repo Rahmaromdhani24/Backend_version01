@@ -1,9 +1,7 @@
 package rahma.backend.gestionPDEK.Entity;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -79,6 +77,8 @@ public class Soudure extends Operation {
     @Column(name = "quantite_atteint")
     private int quantiteAtteint; 
     private String code; 
+    
+    private String zone; 
     
     private int decision ;
     private int rempliePlanAction ;

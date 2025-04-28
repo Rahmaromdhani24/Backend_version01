@@ -18,7 +18,7 @@ public class EmailSenderTorsadageService {
 
     private final JavaMailSender mailSender;
 
-    @Autowired
+   //  @Autowired
     public EmailSenderTorsadageService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }

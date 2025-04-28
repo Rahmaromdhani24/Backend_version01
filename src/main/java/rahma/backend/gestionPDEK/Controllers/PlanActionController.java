@@ -14,7 +14,6 @@ import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
 import rahma.backend.gestionPDEK.Entity.DetailsPlanAction;
 import rahma.backend.gestionPDEK.Entity.TypePistolet;
 import rahma.backend.gestionPDEK.Entity.TypesOperation;
-import rahma.backend.gestionPDEK.Repository.PlanActionRepository;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -23,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class PlanActionController {
 
 	 @Autowired  private  PlanActionImplimenetation planActionService ;
-	 @Autowired  private  PlanActionRepository planActionRepository ;
 	 
 	 @PostMapping("/addPlanAction/{pdekId}/{numeroPage}/{userId}/{numeroPistolet}/{typePistolet}/{categoriePistolet}")
 	 public ResponseEntity<?> ajouterOuMettreAJour(
@@ -99,4 +97,57 @@ public class PlanActionController {
 	        List<UserDTO> users = planActionService.getUsersByPlanActionId(id);
 	        return ResponseEntity.ok(users);
 	    }
+	 
+	 @PostMapping("/addPlanActionSoudure/{pdekId}/{numeroPage}/{userId}/{id}")
+	 public ResponseEntity<?> addPlanActionSoudure(
+	     @PathVariable Long pdekId,
+	     @PathVariable int numeroPage,
+	     @PathVariable int userId,
+	     @PathVariable int id,
+	     @RequestBody DetailsPlanAction dto
+	 ) {
+	     try {
+	         // Conversion des chaînes vers les enums (en majuscules)
+
+	         DetailsPlanActionDTO dtoResponse = planActionService.ajouterPlanActionOuDetailsSoudure(
+	                 pdekId,
+	                 numeroPage,
+	                 dto,
+	                 userId,
+	                 id
+	             );
+
+	         return ResponseEntity.ok(dtoResponse);
+	     } catch (IllegalArgumentException e) {
+	         String messageErreur = String.format(
+	             "Erreur ajout plan action soudure ."   );
+	         return ResponseEntity.badRequest().body(messageErreur);
+	     }
+	 }
+	 @PostMapping("/addPlanActionTorsadage/{pdekId}/{numeroPage}/{userId}/{id}")
+	 public ResponseEntity<?> addPlanActionTorsadage(
+	     @PathVariable Long pdekId,
+	     @PathVariable int numeroPage,
+	     @PathVariable int userId,
+	     @PathVariable int id,
+	     @RequestBody DetailsPlanAction dto
+	 ) {
+	     try {
+	         // Conversion des chaînes vers les enums (en majuscules)
+
+	         DetailsPlanActionDTO dtoResponse = planActionService.ajouterPlanActionOuDetailsTorsadage(
+	                 pdekId,
+	                 numeroPage,
+	                 dto,
+	                 userId,
+	                 id
+	             );
+
+	         return ResponseEntity.ok(dtoResponse);
+	     } catch (IllegalArgumentException e) {
+	         String messageErreur = String.format(
+	             "Erreur ajout plan action soudure ."   );
+	         return ResponseEntity.badRequest().body(messageErreur);
+	     }
+	 }
 }

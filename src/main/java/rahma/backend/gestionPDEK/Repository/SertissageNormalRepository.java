@@ -4,16 +4,20 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import jakarta.transaction.Transactional;
 import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
 import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
+import rahma.backend.gestionPDEK.Entity.SertissageIDC;
 import rahma.backend.gestionPDEK.Entity.SertissageNormal;
 import rahma.backend.gestionPDEK.Entity.Soudure;
+import rahma.backend.gestionPDEK.Entity.User;
 
 @Repository
 
@@ -37,7 +41,25 @@ public interface SertissageNormalRepository extends JpaRepository<SertissageNorm
 	List<SertissageNormal> findByPdekSertissageNormal_IdAndPagePDEK_PageNumber(Long pdekId, int pageNumber);
 
 
-	List<SertissageNormal_DTO> findByDecision(int decision);
-	List<SertissageNormal_DTO> findByDecisionAndRempliePlanAction(int decision, int rempliePlanAction);
-}
+	List<SertissageNormal> findByDecision(int decision);
+	List<SertissageNormal> findByDecisionAndRempliePlanAction(int decision, int rempliePlanAction);
+	 
+	 /********************* Modifier decision a 1 **********************************/
+	    @Modifying
+	    @Transactional
+	    @Query("UPDATE SertissageNormal p SET p.decision = 1 WHERE p.id = :id")
+	    void validerSertissage(@Param("id") Long id);
+	    
+	    @Modifying
+	    @Transactional
+	    @Query("UPDATE SertissageNormal p SET p.rempliePlanAction = 0 WHERE p.id = :id")
+	    void ajoutPlanActionByChefLigne(@Param("id") Long id);
+	    
+	    
+	    @Query("SELECT p.pagePDEK FROM SertissageNormal p WHERE p.id = :idSertissage")
+	    PagePDEK findPDEKByPagePDEK(@Param("idSertissage") Long idSertissage);
+	    
+	    @Query("SELECT DISTINCT p.userSertissageNormal FROM SertissageNormal  p WHERE p.pdekSertissageNormal.id = :idPdek")
+	    List<User> findUsersByPdekId(@Param("idPdek") Long idPdek);
+	}
 

@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
-import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
@@ -158,9 +157,14 @@ public class SoudureServiceImplimentation implements ServiceSoudure {
 	                         Collectors.mapping(
 	                                 s -> new SoudureDTO(
 	                                         s.getId(),
+	                     	      	         s.getClass().getSimpleName(),
+	                     	      	         s.getUserSoudure().getSegment() ,
+	                  	      	             s.getUserSoudure().getPlant().toString() ,
+	                    	      	         s.getUserSoudure().getMachine() ,
 	                                         s.getCode(),
 	                                         s.getSectionFil(),
 	                                         s.getDate().toString(),
+	                                         s.getHeureCreation() ,
 	                                         s.getNumeroCycle(),
 	                                         s.getUserSoudure().getMatricule(),
 	                                         s.getMoyenne(),
@@ -179,7 +183,13 @@ public class SoudureServiceImplimentation implements ServiceSoudure {
 	                                         s.getUserSoudure().getMatricule() ,
 	                                         s.getUserSoudure().getMatricule()  ,
 	                                         s.getDecision() , 
-	                                         s.getRempliePlanAction()
+	                                         s.getRempliePlanAction() ,
+	                                         s.getPdekSoudure().getId()  ,
+	                             	         s.getPagePDEK().getPageNumber() ,
+	                              	         s.getQuantiteAtteint() ,
+	                              	         s.getZone()
+
+
 	                                 ),
 	                                 Collectors.toList()
 	                         )
@@ -252,9 +262,14 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
             return souduresPageActuelle.stream()
                     .map(s -> new SoudureDTO(
                             s.getId(),
+        	      	        s.getClass().getSimpleName(),
+        	      	        s.getUserSoudure().getSegment() ,
+   	      	                s.getUserSoudure().getPlant().toString() ,
+        	      	        s.getUserSoudure().getMachine() ,
                             s.getCode(),
                             s.getSectionFil(),
                             s.getDate().toString(),
+                            s.getHeureCreation() ,
                             s.getNumeroCycle(),
                             s.getUserSoudure().getMatricule(),
 							s.getMoyenne(),
@@ -273,7 +288,13 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
 	                        s.getUserSoudure().getMatricule() ,
 	                        s.getUserSoudure().getMatricule() ,
 	                        s.getDecision() , 
-	                        s.getRempliePlanAction()))
+	                        s.getRempliePlanAction(),
+	                        s.getPdekSoudure().getId()  ,
+                	        s.getPagePDEK().getPageNumber() ,
+                 	        s.getQuantiteAtteint() ,
+                 	        s.getZone()
+
+))
                     .collect(Collectors.toList());
         }
     }
@@ -289,9 +310,14 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
 	        return soudures.stream()
 	            .map(s -> new SoudureDTO( 
 	      	        s.getId() ,
+	      	        s.getClass().getSimpleName(),
+	      	        s.getUserSoudure().getSegment() ,
+     	            s.getUserSoudure().getPlant().toString() ,
+	      	        s.getUserSoudure().getMachine() ,
 	      	        s.getCode()  ,
 	      	        s.getSectionFil() ,
 	      	        s.getDate() ,
+	                s.getHeureCreation() ,
 	                s.getNumeroCycle(),
 	                s.getUserSoudure().getMatricule() ,
 	                s.getMoyenne(),
@@ -310,7 +336,13 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
                     s.getUserSoudure().getMatricule() ,
                     s.getUserSoudure().getMatricule() ,
                     s.getDecision() , 
-                    s.getRempliePlanAction()
+                    s.getRempliePlanAction(),
+                    s.getPdekSoudure().getId()  ,
+        	        s.getPagePDEK().getPageNumber() ,
+         	        s.getQuantiteAtteint() ,
+         	        s.getZone()
+
+
 	            ))
 	            .toList();
 	    
@@ -321,11 +353,16 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
 		   List<Soudure> soudures = soudureRepository.findByDecisionAndRempliePlanAction(0 , 1);
 
 	        return soudures.stream()
-	            .map(s -> new SoudureDTO( 
+	           .map(s -> new SoudureDTO( 
 	      	        s.getId() ,
+	      	        s.getClass().getSimpleName(),
+	      	        s.getUserSoudure().getSegment() ,
+     	            s.getUserSoudure().getPlant().toString() ,
+	      	        s.getUserSoudure().getMachine() ,
 	      	        s.getCode()  ,
 	      	        s.getSectionFil() ,
 	      	        s.getDate() ,
+	                s.getHeureCreation() ,
 	                s.getNumeroCycle(),
 	                s.getUserSoudure().getMatricule() ,
 	                s.getMoyenne(),
@@ -344,7 +381,12 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
                     s.getUserSoudure().getMatricule() ,
                     s.getUserSoudure().getMatricule()  ,
                     s.getDecision() , 
-                    s.getRempliePlanAction()
+                    s.getRempliePlanAction() ,
+                    s.getPdekSoudure().getId()  ,
+        	        s.getPagePDEK().getPageNumber() ,
+         	        s.getQuantiteAtteint() ,
+         	        s.getZone()
+
 	            ))
 	            .toList();
 	    
@@ -354,11 +396,16 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
 		   List<Soudure> soudures = soudureRepository.findByDecision(1);
 
 	        return soudures.stream()
-	            .map(s -> new SoudureDTO( 
+	           .map(s -> new SoudureDTO( 
 	      	        s.getId() ,
+	      	        s.getClass().getSimpleName(),
+	      	        s.getUserSoudure().getSegment() ,
+     	            s.getUserSoudure().getPlant().toString() ,
+	      	        s.getUserSoudure().getMachine() ,
 	      	        s.getCode()  ,
 	      	        s.getSectionFil() ,
 	      	        s.getDate() ,
+	                s.getHeureCreation() ,
 	                s.getNumeroCycle(),
 	                s.getUserSoudure().getMatricule() ,
 	                s.getMoyenne(),
@@ -377,7 +424,13 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
                     s.getUserSoudure().getMatricule() ,
                     s.getUserSoudure().getMatricule()  ,
                     s.getDecision() , 
-                    s.getRempliePlanAction()
+                    s.getRempliePlanAction() ,
+                    s.getPdekSoudure().getId()  ,
+        	        s.getPagePDEK().getPageNumber() ,
+         	        s.getQuantiteAtteint() ,
+         	        s.getZone()
+
+
 	            ))
 	            .toList();
 	    
@@ -394,7 +447,7 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
 
 	    // Récupérer le pistolet concerné
 	    Soudure soudure = soudureRepository.findById(idSoudure)
-	        .orElseThrow(() -> new RuntimeException("Pistolet non trouvé avec ID : " + idSoudure));
+	        .orElseThrow(() -> new RuntimeException("Soudure non trouvé avec ID : " + idSoudure));
 
 	    // Récupérer le PDEK associé
 	    PDEK pdek = soudure.getPdekSoudure() ; 

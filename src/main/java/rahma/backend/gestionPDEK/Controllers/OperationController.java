@@ -1,16 +1,13 @@
 package rahma.backend.gestionPDEK.Controllers;
 
 import java.util.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import rahma.backend.gestionPDEK.Entity.*;
-import rahma.backend.gestionPDEK.ServicesImplementation.*;
 
 @RestController
 @RequestMapping("/operations")
 public class OperationController {
-    @Autowired
-    private OperationService operationService;
+  
 
     @GetMapping("/types")
     public List<String> getAllTypesOperations() {
@@ -57,17 +54,5 @@ public class OperationController {
      return null  ; 
     }
 }
- /*   @GetMapping("/sections-fil")
-    public List<String> getSectionsFil() {
-        return Arrays.stream(SectionFil_Soudure.values())
-                     .map(SectionFil_Soudure::getValue)
-                     .collect(Collectors.toList());
-    }
 
-    @GetMapping("/codes-controles")
-    public List<String> getCodesControles() {
-        return Arrays.stream(CodeControle_Soudure.values())
-                     .map(CodeControle_Soudure::getCode)
-                     .collect(Collectors.toList());
-    }*/
 

@@ -1,27 +1,37 @@
 package rahma.backend.gestionPDEK.ServicesImplementation;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import rahma.backend.gestionPDEK.DTO.AjoutSertissageNormalResultDTO;
-import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
+import rahma.backend.gestionPDEK.DTO.AjoutSertissageResultDTO;
+import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
 import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
+import rahma.backend.gestionPDEK.DTO.UserDTO;
+import rahma.backend.gestionPDEK.Entity.ControleQualite;
+import rahma.backend.gestionPDEK.Entity.DetailsPlanAction;
 import rahma.backend.gestionPDEK.Entity.OutilContact;
 import rahma.backend.gestionPDEK.Entity.PDEK;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
+import rahma.backend.gestionPDEK.Entity.PlanAction;
 import rahma.backend.gestionPDEK.Entity.Plant;
+import rahma.backend.gestionPDEK.Entity.SertissageIDC;
 import rahma.backend.gestionPDEK.Entity.SertissageNormal;
 import rahma.backend.gestionPDEK.Entity.TypesOperation;
 import rahma.backend.gestionPDEK.Entity.User;
+import rahma.backend.gestionPDEK.Repository.AuditLogRepository;
+import rahma.backend.gestionPDEK.Repository.ControleQualiteRepository;
+import rahma.backend.gestionPDEK.Repository.DetailsPlanActionRepository;
 import rahma.backend.gestionPDEK.Repository.OutilsContactRepository;
 import rahma.backend.gestionPDEK.Repository.PdekPageRepository;
 import rahma.backend.gestionPDEK.Repository.PdekRepository;
+import rahma.backend.gestionPDEK.Repository.PlanActionRepository;
 import rahma.backend.gestionPDEK.Repository.ProjetRepository;
 import rahma.backend.gestionPDEK.Repository.SertissageNormalRepository;
 import rahma.backend.gestionPDEK.Repository.UserRepository;
@@ -36,7 +46,11 @@ public class SertissageNormalServiceImplimentation implements ServiceSertissageN
 	 @Autowired    private UserRepository userRepository;	
 	 @Autowired    private ProjetRepository projetRepository;	
 	 @Autowired    private PdekPageRepository pdekPageRepository;	
-	 
+	 @Autowired    private ControleQualiteRepository controleQualiteRepository;
+	 @Autowired    private AuditLogRepository auditLogRepository;
+     @Autowired    private PlanActionRepository planActionRepository ; 
+     @Autowired    private DetailsPlanActionRepository detailsPlanActionRepository ; 
+     
 	 // Récupération liste des contacts depuis numero  de outil 
 	 public List<String> getDistinctContactsByNumeroOutil(String numeroOutil) {
 	        List<String> contacts = outilContactRepository.findContactsByNumeroOutil(numeroOutil);
@@ -166,7 +180,7 @@ public class SertissageNormalServiceImplimentation implements ServiceSertissageN
 	    }
 
 		/******************************************************************************************************************************/
-		public AjoutSertissageNormalResultDTO ajoutPDEK_SertissageNormal (SertissageNormal sertissageNormal, int matriculeOperateur , String projet) {
+		public AjoutSertissageResultDTO ajoutPDEK_SertissageNormal (SertissageNormal sertissageNormal, int matriculeOperateur , String projet) {
 			
 		    String sectionFilSelectionner = sertissageNormal.getSectionFil() ; 
 		    User user = userRepository.findByMatricule(matriculeOperateur).get() ; 
@@ -241,7 +255,7 @@ public class SertissageNormalServiceImplimentation implements ServiceSertissageN
 		         sertissageNormalRepository.save(instance1) ;
 		        
 		   
-		     	return new AjoutSertissageNormalResultDTO(pdek.getId(), pagePDEK.getPageNumber());
+		     	return new AjoutSertissageResultDTO(pdek.getId(), pagePDEK.getPageNumber()  , instance1.getId());
 
 
 		    } else {
@@ -273,7 +287,7 @@ public class SertissageNormalServiceImplimentation implements ServiceSertissageN
 		    	sertissageNormalRepository.save(instance1) ;   	
 
 			      }
-		     	return new AjoutSertissageNormalResultDTO(newPDEK.getId(), newPage.getPageNumber());
+		     	return new AjoutSertissageResultDTO(newPDEK.getId(), newPage.getPageNumber() , instance1.getId());
 
 		    }
 			 }
@@ -290,19 +304,39 @@ public class SertissageNormalServiceImplimentation implements ServiceSertissageN
 	                 .collect(Collectors.groupingBy(
 	                         s -> s.getPagePDEK().getPageNumber(), // groupement par numéro de page
 	                         Collectors.mapping(
-	                                 s -> new SertissageNormal_DTO(
-	                                         s.getId(),
-	                                         s.getCodeControle(),
-	                                         s.getSectionFil(),
-											 s.getNumeroOutils() , 
-											 s.getNumeroContacts() , 
-	                                         s.getDate().toString(),
-	                                         s.getNumCycle() ,
-											 s.getUserSertissageNormal().getMatricule(),
-											 s.getHauteurSertissageEch1(),
-											 s.getHauteurSertissageEch2(),
-											 s.getHauteurSertissageEch3(),
-											 s.getHauteurSertissageEchFin()),
+	                                 n -> new SertissageNormal_DTO(
+	                                		 n.getId(),
+	         	                            n.getClass().getSimpleName() ,
+	         	                            n.getUserSertissageNormal().getPlant().toString() , 
+	         	                            n.getCodeControle() ,  // Modification ici : .getCodeControle() devient .getCode() si c'est le bon attribut
+	         	                            n.getSectionFil(),
+	         	                            n.getNumeroOutils() ,  // Modification ici : .getNumeroOutils() devient .getNumOutil() si c'est le bon attribut
+	         	                            n.getNumeroContacts()  , // Modification ici : .getNumeroContacts() devient .getNumContact() si c'est le bon attribut
+	         	                            n.getDate(),
+	         	                            n.getHeureCreation() ,
+	         	                            n.getNumCycle(),
+	         	                            n.getUserSertissageNormal().getMatricule(),  // Assure-toi que `getUserSertissageNormal()` retourne un objet avec la méthode `getMatricule()`
+	         	                            n.getHauteurSertissageEch1(),
+	         	                            n.getHauteurSertissageEch2(),
+	         	                            n.getHauteurSertissageEch3(),
+	         	                            n.getHauteurSertissageEchFin(),
+	         	                            n.getLargeurSertissage(),  // Ajout de la largeurSertissage si nécessaire
+	         	                            n.getLargeurSertissageEchFin(),  // Ajout de la largeurSertissageEchFin si nécessaire
+	         	                            n.getHauteurIsolant(),
+	         	                            n.getLargeurIsolant(),
+	         	                            n.getLargeurIsolantEchFin(),
+	         	                            n.getHauteurIsolantEchFin(),
+	         	                            n.getTraction(),
+	         	                            n.getTractionFinEch(),
+	         	                            n.getProduit(),
+	         	                            n.getSerieProduit(),
+	         	                            n.getQuantiteCycle(),
+	         	                            n.getSegment(),
+	         	                            n.getNumeroMachine(),
+	         	                            n.getDecision(),
+	         	                            n.getRempliePlanAction(),
+	         	                            n.getPdekSertissageNormal().getId()  ,
+	         	              	            n.getPagePDEK().getPageNumber() ),
 	                                 Collectors.toList()
 	                         )
 	                 ));
@@ -355,14 +389,207 @@ public class SertissageNormalServiceImplimentation implements ServiceSertissageN
 
 	@Override
 	public List<SertissageNormal_DTO> getSertissagesNonValidees() {
-		// TODO Auto-generated method stub
-		return sertissageNormalRepository.findByDecision(0);
+		 List<SertissageNormal> sertissages = sertissageNormalRepository.findByDecisionAndRempliePlanAction(0 , 0);
+
+		  return sertissages.stream()
+		            .map(n -> new SertissageNormal_DTO( 
+		            		n.getId(),
+                            n.getClass().getSimpleName() ,
+                            n.getUserSertissageNormal().getPlant().toString() , 
+                            n.getCodeControle() ,  // Modification ici : .getCodeControle() devient .getCode() si c'est le bon attribut
+                            n.getSectionFil(),
+                            n.getNumeroOutils() ,  // Modification ici : .getNumeroOutils() devient .getNumOutil() si c'est le bon attribut
+                            n.getNumeroContacts()  , // Modification ici : .getNumeroContacts() devient .getNumContact() si c'est le bon attribut
+                            n.getDate(),
+                            n.getHeureCreation() ,
+                            n.getNumCycle(),
+                            n.getUserSertissageNormal().getMatricule(),  // Assure-toi que `getUserSertissageNormal()` retourne un objet avec la méthode `getMatricule()`
+                            n.getHauteurSertissageEch1(),
+                            n.getHauteurSertissageEch2(),
+                            n.getHauteurSertissageEch3(),
+                            n.getHauteurSertissageEchFin(),
+                            n.getLargeurSertissage(),  // Ajout de la largeurSertissage si nécessaire
+                            n.getLargeurSertissageEchFin(),  // Ajout de la largeurSertissageEchFin si nécessaire
+                            n.getHauteurIsolant(),
+                            n.getLargeurIsolant(),
+                            n.getLargeurIsolantEchFin(),
+                            n.getHauteurIsolantEchFin(),
+                            n.getTraction(),
+                            n.getTractionFinEch(),
+                            n.getProduit(),
+                            n.getSerieProduit(),
+                            n.getQuantiteCycle(),
+                            n.getSegment(),
+                            n.getNumeroMachine(),
+                            n.getDecision(),
+                            n.getRempliePlanAction() ,
+                            n.getPdekSertissageNormal().getId()  ,
+                	        n.getPagePDEK().getPageNumber() 
+		            		  ))
+		            .toList();
+		    
+		}
+
+	@Override
+	public List<SertissageNormal_DTO> getSertissagesNonValideesChefLigne() {
+		 List<SertissageNormal> sertissages = sertissageNormalRepository.findByDecisionAndRempliePlanAction(0 , 1);
+
+	        return sertissages.stream()
+	            .map(n -> new SertissageNormal_DTO( 
+	            		n.getId(),
+                        n.getClass().getSimpleName() ,
+                        n.getUserSertissageNormal().getPlant().toString() , 
+                        n.getCodeControle() ,  // Modification ici : .getCodeControle() devient .getCode() si c'est le bon attribut
+                        n.getSectionFil(),
+                        n.getNumeroOutils() ,  // Modification ici : .getNumeroOutils() devient .getNumOutil() si c'est le bon attribut
+                        n.getNumeroContacts()  , // Modification ici : .getNumeroContacts() devient .getNumContact() si c'est le bon attribut
+                        n.getDate(),
+                        n.getHeureCreation() ,
+                        n.getNumCycle(),
+                        n.getUserSertissageNormal().getMatricule(),  // Assure-toi que `getUserSertissageNormal()` retourne un objet avec la méthode `getMatricule()`
+                        n.getHauteurSertissageEch1(),
+                        n.getHauteurSertissageEch2(),
+                        n.getHauteurSertissageEch3(),
+                        n.getHauteurSertissageEchFin(),
+                        n.getLargeurSertissage(),  // Ajout de la largeurSertissage si nécessaire
+                        n.getLargeurSertissageEchFin(),  // Ajout de la largeurSertissageEchFin si nécessaire
+                        n.getHauteurIsolant(),
+                        n.getLargeurIsolant(),
+                        n.getLargeurIsolantEchFin(),
+                        n.getHauteurIsolantEchFin(),
+                        n.getTraction(),
+                        n.getTractionFinEch(),
+                        n.getProduit(),
+                        n.getSerieProduit(),
+                        n.getQuantiteCycle(),
+                        n.getSegment(),
+                        n.getNumeroMachine(),
+                        n.getDecision(),
+                        n.getRempliePlanAction() ,
+                        n.getPdekSertissageNormal().getId()  ,
+            	        n.getPagePDEK().getPageNumber() 
+	            		  ))
+	            .toList();
+	    
+	}
+	@Override
+	public List<SertissageNormal_DTO> getSertissagesValidees() {
+		 List<SertissageNormal> sertissages = sertissageNormalRepository.findByDecision(1);
+
+	        return sertissages.stream()
+	            .map(n -> new SertissageNormal_DTO( 
+	            		n.getId(),
+                        n.getClass().getSimpleName() ,
+                        n.getUserSertissageNormal().getPlant().toString() , 
+                        n.getCodeControle() ,  // Modification ici : .getCodeControle() devient .getCode() si c'est le bon attribut
+                        n.getSectionFil(),
+                        n.getNumeroOutils() ,  // Modification ici : .getNumeroOutils() devient .getNumOutil() si c'est le bon attribut
+                        n.getNumeroContacts()  , // Modification ici : .getNumeroContacts() devient .getNumContact() si c'est le bon attribut
+                        n.getDate(),
+                        n.getHeureCreation() ,
+                        n.getNumCycle(),
+                        n.getUserSertissageNormal().getMatricule(),  // Assure-toi que `getUserSertissageNormal()` retourne un objet avec la méthode `getMatricule()`
+                        n.getHauteurSertissageEch1(),
+                        n.getHauteurSertissageEch2(),
+                        n.getHauteurSertissageEch3(),
+                        n.getHauteurSertissageEchFin(),
+                        n.getLargeurSertissage(),  // Ajout de la largeurSertissage si nécessaire
+                        n.getLargeurSertissageEchFin(),  // Ajout de la largeurSertissageEchFin si nécessaire
+                        n.getHauteurIsolant(),
+                        n.getLargeurIsolant(),
+                        n.getLargeurIsolantEchFin(),
+                        n.getHauteurIsolantEchFin(),
+                        n.getTraction(),
+                        n.getTractionFinEch(),
+                        n.getProduit(),
+                        n.getSerieProduit(),
+                        n.getQuantiteCycle(),
+                        n.getSegment(),
+                        n.getNumeroMachine(),
+                        n.getDecision(),
+                        n.getRempliePlanAction() ,
+                        n.getPdekSertissageNormal().getId()  ,
+            	        n.getPagePDEK().getPageNumber() 
+	            		  ))
+	            .toList();
+	    
 	}
 
 	@Override
-	public List<SertissageNormal_DTO> getSertissagesValidees() {
-		// TODO Auto-generated method stub
-		return sertissageNormalRepository.findByDecision(1);
+	public void validerSertissage(Long idSertissage, int matriculeUser) {
+		 String heure = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+		   String date  = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+	    // Valider le pistolet
+		   sertissageNormalRepository.validerSertissage(idSertissage);
+
+	    // Récupérer le pistolet concerné
+	    SertissageNormal  sertissageIDC = sertissageNormalRepository.findById(idSertissage)
+	        .orElseThrow(() -> new RuntimeException("Sertissage IDC  non trouvé avec ID : " + idSertissage));
+
+	    // Récupérer le PDEK associé
+	    PDEK pdek = sertissageIDC.getPdekSertissageNormal() ;  
+
+	    // Récupérer l'utilisateur via son matricule
+	    User userControleur = userRepository.findByMatricule(matriculeUser).get() ;
+
+	    // Créer l'entrée de contrôle qualité
+	    ControleQualite controle = ControleQualite.builder()
+	        .user(userControleur)
+	        .pdek(pdek)
+	        .idInstanceOperation(sertissageIDC.getId())
+	        .nombrePage(pdek.getPages() != null ? pdek.getPages().size() : 0)
+	        .dateControle(date)
+	        .heureControle(heure)
+	        .resultat("Validé")
+	        .build();
+
+	    // Sauvegarder le contrôle qualité
+	    controleQualiteRepository.save(controle);
+	    
+	    
+	    //valider Plan action si existe 
+	    
+	    // Étape 1 : récupérer la page PDEK du pistolet
+	    PagePDEK page = sertissageNormalRepository.findPDEKByPagePDEK(idSertissage);
+	    if (page == null) return;
+
+	    // Étape 2 : récupérer le plan d’action
+	    Optional<PlanAction> planOpt = planActionRepository.findByPagePDEKId(page.getId());
+	    if (planOpt.isEmpty()) return;
+
+	    PlanAction plan = planOpt.get();
+
+	    // Étape 3 : récupérer les détails
+	    List<DetailsPlanAction> detailsList = detailsPlanActionRepository.findByPlanActionId(plan.getId());
+
+	    // Étape 4 : modifier les signatures si nécessaire
+	    for (DetailsPlanAction detail : detailsList) {
+	        if (detail.getMatricule_operateur() == (matriculeUser) && detail.getSignature_qualite() == 0) {
+	            detail.setSignature_qualite(1);
+	            detailsPlanActionRepository.save(detail); // sauvegarde
+	        }
+	    }
 	}
-	 
-			}
+
+	@Override
+	public List<UserDTO> getUserDTOsByPdek(Long idPdek) {
+		 List<User> users = sertissageNormalRepository.findUsersByPdekId(idPdek);
+	        return users.stream()
+	                    .map(UserDTO::fromEntity)
+	                    .toList(); // ou collect(Collectors.toList()) si tu es en Java 8
+	    }
+
+	@Override
+	public boolean changerAttributRempliePlanActionSertissageeDe0a1(Long id) {
+		 Optional<SertissageNormal> optionalSertissage = sertissageNormalRepository.findById(id);
+	        if (optionalSertissage.isPresent()) {
+	        	SertissageNormal sertissage = optionalSertissage.get();
+	        	sertissage.setRempliePlanAction(1);  // changer à 1
+	            sertissageNormalRepository.save(sertissage);
+	            return true;
+	        }
+	        return false;
+	    
+	}
+}

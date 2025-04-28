@@ -12,6 +12,7 @@ import rahma.backend.gestionPDEK.Entity.TypesOperation;
 
 public interface PlanActionService {
 	
+	/********************** Pistolet *****************************/
 	 public DetailsPlanActionDTO ajouterPlanActionOuDetails(Long pdekId, int numeroPage, DetailsPlanAction dto, int userId , 
              int numeroPistolet , TypePistolet typePistolet ,CategoriePistolet categoriePistolet) ;
 	 
@@ -23,6 +24,21 @@ public interface PlanActionService {
     
 	public List<PlanActionDTO> testerPdeksProcessPossedePlanAction(long pdekId) ; 
 
+	
+	/********************** Soudure  *****************************/
+	 public DetailsPlanActionDTO ajouterPlanActionOuDetailsSoudure(Long pdekId, int numeroPage, DetailsPlanAction dto, int userId , 
+            long idSoudre) ;
+	 
+	 public DetailsPlanActionDTO ajouterPlanActionOuDetailsTorsadage(Long pdekId, int numeroPage, DetailsPlanAction dto, int userId , 
+	            long idTorsadage) ;
+		 
+	public PlanActionDTO testerPdekSoudrePossedePlanAction(long pdekId) ; 
+    //public List<DetailsPlanActionDTO> getDetailsByPlanActionId(Long id)  ; 
+    //public List<PlanActionDTO> getPlansActionByTypeOperation(TypesOperation typeOperation) ; 
+    // public List<UserDTO> getUsersByPlanActionId(Long planActionId) ; 
+	//public List<PlanActionDTO> testerPdeksProcessPossedePlanAction(long pdekId) ; 
+
+	
     /*public void ajouterPlanActionTorsadage() ; 
     public void ajouterPlanActionSertissageNormal() ; 
     public void ajouterPlanActionSertissageIDC() ;*/

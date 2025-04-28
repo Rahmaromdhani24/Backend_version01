@@ -8,9 +8,14 @@ import lombok.*;
 @AllArgsConstructor
 public class SoudureDTO {
     private Long id;
+    private String typeOperation ; 
+    private int segment ; 
+    private String plant ; 
+    private String  numeroMachine ; 
     private String code;
     private String sectionFil;
     private String date;
+    private String heureCreation ; 
     private int numeroCycle;
     private int userSoudure ;
     private double moyenne ; 
@@ -30,4 +35,8 @@ public class SoudureDTO {
     private int matriculeAgentQualite ; 
     private int decision ; 
     private int rempliePlanAction ; 
+    private long pdekId ; 
+    private int numPage ;
+    private int quantiteAtteint ;
+    private String zone ; 
 }

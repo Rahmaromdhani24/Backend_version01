@@ -12,7 +12,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import rahma.backend.gestionPDEK.DTO.AjoutPistoletResultDTO;
 import rahma.backend.gestionPDEK.DTO.PistoletDTO;
-import rahma.backend.gestionPDEK.DTO.PlanActionDTO;
 import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;

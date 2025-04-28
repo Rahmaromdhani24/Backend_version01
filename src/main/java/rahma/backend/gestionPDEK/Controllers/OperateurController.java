@@ -101,7 +101,8 @@ public ResponseEntity<List<UserDTO>> getAgentsQualiteByPlantEtSegment(@RequestPa
         throw new RuntimeException("Invalid Plant name: " + nomPlant);
     }
 
-    TypesOperation typeOperation  ; 
+    @SuppressWarnings("unused")
+	TypesOperation typeOperation  ; 
     try {
     	typeOperation = TypesOperation.valueOf(operation); // Cela va convertir la chaîne en l'énumération correspondante
     } catch (IllegalArgumentException e) {
@@ -130,6 +131,7 @@ public ResponseEntity<List<UserDTO>> getTechniciensByPlantEtSegment(@RequestPara
         throw new RuntimeException("Invalid Plant name: " + nomPlant);
     }
 
+    @SuppressWarnings("unused")
     TypesOperation typeOperation  ; 
     try {
     	typeOperation = TypesOperation.valueOf(operation); // Cela va convertir la chaîne en l'énumération correspondante

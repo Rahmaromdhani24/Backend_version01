@@ -130,9 +130,14 @@ public class PDEK_ServiceImplimenetation implements PDEKService {
                       .filter(p -> p.getPagePDEK() != null && p.getPagePDEK().getPageNumber() == numeroPage)
                       .map(p -> new SoudureDTO(
                           p.getId(),
+      	      	          p.getClass().getSimpleName(),
+      	      	          p.getUserSoudure().getSegment() ,
+         	              p.getUserSoudure().getPlant().toString() ,
+      	      	          p.getUserSoudure().getMachine() ,
                           p.getCode() ,
                           p.getSectionFil() ,
                           p.getDate() ,
+                          p.getHeureCreation() ,
                           p.getNumeroCycle() ,
                           p.getUserSoudure().getMatricule() ,
                           p.getMoyenne() ,
@@ -151,17 +156,64 @@ public class PDEK_ServiceImplimenetation implements PDEKService {
                           p.getUserSoudure().getMatricule() ,
                           p.getUserSoudure().getMatricule() ,
                           p.getDecision() , 
-                          p.getRempliePlanAction()
+                          p.getRempliePlanAction(),
+                          p.getPdekSoudure().getId()  ,
+                	      p.getPagePDEK().getPageNumber() ,
+               	          p.getQuantiteAtteint() ,
+               	          p.getZone()
+
+
                       ))
                       .forEach(contenu::add);
               }
 
-
 	            if (pdek.getPdekTorsadages() != null) {
 	                pdek.getPdekTorsadages().stream()
 	                    .filter(t -> t.getPagePDEK() != null && t.getPagePDEK().getPageNumber() == numeroPage)
-	                    .forEach(contenu::add);
+	                    .map(s -> new TorsadageDTO(
+	                        s.getId(),
+	                        s.getClass().getSimpleName() ,
+	                        s.getUserTorsadage().getSegment() ,
+	           	            s.getUserTorsadage().getPlant().toString() ,
+	                        s.getUserTorsadage().getMachine() ,
+	                        s.getCode(),
+	                        s.getSpecificationMesure(),
+	                        s.getSpecificationMesure(),
+	                        s.getDate(),
+	        	            s.getHeureCreation(), 
+	                        s.getNumeroCycle(),
+	                        s.getUserTorsadage().getMatricule(),
+	                        s.getMoyenne(),
+	                        s.getEtendu(),
+	                        s.getEch1(),
+	                        s.getEch2(),
+	                        s.getEch3(),
+	                        s.getEch4(),
+	                        s.getEch5(),
+	                        s.getNumCommande(),
+	                        s.getQuantiteTotale(),
+	                        s.getNumerofil(),
+	                        s.getLongueurFinalDebutCde(),
+	                        s.getLongueurFinalFinCde(),
+	                        s.getLongueurBoutDebutCdeC1(),
+	                        s.getLongueurBoutDebutCdeC2(),
+	                        s.getLongueurBoutFinCdeC1(),
+	                        s.getLongueurBoutFinCdeC2(),
+	                        s.getDecalageMaxDebutCdec1(),
+	                        s.getDecalageMaxDebutCdec2(),
+	                        s.getDecalageMaxFinCdec1(),
+	                        s.getDecalageMaxFinCdec2(),
+	                        s.getQuantiteAtteint(),
+	                        s.getUserTorsadage().getMatricule(),
+	                        s.getDecision(),
+	                        s.getRempliePlanAction(),
+	                        s.getPdekTorsadage().getId()  ,
+	                	    s.getPagePDEK().getPageNumber() ,
+	                	    s.getZone() 
+	                    ))
+	                    .forEach(contenu::add); // ✅ Ajout ici
 	            }
+
 	                    // 🎯 Filtrage des pistolets liés à cette page
 	                    if (pdek.getPdekPistoles() != null) {
 	                        pdek.getPdekPistoles().stream()
@@ -203,13 +255,81 @@ public class PDEK_ServiceImplimenetation implements PDEKService {
 	            if (pdek.getPdekSertissageIDC() != null) {
 	                pdek.getPdekSertissageIDC().stream()
 	                    .filter(i -> i.getPagePDEK() != null && i.getPagePDEK().getPageNumber() == numeroPage)
-	                    .forEach(contenu::add);
-	            }
+	                    .map( s-> new SertissageIDC_DTO( 
+	        	            	s.getId(),
+	                   		    s.getCodeControle(),
+	                   		    s.getSectionFil(),
+	                   		    s.getDate().toString(),
+	                   		    s.getNumCycle(),
+	                   		    s.getUserSertissageIDC().getMatricule(),
+	                   		    s.getHauteurSertissageC1Ech1(),
+	                   		    s.getHauteurSertissageC1Ech2(),
+	                   		    s.getHauteurSertissageC1Ech3(),
+	                   		    s.getHauteurSertissageC1EchFin(),
+	                   		    s.getHauteurSertissageC2Ech1(),
+	                   		    s.getHauteurSertissageC2Ech2(),
+	                   		    s.getHauteurSertissageC2Ech3(),
+	                   		    s.getHauteurSertissageC2EchFin(),
+	                   		    s.getProduit(),
+	                   		    s.getSerieProduit(),
+	                   		    s.getQuantiteCycle(),
+	                   		    s.getNumeroMachine(),
+	                   		    s.getForceTractionC1Ech1(),
+	                   		    s.getForceTractionC1Ech2(),
+	                   		    s.getForceTractionC1Ech3(),
+	                   		    s.getForceTractionC1EchFin(),
+	                   		    s.getForceTractionC2Ech1(),
+	                   		    s.getForceTractionC2Ech2(),
+	                   		    s.getForceTractionC2Ech3(),
+	                   		    s.getForceTractionC2EchFin(),
+	                   		    s.getDecision(),
+	                   		    s.getRempliePlanAction(),
+	                   		    s.getPdekSertissageIDC().getId()  ,
+	                	        s.getPagePDEK().getPageNumber() 
+	                    		 ))
+                        .forEach(contenu::add);
+                }
+
 
 	            if (pdek.getPdekSertissageNormal() != null) {
 	                pdek.getPdekSertissageNormal().stream()
 	                    .filter(n -> n.getPagePDEK() != null && n.getPagePDEK().getPageNumber() == numeroPage)
+	                    .map(n -> new SertissageNormal_DTO(
+	                            n.getId(),
+	                            n.getClass().getSimpleName() ,
+	                            n.getUserSertissageNormal().getPlant().toString() , 
+	                            n.getCodeControle() ,  // Modification ici : .getCodeControle() devient .getCode() si c'est le bon attribut
+	                            n.getSectionFil(),
+	                            n.getNumeroOutils() ,  // Modification ici : .getNumeroOutils() devient .getNumOutil() si c'est le bon attribut
+	                            n.getNumeroContacts()  , // Modification ici : .getNumeroContacts() devient .getNumContact() si c'est le bon attribut
+	                            n.getDate(),
+	                            n.getHeureCreation() ,
+	                            n.getNumCycle(),
+	                            n.getUserSertissageNormal().getMatricule(),  // Assure-toi que `getUserSertissageNormal()` retourne un objet avec la méthode `getMatricule()`
+	                            n.getHauteurSertissageEch1(),
+	                            n.getHauteurSertissageEch2(),
+	                            n.getHauteurSertissageEch3(),
+	                            n.getHauteurSertissageEchFin(),
+	                            n.getLargeurSertissage(),  // Ajout de la largeurSertissage si nécessaire
+	                            n.getLargeurSertissageEchFin(),  // Ajout de la largeurSertissageEchFin si nécessaire
+	                            n.getHauteurIsolant(),
+	                            n.getLargeurIsolant(),
+	                            n.getLargeurIsolantEchFin(),
+	                            n.getHauteurIsolantEchFin(),
+	                            n.getTraction(),
+	                            n.getTractionFinEch(),
+	                            n.getProduit(),
+	                            n.getSerieProduit(),
+	                            n.getQuantiteCycle(),
+	                            n.getSegment(),
+	                            n.getNumeroMachine(),
+	                            n.getDecision(),
+	                            n.getRempliePlanAction(),
+	                            n.getPdekSertissageNormal().getId()  ,
+	                  	        n.getPagePDEK().getPageNumber() 
+	                    ))
 	                    .forEach(contenu::add);
+
 	            }
 
 	            if (!contenu.isEmpty()) {

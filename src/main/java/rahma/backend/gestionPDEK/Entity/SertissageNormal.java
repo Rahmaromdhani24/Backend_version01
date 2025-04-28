@@ -83,7 +83,7 @@ public class SertissageNormal extends Operation {
     private String codeControle; 
     
     private String date;
-    
+    private String heureCreation ;
     private int  segment ; 
 
     private double tolerance ; 

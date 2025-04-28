@@ -55,5 +55,8 @@ public interface SoudureRepository extends JpaRepository<Soudure, Long> {
     PagePDEK findPDEKByPagePDEK(@Param("idSoudure") Long idPistolet);
     @Query("SELECT DISTINCT p.userSoudure FROM Soudure p WHERE p.pdekSoudure.id = :idPdek")
     List<User> findUsersByPdekId(@Param("idPdek") Long idPdek);
+    
+    
+
 }
 

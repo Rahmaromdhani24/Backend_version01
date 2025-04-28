@@ -30,12 +30,12 @@ public class WebSecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/login").permitAll()
-                .requestMatchers("/auth/getUser/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
-                .requestMatchers("/pdek/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
-                .requestMatchers("/operations/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
+                .requestMatchers("/auth/getUser/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_DE_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
+                .requestMatchers("/pdek/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_DE_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
+                .requestMatchers("/operations/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_DE_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN") 
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN" ,"OPERATEUR" ,"AGENT_QUALITE")
                 .requestMatchers("/operator/**").hasRole("OPERATEUR")
-                .requestMatchers("/planAction/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN")
+                .requestMatchers("/planAction/**").hasAnyRole("ADMIN", "OPERATEUR", "CHEF_DE_LIGNE" , "AGENT_QUALITE" , "TECHNICIEN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
