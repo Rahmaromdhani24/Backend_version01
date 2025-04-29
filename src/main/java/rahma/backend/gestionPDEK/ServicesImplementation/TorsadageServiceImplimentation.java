@@ -42,6 +42,7 @@ public class TorsadageServiceImplimentation implements ServiceTorsadage {
     instance1.setCode(instanceTorsadage.getCode());
     instance1.setSpecificationMesure(specificationMesureSelectionner);
     instance1.setDate(instanceTorsadage.getDate());
+    instance1.setHeureCreation(instanceTorsadage.getHeureCreation());
     instance1.setNumCommande(instanceTorsadage.getNumCommande());
     instance1.setLongueurFinalDebutCde(instanceTorsadage.getLongueurFinalDebutCde());
     instance1.setLongueurBoutDebutCdeC1(instanceTorsadage.getLongueurBoutDebutCdeC1());
@@ -481,11 +482,13 @@ public class TorsadageServiceImplimentation implements ServiceTorsadage {
 	    }
 
 	@Override
-	public boolean changerAttributRempliePlanActionTorsadageDe0a1(Long id) {
+	public boolean changerAttributRempliePlanActionTorsadageDe0a1(Long id , String zoneCouleur) {
 		  Optional<Torsadage> optionalTorsadage = torsadageRepository.findById(id);
 	        if (optionalTorsadage.isPresent()) {
 	            Torsadage torsadage = optionalTorsadage.get();
-	            torsadage.setRempliePlanAction(1);  // changer à 1
+	            torsadage.setRempliePlanAction(1);  
+	            torsadage.setZone(zoneCouleur);  // changer à 1
+
 	            torsadageRepository.save(torsadage);
 	            return true;
 	        }

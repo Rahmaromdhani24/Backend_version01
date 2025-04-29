@@ -11,5 +11,5 @@ public List<SertissageIDC_DTO> getSertissagesIDCNonValideesChefLigne() ;
 public List<SertissageIDC_DTO> getSertissagesIDCValidees() ; 
 public void validerSertissageIDC(Long idSertissageIDc, int matriculeUser) ;
 public List<UserDTO> getUserDTOsByPdek(Long idPdek) ; 
-public boolean changerAttributRempliePlanActionSertissageIDCeDe0a1(Long id) ; 
+public boolean changerAttributRempliePlanActionSertissageIDCeDe0a1(Long id , String couleurZone) ; 
 }

@@ -2,6 +2,7 @@ package rahma.backend.gestionPDEK.Controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
@@ -78,7 +79,7 @@ public class TorsadageController {
         try {
         AjoutTorsadageResultDTO result = serviceTorsadage.ajoutPDEK_Torsadage(torsadage, matriculeOperateur, projet);
            String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage() +
-           		"\", \"idSoudure\": \"" + result.getIdTorsadage() +"\" }";
+           		"\", \"idTorsadage\": \"" + result.getIdTorsadage() +"\" }";
            return ResponseEntity.ok(jsonResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Erreur lors de l'ajout : " + e.getMessage());
@@ -207,15 +208,17 @@ public ResponseEntity<List<TorsadageDTO>> getTorsadageParPdekEtPage(
  	        return ResponseEntity.ok(userDTOs);
  	    }
  	 
- 	 @PutMapping("/remplir-plan-action/{id}")
- public ResponseEntity<String> remplirPlanAction(@PathVariable Long id) {
-         boolean success = serviceTorsadage.changerAttributRempliePlanActionTorsadageDe0a1(id);
-         if (success) {
-             return ResponseEntity.ok("Attribut rempliePlanAction mis à jour !");
-         } else {
-             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Soudure non trouvée.");
-         }
- }
+
+  	 @PutMapping("/plan-action-zone/{zone}/{id}")
+  	 public ResponseEntity<String> remplirPlanActionEtZoneCouleur(@PathVariable Long id , @PathVariable String zone) {
+  	         boolean success = serviceTorsadage.changerAttributRempliePlanActionTorsadageDe0a1(id , zone);
+  	         if (success) {
+  	             return ResponseEntity.ok("Attribut rempliePlanAction mis à jour et zone ajouter!");
+  	         } else {
+  	             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Torsadage non trouvée.");
+  	         }
+  	 }
+  	 	 
  }
 
  

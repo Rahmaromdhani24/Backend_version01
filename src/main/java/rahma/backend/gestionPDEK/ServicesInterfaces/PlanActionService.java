@@ -28,11 +28,21 @@ public interface PlanActionService {
 	/********************** Soudure  *****************************/
 	 public DetailsPlanActionDTO ajouterPlanActionOuDetailsSoudure(Long pdekId, int numeroPage, DetailsPlanAction dto, int userId , 
             long idSoudre) ;
-	 
+
+	public PlanActionDTO testerPdekSoudrePossedePlanAction(long pdekId) ; 
+	
+	
+	/********************** Torsadag  *****************************/
 	 public DetailsPlanActionDTO ajouterPlanActionOuDetailsTorsadage(Long pdekId, int numeroPage, DetailsPlanAction dto, int userId , 
 	            long idTorsadage) ;
 		 
-	public PlanActionDTO testerPdekSoudrePossedePlanAction(long pdekId) ; 
+	 /********************** Sertissage Normal  *****************************/
+	 public DetailsPlanActionDTO ajouterPlanActionOuDetailsSertissageNormal(Long pdekId, int numeroPage, DetailsPlanAction dto, int userId , 
+	            long idSertissage) ;
+		 
+	 public DetailsPlanActionDTO ajouterPlanActionOuDetailsSertissageIDC(Long pdekId, int numeroPage, DetailsPlanAction dto, int userId , 
+	            long idSertissage) ;
+	 
     //public List<DetailsPlanActionDTO> getDetailsByPlanActionId(Long id)  ; 
     //public List<PlanActionDTO> getPlansActionByTypeOperation(TypesOperation typeOperation) ; 
     // public List<UserDTO> getUsersByPlanActionId(Long planActionId) ; 

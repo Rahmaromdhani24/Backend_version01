@@ -17,6 +17,6 @@ public interface ServiceSoudure {
 	public List<SoudureDTO> getSouduresValidees() ; 
 	public void validerSoudure(Long idSoudure, int matriculeUser) ;
 	public List<UserDTO> getUserDTOsByPdek(Long idPdek) ; 
-	public boolean changerAttributRempliePlanActionSoudureDe0a1(Long id) ; 
+	public boolean changerAttributRempliePlanActionSoudureDe0a1(Long id , String couleurZone) ;
 
 }

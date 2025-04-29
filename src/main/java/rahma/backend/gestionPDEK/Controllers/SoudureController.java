@@ -306,27 +306,14 @@ public ResponseEntity<List<SoudureDTO>> getTorsadagesParPageActuelle(
 	        return ResponseEntity.ok(userDTOs);
 	    }
 	 
-	 @PutMapping("/remplir-plan-action/{id}")
-public ResponseEntity<String> remplirPlanAction(@PathVariable Long id) {
-        boolean success = serviceSoudure.changerAttributRempliePlanActionSoudureDe0a1(id);
-        if (success) {
-            return ResponseEntity.ok("Attribut rempliePlanAction mis à jour !");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Soudure non trouvée.");
-        }
-}
-	 
-	  @PutMapping("/zone/{zone}/{id}")
-	    public ResponseEntity<String> updateZone(@PathVariable Long id, @PathVariable String zone) {
-	        Optional<Soudure> optionalSoudure = soudureRepository.findById(id);
-	        
-	        if (optionalSoudure.isPresent()) {
-	            Soudure soudure = optionalSoudure.get();
-	            soudure.setZone(zone);
-	            soudureRepository.save(soudure);
-	            return ResponseEntity.ok("Zone mise à jour avec succès.");
-	        } else {
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Soudure non trouvée avec l'id: " + id);
-	        }
-	    }
+	 @PutMapping("/plan-action-zone/{zone}/{id}")
+  	 public ResponseEntity<String> remplirPlanActionEtZoneCouleur(@PathVariable Long id , @PathVariable String zone) {
+  	         boolean success = serviceSoudure.changerAttributRempliePlanActionSoudureDe0a1(id , zone);
+  	         if (success) {
+  	             return ResponseEntity.ok("Attribut rempliePlanAction mis à jour et zone ajouter!");
+  	         } else {
+  	             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Soudure non trouvée.");
+  	         }
+  	 }
+  	 	 
 }

@@ -3,7 +3,6 @@ package rahma.backend.gestionPDEK.ServicesInterfaces;
 import java.util.List;
 import java.util.Map;
 import rahma.backend.gestionPDEK.DTO.AjoutTorsadageResultDTO;
-import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
@@ -17,6 +16,6 @@ public interface ServiceTorsadage {
 	public List<TorsadageDTO> getTorsadagsValidees() ; 
 	public void validerTorsadage(Long idTorsadage, int matriculeUser) ;
 	public List<UserDTO> getUserDTOsByPdek(Long idPdek) ; 
-	public boolean changerAttributRempliePlanActionTorsadageDe0a1(Long id) ; 
+	public boolean changerAttributRempliePlanActionTorsadageDe0a1(Long id , String zoneCouleur);
 
 }

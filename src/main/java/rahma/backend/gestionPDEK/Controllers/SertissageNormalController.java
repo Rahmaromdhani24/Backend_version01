@@ -320,9 +320,9 @@ public ResponseEntity<String> ajouterSertissageNormal(
 	        return ResponseEntity.ok(userDTOs);
 	    }
 	 
-	 @PutMapping("/remplir-plan-action/{id}")
-public ResponseEntity<String> remplirPlanAction(@PathVariable Long id) {
-     boolean success = serviceSertissageNormal.changerAttributRempliePlanActionSertissageeDe0a1(id);
+	 @PutMapping("/plan-action-zone/{zone}/{id}")
+public ResponseEntity<String> remplirPlanAction(@PathVariable Long id , @PathVariable String zone) {
+     boolean success = serviceSertissageNormal.changerAttributRempliePlanActionSertissageeDe0a1(id , zone);
      if (success) {
          return ResponseEntity.ok("Attribut rempliePlanAction mis à jour !");
      } else {

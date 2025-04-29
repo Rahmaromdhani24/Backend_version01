@@ -76,6 +76,8 @@ public class SertissageIDC extends Operation {
     @Column(name = "serie_produit")
     private String serieProduit  ; 
     
+    private String  zone;
+
     @Column(name = "quantite_cycle")
     private int quantiteCycle ; 
     

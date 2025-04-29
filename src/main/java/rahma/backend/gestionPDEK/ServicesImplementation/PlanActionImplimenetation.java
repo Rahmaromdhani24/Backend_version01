@@ -21,6 +21,8 @@ import rahma.backend.gestionPDEK.Entity.DetailsPlanAction;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.Pistolet;
 import rahma.backend.gestionPDEK.Entity.PlanAction;
+import rahma.backend.gestionPDEK.Entity.SertissageIDC;
+import rahma.backend.gestionPDEK.Entity.SertissageNormal;
 import rahma.backend.gestionPDEK.Entity.Soudure;
 import rahma.backend.gestionPDEK.Entity.Torsadage;
 import rahma.backend.gestionPDEK.Entity.TypePistolet;
@@ -30,6 +32,8 @@ import rahma.backend.gestionPDEK.Repository.DetailsPlanActionRepository;
 import rahma.backend.gestionPDEK.Repository.PdekPageRepository;
 import rahma.backend.gestionPDEK.Repository.PistoletRepository;
 import rahma.backend.gestionPDEK.Repository.PlanActionRepository;
+import rahma.backend.gestionPDEK.Repository.SertissageIDCRepository;
+import rahma.backend.gestionPDEK.Repository.SertissageNormalRepository;
 import rahma.backend.gestionPDEK.Repository.SoudureRepository;
 import rahma.backend.gestionPDEK.Repository.TorsadageRepository;
 import rahma.backend.gestionPDEK.Repository.UserRepository;
@@ -44,8 +48,9 @@ public class PlanActionImplimenetation implements PlanActionService {
 	@Autowired  UserRepository userRepository;
 	@Autowired  private PistoletRepository pistoletRepository;
 	@Autowired  private SoudureRepository soudureRepository;
-
 	@Autowired  private TorsadageRepository torsadageRepository;
+	@Autowired  private SertissageIDCRepository sertissageIDCRepository;
+	@Autowired  private SertissageNormalRepository sertissageNormalRepository;
 
 
 
@@ -234,6 +239,14 @@ public class PlanActionImplimenetation implements PlanActionService {
 		            dto.setId(plan.getId());
 		            dto.setDateCreation(plan.getDateCreation());
 		            dto.setHeureCreation(plan.getHeureCreation());
+		            dto.setType_operation(plan.getType_operation());
+		            dto.setPdekId(plan.getPagePDEK().getPdek().getId());
+		            dto.setMatriculeUser(plan.getUserPlanAction().getMatricule());
+		            dto.setPoste(plan.getUserPlanAction().getPoste());
+		            dto.setMachine(plan.getUserPlanAction().getMachine());
+		            dto.setPlant(plan.getUserPlanAction().getPlant().toString());
+		            dto.setSegment(plan.getUserPlanAction().getSegment());
+		            dto.setSectionFil(plan.getSectionFil());
 		            result.add(dto);
 		        }
 		    }
@@ -294,6 +307,8 @@ public class PlanActionImplimenetation implements PlanActionService {
 	    dto.setSignature_contermetre(0);
 	    dto.setSignature_qualite(0);
 	    dto.setMatricule_chef_ligne(userId);
+	    dto.setMatricule_operateur(instance.getUserSoudure().getMatricule());
+
 	    // Sauvegarder les détails du plan d'action
 	    DetailsPlanAction savedDetails = detailsPlanActionRepository.save(dto);
 	    
@@ -343,9 +358,7 @@ public class PlanActionImplimenetation implements PlanActionService {
 
 	@Override
 	public DetailsPlanActionDTO ajouterPlanActionOuDetailsTorsadage(Long pdekId, int numeroPage, DetailsPlanAction dto,
-			int userId, long idTorsadage) {
-		// TODO Auto-generated method stub
-		 
+			int userId, long idTorsadage) {		 
 	    // Récupérer la page PDEK
 	    PagePDEK pagePDEK = pagePDEKRepository.findByPdekIdAndPageNumber(pdekId, numeroPage)
 	        .orElseThrow(() -> new RuntimeException("PagePDEK introuvable pour le PDEK ID " + pdekId + " et numéro de page " + numeroPage));
@@ -355,6 +368,8 @@ public class PlanActionImplimenetation implements PlanActionService {
 	    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 	    
+	    Torsadage instance = torsadageRepository.findById(idTorsadage).get() ; 
+
 	    // Si aucun plan d'action n'existe pour cette page, on en crée un nouveau
 	    if (planAction == null) {
 	        planAction = PlanAction.builder()
@@ -364,6 +379,11 @@ public class PlanActionImplimenetation implements PlanActionService {
 	            .pagePDEK(pagePDEK)
 	            .userPlanAction(null)  // L'utilisateur sera défini plus tard
 	            .details(new ArrayList<>())  // Liste de détails vide
+	            .machine(instance.getUserTorsadage().getMachine())
+	            .poste(instance.getUserTorsadage().getPoste())
+	            .plant(instance.getUserTorsadage().getPlant().toString())
+	            .segment(instance.getUserTorsadage().getSegment())
+	            .sectionFil(instance.getSpecificationMesure())
 	            .build();
 	        
 	        // Sauvegarder le nouveau plan d'action
@@ -387,6 +407,7 @@ public class PlanActionImplimenetation implements PlanActionService {
 	    dto.setSignature_maintenance(1);  // Exemple de valeur pour la signature
 	    dto.setSignature_contermetre(0);
 	    dto.setSignature_qualite(0);
+	    dto.setMatricule_operateur(instance.getUserTorsadage().getMatricule());
 	    dto.setMatricule_chef_ligne(userId);
 
 	    // Sauvegarder les détails du plan d'action
@@ -397,17 +418,161 @@ public class PlanActionImplimenetation implements PlanActionService {
 	    
 	    // Sauvegarder les détails dans le plan d'action
 	    planActionRepository.save(planAction);
-	    
-	       // modifier etat de pistolet
-		
-	 		Optional<Torsadage> optionalSoudure = torsadageRepository.findById(idTorsadage);
-	 		
-	 		optionalSoudure.ifPresent(soudure -> {
-	 			torsadageRepository.ajoutPlanActionByChefLigne(idTorsadage);
-	 		});
+	    		
+		Torsadage optionalTorsadage = torsadageRepository.findById(idTorsadage).get();
+		optionalTorsadage.setRempliePlanAction(0);
+		torsadageRepository.save(optionalTorsadage) ;
+
 	 		
 	    // Retourner le DTO des détails
 	    return mapToDTO(savedDetails);
 	}
+
+	@Override
+	public DetailsPlanActionDTO ajouterPlanActionOuDetailsSertissageNormal(Long pdekId, int numeroPage,
+			DetailsPlanAction dto, int userId, long idSertissage) {
+
+		 // Récupérer la page PDEK
+	    PagePDEK pagePDEK = pagePDEKRepository.findByPdekIdAndPageNumber(pdekId, numeroPage)
+	        .orElseThrow(() -> new RuntimeException("PagePDEK introuvable pour le PDEK ID " + pdekId + " et numéro de page " + numeroPage));
+	    
+	    // Chercher le plan d'action associé à cette page
+	    PlanAction planAction = planActionRepository.findByPagePDEK(pagePDEK).orElse(null);
+	    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+	    
+	    SertissageNormal instance = sertissageNormalRepository.findById(idSertissage).get() ; 
+
+	    // Si aucun plan d'action n'existe pour cette page, on en crée un nouveau
+	    if (planAction == null) {
+	        planAction = PlanAction.builder()
+	            .dateCreation(LocalDate.now().format(dateFormatter))
+	            .heureCreation(LocalTime.now().format(timeFormatter))
+	            .type_operation(TypesOperation.Torsadage) 
+	            .pagePDEK(pagePDEK)
+	            .userPlanAction(null)  // L'utilisateur sera défini plus tard
+	            .details(new ArrayList<>())  // Liste de détails vide
+	            .machine(instance.getUserSertissageNormal().getMachine())
+	            .poste(instance.getUserSertissageNormal().getPoste())
+	            .plant(instance.getUserSertissageNormal().getPlant().toString())
+	            .segment(instance.getUserSertissageNormal().getSegment())
+	            .sectionFil(instance.getSectionFil())
+	            .build();
+	        
+	        // Sauvegarder le nouveau plan d'action
+	        planAction = planActionRepository.save(planAction);
+	    }
+
+	    // Récupérer l'utilisateur par matricule
+	    User user = userRepository.findByMatricule(userId).get();
+	    
+	    // Associer l'utilisateur au plan d'action
+	    planAction.setUserPlanAction(user);
+	    
+	    // Sauvegarder les changements dans le plan d'action (y compris la relation avec l'utilisateur)
+	    planActionRepository.save(planAction);
+	    
+	    // Ajouter les informations dans le DTO
+	    dto.setPlanAction(planAction);
+	    dto.setUserPlanAction(user);
+	    dto.setDateCreation(LocalDate.now().format(dateFormatter));
+	    dto.setHeureCreation(LocalTime.now().format(timeFormatter));
+	    dto.setSignature_maintenance(1);  // Exemple de valeur pour la signature
+	    dto.setSignature_contermetre(0);
+	    dto.setSignature_qualite(0);
+	    dto.setMatricule_operateur(instance.getUserSertissageNormal().getMatricule());
+	    dto.setMatricule_chef_ligne(userId);
+
+	    // Sauvegarder les détails du plan d'action
+	    DetailsPlanAction savedDetails = detailsPlanActionRepository.save(dto);
+	    
+	    // Ajouter les détails au plan d'action
+	    planAction.getDetails().add(savedDetails);
+	    
+	    // Sauvegarder les détails dans le plan d'action
+	    planActionRepository.save(planAction);
+	    		
+		SertissageNormal sertissageNormal = sertissageNormalRepository.findById(idSertissage).get();
+		sertissageNormal.setRempliePlanAction(0);
+		sertissageNormalRepository.save(sertissageNormal) ;
+
+	 		
+	    // Retourner le DTO des détails
+	    return mapToDTO(savedDetails);
+	}
+
+	@Override
+	public DetailsPlanActionDTO ajouterPlanActionOuDetailsSertissageIDC(Long pdekId, int numeroPage,
+			DetailsPlanAction dto, int userId, long idSertissage) {
+		 // Récupérer la page PDEK
+	    PagePDEK pagePDEK = pagePDEKRepository.findByPdekIdAndPageNumber(pdekId, numeroPage)
+	        .orElseThrow(() -> new RuntimeException("PagePDEK introuvable pour le PDEK ID " + pdekId + " et numéro de page " + numeroPage));
+	    
+	    // Chercher le plan d'action associé à cette page
+	    PlanAction planAction = planActionRepository.findByPagePDEK(pagePDEK).orElse(null);
+	    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+	    
+	    SertissageIDC instance = sertissageIDCRepository.findById(idSertissage).get() ; 
+
+	    // Si aucun plan d'action n'existe pour cette page, on en crée un nouveau
+	    if (planAction == null) {
+	        planAction = PlanAction.builder()
+	            .dateCreation(LocalDate.now().format(dateFormatter))
+	            .heureCreation(LocalTime.now().format(timeFormatter))
+	            .type_operation(TypesOperation.Torsadage) 
+	            .pagePDEK(pagePDEK)
+	            .userPlanAction(null)  // L'utilisateur sera défini plus tard
+	            .details(new ArrayList<>())  // Liste de détails vide
+	            .machine(instance.getUserSertissageIDC().getMachine())
+	            .poste(instance.getUserSertissageIDC().getPoste())
+	            .plant(instance.getUserSertissageIDC().getPlant().toString())
+	            .segment(instance.getUserSertissageIDC().getSegment())
+	            .sectionFil(instance.getSectionFil())
+	            .build();
+	        
+	        // Sauvegarder le nouveau plan d'action
+	        planAction = planActionRepository.save(planAction);
+	    }
+
+	    // Récupérer l'utilisateur par matricule
+	    User user = userRepository.findByMatricule(userId).get();
+	    
+	    // Associer l'utilisateur au plan d'action
+	    planAction.setUserPlanAction(user);
+	    
+	    // Sauvegarder les changements dans le plan d'action (y compris la relation avec l'utilisateur)
+	    planActionRepository.save(planAction);
+	    
+	    // Ajouter les informations dans le DTO
+	    dto.setPlanAction(planAction);
+	    dto.setUserPlanAction(user);
+	    dto.setDateCreation(LocalDate.now().format(dateFormatter));
+	    dto.setHeureCreation(LocalTime.now().format(timeFormatter));
+	    dto.setSignature_maintenance(1);  // Exemple de valeur pour la signature
+	    dto.setSignature_contermetre(0);
+	    dto.setSignature_qualite(0);
+	    dto.setMatricule_operateur(instance.getUserSertissageIDC().getMatricule());
+	    dto.setMatricule_chef_ligne(userId);
+
+	    // Sauvegarder les détails du plan d'action
+	    DetailsPlanAction savedDetails = detailsPlanActionRepository.save(dto);
+	    
+	    // Ajouter les détails au plan d'action
+	    planAction.getDetails().add(savedDetails);
+	    
+	    // Sauvegarder les détails dans le plan d'action
+	    planActionRepository.save(planAction);
+	    		
+		SertissageIDC sertissageIDC = sertissageIDCRepository.findById(idSertissage).get();
+		sertissageIDC.setRempliePlanAction(0);
+		sertissageIDCRepository.save(sertissageIDC) ;
+
+	 		
+	    // Retourner le DTO des détails
+	    return mapToDTO(savedDetails);
+	}
+
+
 
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import rahma.backend.gestionPDEK.DTO.AjoutSertissageResultDTO;
 import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
 import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
+import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
@@ -138,9 +139,9 @@ public class SertissageIDCController {
 	        return ResponseEntity.ok(userDTOs);
 	    }
 	 
-	 @PutMapping("/remplir-plan-action/{id}")
-public ResponseEntity<String> remplirPlanAction(@PathVariable Long id) {
-        boolean success = serviceSertissageIDC.changerAttributRempliePlanActionSertissageIDCeDe0a1(id);
+	 @PutMapping("/remplir-plan-action/{zone}/{id}")
+public ResponseEntity<String> remplirPlanAction(@PathVariable Long id , @PathVariable String zone) {
+        boolean success = serviceSertissageIDC.changerAttributRempliePlanActionSertissageIDCeDe0a1(id , zone);
         if (success) {
             return ResponseEntity.ok("Attribut rempliePlanAction mis à jour !");
         } else {
@@ -194,4 +195,7 @@ public ResponseEntity<String> remplirPlanAction(@PathVariable Long id) {
 
 	     return ResponseEntity.ok(sertissagesDTOs);
 	 }
+
+
+ 
 }

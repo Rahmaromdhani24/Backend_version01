@@ -504,11 +504,12 @@ public List<SoudureDTO> recupererSouduresParPageActuel(String sectionFil, int se
 
 
 	@Override
-	public boolean changerAttributRempliePlanActionSoudureDe0a1(Long id) {
+	public boolean changerAttributRempliePlanActionSoudureDe0a1(Long id , String couleurZone) {
 		   Optional<Soudure> optionalSoudure = soudureRepository.findById(id);
 	        if (optionalSoudure.isPresent()) {
 	            Soudure soudure = optionalSoudure.get();
-	            soudure.setRempliePlanAction(1);  // changer à 1
+	            soudure.setRempliePlanAction(1);  
+	            soudure.setZone(couleurZone);
 	            soudureRepository.save(soudure);
 	            return true;
 	        }

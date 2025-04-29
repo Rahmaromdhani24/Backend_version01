@@ -581,11 +581,12 @@ public class SertissageNormalServiceImplimentation implements ServiceSertissageN
 	    }
 
 	@Override
-	public boolean changerAttributRempliePlanActionSertissageeDe0a1(Long id) {
+	public boolean changerAttributRempliePlanActionSertissageeDe0a1(Long id , String couleurZone) {
 		 Optional<SertissageNormal> optionalSertissage = sertissageNormalRepository.findById(id);
 	        if (optionalSertissage.isPresent()) {
 	        	SertissageNormal sertissage = optionalSertissage.get();
-	        	sertissage.setRempliePlanAction(1);  // changer à 1
+	        	sertissage.setRempliePlanAction(1); 
+	        	sertissage.setZone(couleurZone); 
 	            sertissageNormalRepository.save(sertissage);
 	            return true;
 	        }

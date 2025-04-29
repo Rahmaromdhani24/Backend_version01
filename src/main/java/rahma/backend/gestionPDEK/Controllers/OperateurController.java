@@ -79,7 +79,7 @@ public ResponseEntity<List<UserDTO>> getAgentsQualiteByPlant(@RequestParam Strin
         throw new RuntimeException("Invalid Plant name: " + nomPlant);
     }
 
-    List<User> agents = userRepository.findByRoleAndPlant(agentQualiteRole, plant);
+    List<User> agents = userRepository.findByRoleAndPlantAndTypeOperationIsNull(agentQualiteRole, plant);
 
     List<UserDTO> dtos = agents.stream()
             .map(UserDTO::fromEntity)

@@ -93,7 +93,8 @@ public class SertissageNormal extends Operation {
     
     private int decision ;
     private int rempliePlanAction ;
-    
+    private String zone ; 
+
     public static String getDescriptionForCode(String code) {
         return CODES_CONTROLES_DESCRIPTION.getOrDefault(code, "Description non trouvée");
     }

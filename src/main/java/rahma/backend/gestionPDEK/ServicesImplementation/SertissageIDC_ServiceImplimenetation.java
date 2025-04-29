@@ -434,11 +434,12 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
 
 
 	@Override
-	public boolean changerAttributRempliePlanActionSertissageIDCeDe0a1(Long id) {
+	public boolean changerAttributRempliePlanActionSertissageIDCeDe0a1(Long id , String couleurZone) {
 		 Optional<SertissageIDC> optionalSertissage = sertissageIDCRepository.findById(id);
 	        if (optionalSertissage.isPresent()) {
 	            SertissageIDC sertissageIDC = optionalSertissage.get();
-	            sertissageIDC.setRempliePlanAction(1);  // changer à 1
+	            sertissageIDC.setRempliePlanAction(1);  
+	            sertissageIDC.setZone(couleurZone);  
 	            sertissageIDCRepository.save(sertissageIDC);
 	            return true;
 	        }
