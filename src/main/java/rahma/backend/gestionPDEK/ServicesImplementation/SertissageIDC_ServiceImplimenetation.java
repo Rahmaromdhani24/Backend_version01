@@ -41,6 +41,7 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
     instance1.setCodeControle(sertissageIDC.getCodeControle());
     instance1.setSectionFil(sectionFilSelectionner);
     instance1.setDate(sertissageIDC.getDate());
+    instance1.setHeureCreation(sertissageIDC.getHeureCreation());
     instance1.setForceTraction(sertissageIDC.getForceTraction());
     instance1.setHauteurSertissageC1Ech1(sertissageIDC.getHauteurSertissageC1Ech1());
     instance1.setHauteurSertissageC1Ech2(sertissageIDC.getHauteurSertissageC1Ech2());
@@ -162,6 +163,7 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
 	                         Collectors.mapping(
 	                                 s -> new SertissageIDC_DTO(
 	                                		    s.getId(),
+	                                		    s.getClass().getSimpleName() ,
 	                                		    s.getCodeControle(),
 	                                		    s.getSectionFil(),
 	                                		    s.getDate().toString(),
@@ -190,7 +192,10 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
 	                                		    s.getDecision(),
 	                                		    s.getRempliePlanAction() ,
 	                                		    s.getPdekSertissageIDC().getId()  ,
-	                                  	        s.getPagePDEK().getPageNumber() 
+	                                  	        s.getPagePDEK().getPageNumber()  ,
+	                                  	        s.getZone() ,
+	                    	     	            s.getHeureCreation()
+
 	                                		),
 	                                 Collectors.toList()
 	                         )
@@ -250,6 +255,7 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
 	        return sertissagesIDC.stream()
 	            .map(s -> new SertissageIDC_DTO( 
 	            		s.getId(),
+	            		s.getClass().getSimpleName() ,
               		    s.getCodeControle(),
               		    s.getSectionFil(),
               		    s.getDate().toString(),
@@ -278,7 +284,10 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
               		    s.getDecision(),
               		    s.getRempliePlanAction(),
               		    s.getPdekSertissageIDC().getId()  ,
-            	        s.getPagePDEK().getPageNumber() 
+            	        s.getPagePDEK().getPageNumber() ,
+            	        s.getZone() ,
+	     	            s.getHeureCreation()
+
 	            ))
 	            .toList();
 	    
@@ -292,6 +301,7 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
 	        return sertissagesIDC.stream()
 	            .map(s -> new SertissageIDC_DTO( 
 	            		s.getId(),
+	            		s.getClass().getSimpleName() ,
               		    s.getCodeControle(),
               		    s.getSectionFil(),
               		    s.getDate().toString(),
@@ -320,7 +330,11 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
               		    s.getDecision(),
               		    s.getRempliePlanAction(),
               		    s.getPdekSertissageIDC().getId()  ,
-          	            s.getPagePDEK().getPageNumber() 
+          	            s.getPagePDEK().getPageNumber() ,
+            	        s.getZone() ,
+	     	            s.getHeureCreation()
+
+
 	            ))
 	            .toList();
 	    
@@ -332,6 +346,7 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
 	        return sertissagesIDC.stream()
 	            .map(s -> new SertissageIDC_DTO( 
 	            	s.getId(),
+	            	s.getClass().getSimpleName() ,
            		    s.getCodeControle(),
            		    s.getSectionFil(),
            		    s.getDate().toString(),
@@ -360,7 +375,11 @@ public class SertissageIDC_ServiceImplimenetation implements ServiceSertissageID
            		    s.getDecision(),
            		    s.getRempliePlanAction(),
            		    s.getPdekSertissageIDC().getId()  ,
-     	            s.getPagePDEK().getPageNumber() 
+     	            s.getPagePDEK().getPageNumber()  ,
+        	        s.getZone() ,
+     	            s.getHeureCreation()
+
+
 	            ))
 	            .toList();
 	    

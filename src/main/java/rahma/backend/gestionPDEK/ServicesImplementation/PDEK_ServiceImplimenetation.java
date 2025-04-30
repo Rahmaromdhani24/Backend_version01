@@ -257,6 +257,7 @@ public class PDEK_ServiceImplimenetation implements PDEKService {
 	                    .filter(i -> i.getPagePDEK() != null && i.getPagePDEK().getPageNumber() == numeroPage)
 	                    .map( s-> new SertissageIDC_DTO( 
 	        	            	s.getId(),
+	        	                s.getClass().getSimpleName() ,
 	                   		    s.getCodeControle(),
 	                   		    s.getSectionFil(),
 	                   		    s.getDate().toString(),
@@ -285,7 +286,10 @@ public class PDEK_ServiceImplimenetation implements PDEKService {
 	                   		    s.getDecision(),
 	                   		    s.getRempliePlanAction(),
 	                   		    s.getPdekSertissageIDC().getId()  ,
-	                	        s.getPagePDEK().getPageNumber() 
+	                	        s.getPagePDEK().getPageNumber() ,
+	                	        s.getZone() ,
+	    	     	            s.getHeureCreation()
+
 	                    		 ))
                         .forEach(contenu::add);
                 }
@@ -295,38 +299,42 @@ public class PDEK_ServiceImplimenetation implements PDEKService {
 	                pdek.getPdekSertissageNormal().stream()
 	                    .filter(n -> n.getPagePDEK() != null && n.getPagePDEK().getPageNumber() == numeroPage)
 	                    .map(n -> new SertissageNormal_DTO(
-	                            n.getId(),
-	                            n.getClass().getSimpleName() ,
-	                            n.getUserSertissageNormal().getPlant().toString() , 
-	                            n.getCodeControle() ,  // Modification ici : .getCodeControle() devient .getCode() si c'est le bon attribut
-	                            n.getSectionFil(),
-	                            n.getNumeroOutils() ,  // Modification ici : .getNumeroOutils() devient .getNumOutil() si c'est le bon attribut
-	                            n.getNumeroContacts()  , // Modification ici : .getNumeroContacts() devient .getNumContact() si c'est le bon attribut
-	                            n.getDate(),
-	                            n.getHeureCreation() ,
-	                            n.getNumCycle(),
-	                            n.getUserSertissageNormal().getMatricule(),  // Assure-toi que `getUserSertissageNormal()` retourne un objet avec la méthode `getMatricule()`
-	                            n.getHauteurSertissageEch1(),
-	                            n.getHauteurSertissageEch2(),
-	                            n.getHauteurSertissageEch3(),
-	                            n.getHauteurSertissageEchFin(),
-	                            n.getLargeurSertissage(),  // Ajout de la largeurSertissage si nécessaire
-	                            n.getLargeurSertissageEchFin(),  // Ajout de la largeurSertissageEchFin si nécessaire
-	                            n.getHauteurIsolant(),
-	                            n.getLargeurIsolant(),
-	                            n.getLargeurIsolantEchFin(),
-	                            n.getHauteurIsolantEchFin(),
-	                            n.getTraction(),
-	                            n.getTractionFinEch(),
-	                            n.getProduit(),
-	                            n.getSerieProduit(),
-	                            n.getQuantiteCycle(),
-	                            n.getSegment(),
-	                            n.getNumeroMachine(),
-	                            n.getDecision(),
-	                            n.getRempliePlanAction(),
-	                            n.getPdekSertissageNormal().getId()  ,
-	                  	        n.getPagePDEK().getPageNumber() 
+	                    		 n.getId(),
+	                             n.getClass().getSimpleName() ,
+	                             n.getUserSertissageNormal().getPlant().toString() ,
+	                             n.getHeureCreation() ,
+	                             n.getCodeControle() ,  
+	                             n.getSectionFil(),
+	                             n.getNumeroOutils() , 
+	                             n.getNumeroContacts()  ,
+	                             n.getDate(),
+	                             n.getNumCycle(),
+	                             n.getUserSertissageNormal().getMatricule(),  
+	                             n.getHauteurSertissageEch1(),
+	                             n.getHauteurSertissageEch2(),
+	                             n.getHauteurSertissageEch3(),
+	                             n.getHauteurSertissageEchFin(),
+	                             n.getLargeurSertissage(), 
+	                             n.getLargeurSertissageEchFin(), 
+	                             n.getHauteurIsolant(),
+	                             n.getLargeurIsolant(),
+	                             n.getLargeurIsolantEchFin(),
+	                             n.getHauteurIsolantEchFin(),
+	                             n.getTraction(),
+	                             n.getTractionFinEch(),
+	                             n.getProduit(),
+	                             n.getSerieProduit(),
+	                             n.getQuantiteCycle(),
+	                             n.getSegment(),
+	                             n.getNumeroMachine(),
+	                             n.getDecision(),
+	                             n.getRempliePlanAction() ,
+	                             n.getPdekSertissageNormal().getId()  ,
+	                  	         n.getPagePDEK().getPageNumber() ,
+	                  	         n.getPdekSertissageNormal().getLGD() ,
+		                	     n.getZone()
+
+
 	                    ))
 	                    .forEach(contenu::add);
 

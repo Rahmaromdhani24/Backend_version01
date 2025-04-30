@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 public class SertissageIDC_DTO {
     private Long id;
+    private String typeOperation ; 
     private String code;
     private String sectionFil;
     private String date;
@@ -35,7 +36,8 @@ public class SertissageIDC_DTO {
     private double forceTractionC2EchFin ; 
     private int decision ;
     private int rempliePlanAction ;
-
     private long pdekId ; 
-    private int numPage ;
+    private int numPage ; 
+    private String zone  ; 
+    private String heureCreation ; 
 }

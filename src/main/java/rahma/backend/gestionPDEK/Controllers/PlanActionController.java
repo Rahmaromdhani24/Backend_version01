@@ -150,4 +150,57 @@ public class PlanActionController {
 	         return ResponseEntity.badRequest().body(messageErreur);
 	     }
 	 }
+	 @PostMapping("/addPlanActionSertissageNormal/{pdekId}/{numeroPage}/{userId}/{id}")
+	 public ResponseEntity<?> addPlanActionSertissageNormal(
+	     @PathVariable Long pdekId,
+	     @PathVariable int numeroPage,
+	     @PathVariable int userId,
+	     @PathVariable int id,
+	     @RequestBody DetailsPlanAction dto
+	 ) {
+	     try {
+	         // Conversion des chaînes vers les enums (en majuscules)
+
+	         DetailsPlanActionDTO dtoResponse = planActionService.ajouterPlanActionOuDetailsSertissageNormal(
+	                 pdekId,
+	                 numeroPage,
+	                 dto,
+	                 userId,
+	                 id
+	             );
+
+	         return ResponseEntity.ok(dtoResponse);
+	     } catch (IllegalArgumentException e) {
+	         String messageErreur = String.format(
+	             "Erreur ajout plan action soudure ."   );
+	         return ResponseEntity.badRequest().body(messageErreur);
+	     }
+	 }
+	 
+	 @PostMapping("/addPlanActionSertissageIDC/{pdekId}/{numeroPage}/{userId}/{id}")
+	 public ResponseEntity<?> addPlanActionSertissageIDC(
+	     @PathVariable Long pdekId,
+	     @PathVariable int numeroPage,
+	     @PathVariable int userId,
+	     @PathVariable int id,
+	     @RequestBody DetailsPlanAction dto
+	 ) {
+	     try {
+	         // Conversion des chaînes vers les enums (en majuscules)
+
+	         DetailsPlanActionDTO dtoResponse = planActionService.ajouterPlanActionOuDetailsSertissageIDC(
+	                 pdekId,
+	                 numeroPage,
+	                 dto,
+	                 userId,
+	                 id
+	             );
+
+	         return ResponseEntity.ok(dtoResponse);
+	     } catch (IllegalArgumentException e) {
+	         String messageErreur = String.format(
+	             "Erreur ajout plan action soudure ."   );
+	         return ResponseEntity.badRequest().body(messageErreur);
+	     }
+	 }
 }

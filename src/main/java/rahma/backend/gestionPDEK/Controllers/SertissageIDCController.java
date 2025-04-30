@@ -4,16 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import rahma.backend.gestionPDEK.DTO.AjoutSertissageResultDTO;
 import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
-import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
-import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
 import rahma.backend.gestionPDEK.Repository.*;
@@ -74,8 +70,8 @@ public class SertissageIDCController {
              @RequestBody SertissageIDC sertissageIDC) {
         try {
         	 AjoutSertissageResultDTO result = serviceSertissageIDC.ajoutPDEK_SertissageIDC( sertissageIDC , matricule, nomProjet);
-        	  String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage() + 
-             		 + result.getIdSertissage() +"\" }";
+        	  String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage()  
+        			  + "\", \"idSertissage\": \"" + result.getIdSertissage() +"\" }";
               return ResponseEntity.ok(jsonResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur : " + e.getMessage());
@@ -139,7 +135,7 @@ public class SertissageIDCController {
 	        return ResponseEntity.ok(userDTOs);
 	    }
 	 
-	 @PutMapping("/remplir-plan-action/{zone}/{id}")
+	 @PutMapping("/plan-action-zone/{zone}/{id}")
 public ResponseEntity<String> remplirPlanAction(@PathVariable Long id , @PathVariable String zone) {
         boolean success = serviceSertissageIDC.changerAttributRempliePlanActionSertissageIDCeDe0a1(id , zone);
         if (success) {
@@ -160,6 +156,7 @@ public ResponseEntity<String> remplirPlanAction(@PathVariable Long id , @PathVar
 	     List<SertissageIDC_DTO> sertissagesDTOs = sertissages.stream()
 	    	.map(s ->  new SertissageIDC_DTO( 
 	 	            	s.getId(),
+	 	            	s.getClass().getSimpleName() ,
 	        		    s.getCodeControle(),
 	        		    s.getSectionFil(),
 	        		    s.getDate().toString(),
@@ -188,7 +185,10 @@ public ResponseEntity<String> remplirPlanAction(@PathVariable Long id , @PathVar
 	        		    s.getDecision(),
 	        		    s.getRempliePlanAction(),
 	        		    s.getPdekSertissageIDC().getId()  ,
-	  	              s.getPagePDEK().getPageNumber() 
+	  	                s.getPagePDEK().getPageNumber()  ,
+	     	            s.getZone() , 
+	     	            s.getHeureCreation()
+
 		         )
 		     ).collect(Collectors.toList());
 	    

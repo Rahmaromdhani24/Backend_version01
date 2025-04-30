@@ -109,7 +109,7 @@ public class PDEK {
     @OneToMany(mappedBy = "pdek", cascade = CascadeType.ALL)
     private List<ControleQualite> controlesQualite = new ArrayList<>();
 
-    
+    @Builder
     public List<Pistolet> getPdekPistoles() {
         return pdekPistoles;
     

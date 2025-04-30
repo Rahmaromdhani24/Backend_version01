@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rahma.backend.gestionPDEK.DTO.AjoutSoudureResultDTO;
 import rahma.backend.gestionPDEK.DTO.PdekDTO;
-import rahma.backend.gestionPDEK.DTO.PistoletDTO;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;

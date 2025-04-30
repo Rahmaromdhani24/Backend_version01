@@ -45,8 +45,8 @@ public ResponseEntity<String> ajouterSertissageNormal(
     try {
     	 AjoutSertissageResultDTO result = serviceSertissageNormal.ajoutPDEK_SertissageNormal( sertissageNormal , matricule, nomProjet);
     	  // Retourner un objet JSON structuré avec l'ID du PDEK et le numéro de la page
-         String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage() + 
-        		 + result.getIdSertissage() +"\" }";
+         String jsonResponse = "{ \"pdekId\": \"" + result.getPdekId() + "\", \"pageNumber\": \"" + result.getNumeroPage() 
+        		 + "\", \"idSertissage\": \"" + result.getIdSertissage() +"\" }";
          return ResponseEntity.ok(jsonResponse);
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur : " + e.getMessage());
@@ -250,13 +250,13 @@ public ResponseEntity<String> ajouterSertissageNormal(
          new SertissageNormal_DTO(
         		 n.getId(),
                  n.getClass().getSimpleName() ,
-                 n.getUserSertissageNormal().getPlant().toString() , 
+                 n.getUserSertissageNormal().getPlant().toString() ,
+                 n.getHeureCreation() ,
                  n.getCodeControle() ,  
                  n.getSectionFil(),
                  n.getNumeroOutils() , 
                  n.getNumeroContacts()  ,
                  n.getDate(),
-                 n.getHeureCreation() ,
                  n.getNumCycle(),
                  n.getUserSertissageNormal().getMatricule(),  
                  n.getHauteurSertissageEch1(),
@@ -279,7 +279,10 @@ public ResponseEntity<String> ajouterSertissageNormal(
                  n.getDecision(),
                  n.getRempliePlanAction() ,
                  n.getPdekSertissageNormal().getId()  ,
-      	         n.getPagePDEK().getPageNumber()
+      	         n.getPagePDEK().getPageNumber() , 
+      	         n.getPdekSertissageNormal().getLGD() ,
+     	          n.getZone()
+
          )
      ).collect(Collectors.toList());
 

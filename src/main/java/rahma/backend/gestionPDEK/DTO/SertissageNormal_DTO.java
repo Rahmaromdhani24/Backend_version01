@@ -48,4 +48,7 @@ public class SertissageNormal_DTO {
     private long pdekId ; 
     private int numPage ;
     
+    private String  LGD;
+    private String zone  ;
+
 }

@@ -448,7 +448,7 @@ public class PlanActionImplimenetation implements PlanActionService {
 	        planAction = PlanAction.builder()
 	            .dateCreation(LocalDate.now().format(dateFormatter))
 	            .heureCreation(LocalTime.now().format(timeFormatter))
-	            .type_operation(TypesOperation.Torsadage) 
+	            .type_operation(TypesOperation.Sertissage_Normal) 
 	            .pagePDEK(pagePDEK)
 	            .userPlanAction(null)  // L'utilisateur sera défini plus tard
 	            .details(new ArrayList<>())  // Liste de détails vide
@@ -520,7 +520,7 @@ public class PlanActionImplimenetation implements PlanActionService {
 	        planAction = PlanAction.builder()
 	            .dateCreation(LocalDate.now().format(dateFormatter))
 	            .heureCreation(LocalTime.now().format(timeFormatter))
-	            .type_operation(TypesOperation.Torsadage) 
+	            .type_operation(TypesOperation.Sertissage_IDC) 
 	            .pagePDEK(pagePDEK)
 	            .userPlanAction(null)  // L'utilisateur sera défini plus tard
 	            .details(new ArrayList<>())  // Liste de détails vide
