@@ -55,5 +55,7 @@ public interface TorsadageRepository extends JpaRepository<Torsadage, Long> {
 	    @Query("SELECT DISTINCT p.userTorsadage FROM Torsadage p WHERE p.pdekTorsadage.id = :idPdek")
 	    List<User> findUsersByPdekId(@Param("idPdek") Long idPdek);
      
+	    /************************* Statistiques *******************/
+	    long countByDateBetweenAndZoneNotNull(String startDate, String endDate);
 }
 

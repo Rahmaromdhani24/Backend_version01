@@ -56,7 +56,8 @@ public interface SoudureRepository extends JpaRepository<Soudure, Long> {
     @Query("SELECT DISTINCT p.userSoudure FROM Soudure p WHERE p.pdekSoudure.id = :idPdek")
     List<User> findUsersByPdekId(@Param("idPdek") Long idPdek);
     
-    
+    /************************* Statistiques *******************/
+    long countByDateBetweenAndZoneNotNull(String startDate, String endDate);
 
 }
 

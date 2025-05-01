@@ -89,5 +89,10 @@ public interface PdekRepository extends JpaRepository<PDEK , Long> {
 	
 	List<PDEK> findByTypeOperation(TypesOperation typeOperation);
 
-	
+	/********************** Statistiques *************************/
+	@Query(value = "SELECT p.type_operation, COUNT(*) FROM pdek p " +
+            "WHERE SUBSTRING(p.date_creation, 1, 4) = :year " +
+            "GROUP BY p.type_operation", nativeQuery = true)
+   List<Object[]> countPdekByTypeOperationForYear(@Param("year") String year);
+
 }

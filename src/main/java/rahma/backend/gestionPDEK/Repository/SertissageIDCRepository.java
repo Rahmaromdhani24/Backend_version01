@@ -58,4 +58,14 @@ public interface SertissageIDCRepository extends JpaRepository<SertissageIDC, Lo
 	    PagePDEK findPDEKByPagePDEK(@Param("idSertissageIDC") Long idSertissageIDC);
 	    @Query("SELECT DISTINCT p.userSertissageIDC FROM SertissageIDC p WHERE p.pdekSertissageIDC.id = :idPdek")
 	    List<User> findUsersByPdekId(@Param("idPdek") Long idPdek);
+	    
+	    /************************* Statistiques *******************/
+	    long countByDateBetweenAndZoneNotNull(String startDate, String endDate) ;
+	    
+	    @Query("SELECT s.userSertissageIDC, COUNT(s.zone) AS nombreErreurs " +
+	            "FROM SertissageIDC s " +
+	            "WHERE s.zone IS NOT NULL " +
+	            "GROUP BY s.userSertissageIDC " +
+	            "ORDER BY nombreErreurs DESC")
+	     List<Object[]> findTop5OperateursWithErrors();
 	}

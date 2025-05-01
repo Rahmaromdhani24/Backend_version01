@@ -24,5 +24,13 @@ public interface PlanActionRepository extends JpaRepository<PlanAction, Long> {
 	 List<PlanAction> getByTypeOperation(@Param("type") TypesOperation typeOperation);
 	 
 	List<PlanAction> findAllByPagePDEK(PagePDEK pagePDEK);
+	
+	/************* Statistiques **************/
+	
+	@Query(value = "SELECT p.type_operation, COUNT(*) " +
+            "FROM plan_action p " +
+            "WHERE SUBSTRING(p.date_creation, 1, 4) = :year " +
+            "GROUP BY p.type_operation", nativeQuery = true)
+    List<Object[]> countPlanActionByTypeOperationForYear(@Param("year") String year);
 
 }
