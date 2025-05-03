@@ -2,24 +2,12 @@ package rahma.backend.gestionPDEK.Controllers;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rahma.backend.gestionPDEK.DTO.AjoutTorsadageResultDTO;
-import rahma.backend.gestionPDEK.DTO.OperateurErreurDTO;
-import rahma.backend.gestionPDEK.DTO.OperateurErreurPistolet;
-import rahma.backend.gestionPDEK.DTO.PdekDTO;
-import rahma.backend.gestionPDEK.DTO.StatPistolet;
-import rahma.backend.gestionPDEK.DTO.StatProcessus;
-import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
-import rahma.backend.gestionPDEK.DTO.UserDTO;
+import rahma.backend.gestionPDEK.DTO.*;
 import rahma.backend.gestionPDEK.Entity.*;
-import rahma.backend.gestionPDEK.Repository.*;
-import rahma.backend.gestionPDEK.ServicesImplementation.PDEK_ServiceImplimenetation;
-import rahma.backend.gestionPDEK.ServicesImplementation.TorsadageServiceImplimentation;
-import rahma.backend.gestionPDEK.ServicesInterfaces.StatistiquesService;
+import rahma.backend.gestionPDEK.ServicesInterfaces.*;
 
 @RestController
 @RequestMapping("/statistiques")

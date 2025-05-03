@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import rahma.backend.gestionPDEK.Entity.DetailsPlanAction;
-import rahma.backend.gestionPDEK.Entity.Plant;
 
 @Repository
 public interface DetailsPlanActionRepository extends JpaRepository<DetailsPlanAction, Long> {

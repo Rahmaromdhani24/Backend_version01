@@ -2,8 +2,6 @@ package rahma.backend.gestionPDEK.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import rahma.backend.gestionPDEK.Entity.Plant;
-import rahma.backend.gestionPDEK.Entity.Role;
 
 @Data
 @AllArgsConstructor

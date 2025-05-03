@@ -7,14 +7,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import jakarta.transaction.Transactional;
-import rahma.backend.gestionPDEK.DTO.SoudureDTO;
 import rahma.backend.gestionPDEK.DTO.StatProcessus;
-import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.Plant;
-import rahma.backend.gestionPDEK.Entity.Soudure;
 import rahma.backend.gestionPDEK.Entity.Torsadage;
 import rahma.backend.gestionPDEK.Entity.User;
 

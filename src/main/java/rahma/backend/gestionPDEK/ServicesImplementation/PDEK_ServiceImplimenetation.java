@@ -1,35 +1,15 @@
 package rahma.backend.gestionPDEK.ServicesImplementation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import rahma.backend.gestionPDEK.DTO.ContenuPagePdekDTO;
-import rahma.backend.gestionPDEK.DTO.PdekDTO;
-import rahma.backend.gestionPDEK.DTO.PdekResultat;
-import rahma.backend.gestionPDEK.DTO.PistoletDTO;
-import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
-import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
-import rahma.backend.gestionPDEK.DTO.SoudureDTO;
-import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
-import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
-import rahma.backend.gestionPDEK.Entity.PDEK;
-import rahma.backend.gestionPDEK.Entity.PagePDEK;
-import rahma.backend.gestionPDEK.Entity.Pistolet;
-import rahma.backend.gestionPDEK.Entity.Plant;
-import rahma.backend.gestionPDEK.Entity.SertissageIDC;
-import rahma.backend.gestionPDEK.Entity.SertissageNormal;
-import rahma.backend.gestionPDEK.Entity.Soudure;
-import rahma.backend.gestionPDEK.Entity.Torsadage;
-import rahma.backend.gestionPDEK.Entity.TypePistolet;
-import rahma.backend.gestionPDEK.Repository.PdekRepository;
-import rahma.backend.gestionPDEK.Repository.ProjetRepository;
-import rahma.backend.gestionPDEK.ServicesInterfaces.PDEKService;
+import rahma.backend.gestionPDEK.DTO.*;
+import rahma.backend.gestionPDEK.Entity.*;
+import rahma.backend.gestionPDEK.Repository.*;
+import rahma.backend.gestionPDEK.ServicesInterfaces.*;
 
 @Service
 public class PDEK_ServiceImplimenetation implements PDEKService {
