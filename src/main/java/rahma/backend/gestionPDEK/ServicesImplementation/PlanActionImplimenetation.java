@@ -83,6 +83,8 @@ public class PlanActionImplimenetation implements PlanActionService {
 	            .poste(user.getPoste())
 	            .plant(user.getPlant().toString())
 	            .segment(user.getSegment())
+	            .numeroPistolet(numeroPistolet)
+	            .categoriePistolet(categoriePistolet.name())
 	            .build();
 	        
 	        // Sauvegarder le nouveau plan d'action
@@ -103,6 +105,8 @@ public class PlanActionImplimenetation implements PlanActionService {
 	    dto.setSignature_maintenance(1);  // Exemple de valeur pour la signature
 	    dto.setSignature_contermetre(0);
 	    dto.setSignature_qualite(0);
+	    dto.setNumeroPistolet(numeroPistolet);
+	    dto.setTypePistolet(typePistolet);
 	    
 	    // Sauvegarder les détails du plan d'action
 	    DetailsPlanAction savedDetails = detailsPlanActionRepository.save(dto);

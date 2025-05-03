@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import jakarta.transaction.Transactional;
+import rahma.backend.gestionPDEK.DTO.StatProcessus;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
+import rahma.backend.gestionPDEK.Entity.Plant;
 import rahma.backend.gestionPDEK.Entity.SertissageNormal;
 import rahma.backend.gestionPDEK.Entity.User;
 
@@ -54,5 +56,47 @@ public interface SertissageNormalRepository extends JpaRepository<SertissageNorm
     /************************* Statistiques *******************/
 	    long countByDateBetweenAndZoneNotNull(String startDate, String endDate);
 
-	}
+	    @Query("SELECT s.userSertissageNormal, COUNT(s.zone) AS nombreErreurs " +
+	            "FROM SertissageNormal s " +
+	            "WHERE s.zone IS NOT NULL " +
+	            "GROUP BY s.userSertissageNormal " +
+	            "ORDER BY nombreErreurs DESC")
+	     List<Object[]> findTop3OperateursWithErrors();
+	     
+	     /******************* Statistiques principale  ***********************/
+	     @Query("SELECT new rahma.backend.gestionPDEK.DTO.StatProcessus(" +
+	    		  "'Sertissage', s.sectionFil, p.numMachine, COUNT(DISTINCT p.id), " +
+	    	       "SUM(CASE WHEN s.zone IS NOT NULL THEN 1 ELSE 0 END)) " +
+	    	       "FROM SertissageNormal s " +
+	    	       "JOIN s.pdekSertissageNormal p " +
+	    	       "WHERE p.plant = :plant " +
+	    	       "AND s.date LIKE CONCAT(:year, '%') " +
+	    	       "GROUP BY s.sectionFil, p.numMachine")
+	    	List<StatProcessus> getStatsSertissageNormalByPlant(
+	    	    @Param("plant") Plant plant,
+	    	    @Param("year") String year
+	    	);
 
+/*********************** * Chef de ligne **********************************/
+
+	     
+	     @Query("""
+	    		    SELECT new rahma.backend.gestionPDEK.DTO.StatProcessus(
+	    		        'Sertissage',
+	    		        s.sectionFil,
+	    		        p.numMachine,
+	    		         COUNT(DISTINCT p.id),
+	    		        SUM(CASE WHEN s.zone IS NOT NULL THEN 1 ELSE 0 END)
+	    		    )
+	    		    FROM SertissageNormal s
+	    		    JOIN s.pdekSertissageNormal p     
+	    		    WHERE p.plant = :plant
+	    		      AND p.segment = :segment
+	    		    GROUP BY s.sectionFil, p.numMachine
+	    		    ORDER BY s.sectionFil, p.numMachine
+	    		""")
+	    		List<StatProcessus> findStatsByChefLigneSertissageNormal(
+	    		    @Param("plant") Plant plant,
+	    		    @Param("segment") int segment
+	    		);
+}

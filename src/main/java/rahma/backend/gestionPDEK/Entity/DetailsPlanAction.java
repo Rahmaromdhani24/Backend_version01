@@ -1,7 +1,6 @@
 package rahma.backend.gestionPDEK.Entity;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Id;
 import lombok.*;
 
 @Getter
@@ -47,5 +46,8 @@ public class DetailsPlanAction {
     @JoinColumn(name = "user_id")
     private User userPlanAction;
 
+    private int numeroPistolet ;
+    @Enumerated(EnumType.STRING)
+    private TypePistolet typePistolet;
 }
 

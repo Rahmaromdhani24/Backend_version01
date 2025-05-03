@@ -56,4 +56,16 @@ public interface PistoletRepository extends JpaRepository<Pistolet, Long> {
      PagePDEK findPDEKByPagePDEK(@Param("idPistolet") Long idPistolet);
      @Query("SELECT DISTINCT p.userPistolet FROM Pistolet p WHERE p.pdekPistolet.id = :idPdek")
      List<User> findUsersByPdekId(@Param("idPdek") Long idPdek);
+     
+     /********************** Statistiques ***********************************/
+     @Query(value = """
+    		    SELECT pi.categorie, pi.type, COUNT(*) 
+    		    FROM pistolet pi
+    		    JOIN pdek p ON pi.pdek_id = p.id
+    		    WHERE SUBSTRING(pi.date_creation, 1, 4) = :year
+    		    GROUP BY pi.categorie, pi.type
+    		""", nativeQuery = true)
+    		List<Object[]> countPdekByCategorieAndCouleurForYear(@Param("year") String year);
+
+
 } 

@@ -10,8 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import jakarta.transaction.Transactional;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
+import rahma.backend.gestionPDEK.DTO.StatProcessus;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
+import rahma.backend.gestionPDEK.Entity.Plant;
 import rahma.backend.gestionPDEK.Entity.Soudure;
 import rahma.backend.gestionPDEK.Entity.Torsadage;
 import rahma.backend.gestionPDEK.Entity.User;
@@ -57,5 +59,48 @@ public interface TorsadageRepository extends JpaRepository<Torsadage, Long> {
      
 	    /************************* Statistiques *******************/
 	    long countByDateBetweenAndZoneNotNull(String startDate, String endDate);
+	    @Query("SELECT s.userTorsadage , COUNT(s.zone) AS nombreErreurs " +
+	            "FROM Torsadage s " +
+	            "WHERE s.zone IS NOT NULL " +
+	            "GROUP BY s.userTorsadage " +
+	            "ORDER BY nombreErreurs DESC")
+	     List<Object[]> findTop3OperateursWithErrors();
+	     
+	     
+	     /******************* Statistiques agent de qualite  ***********************/
+	     @Query("SELECT new rahma.backend.gestionPDEK.DTO.StatProcessus(" +
+	    		  "'Torsadage', s.specificationMesure, p.numMachine, COUNT(DISTINCT p.id), " +
+	    	       "SUM(CASE WHEN s.zone IS NOT NULL THEN 1 ELSE 0 END)) " +
+	    	       "FROM Torsadage s " +
+	    	       "JOIN s.pdekTorsadage p " +
+	    	       "WHERE p.plant = :plant " +
+	    	       "AND s.date LIKE CONCAT(:year, '%') " +
+	    	       "GROUP BY s.specificationMesure, p.numMachine")
+	    	List<StatProcessus> getStatsTorsadageByPlant(
+	    	    @Param("plant") Plant plant,
+	    	    @Param("year") String year
+	    	);
+
+	     /************************ Chef de ligne **********************************/
+
+	     
+	     @Query("""
+	    		    SELECT new rahma.backend.gestionPDEK.DTO.StatProcessus(
+	    		        'Torsadage',
+	    		        s.specificationMesure,
+	    		        p.numMachine,
+	    		        COUNT(DISTINCT p.id),
+	    		        SUM(CASE WHEN s.zone IS NOT NULL THEN 1 ELSE 0 END)
+	    		    )
+	    		    FROM Torsadage s
+	    		    JOIN s.pdekTorsadage p
+	    		    WHERE p.plant = :plant AND p.segment = :segment
+	    		    GROUP BY s.specificationMesure, p.numMachine
+	    		    ORDER BY s.specificationMesure, p.numMachine
+	    		""")
+	    		List<StatProcessus> findStatsByChefLigneTorsadage(
+	    		    @Param("plant") Plant plant,
+	    		    @Param("segment") int segment
+	    		);
 }
 

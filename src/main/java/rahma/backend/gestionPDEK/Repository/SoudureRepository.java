@@ -11,10 +11,12 @@ import org.springframework.stereotype.Repository;
 
 import jakarta.transaction.Transactional;
 import rahma.backend.gestionPDEK.DTO.SoudureDTO;
+import rahma.backend.gestionPDEK.DTO.StatProcessus;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.Entity.CategoriePistolet;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
 import rahma.backend.gestionPDEK.Entity.Pistolet;
+import rahma.backend.gestionPDEK.Entity.Plant;
 import rahma.backend.gestionPDEK.Entity.Soudure;
 import rahma.backend.gestionPDEK.Entity.TypePistolet;
 import rahma.backend.gestionPDEK.Entity.User;
@@ -58,6 +60,49 @@ public interface SoudureRepository extends JpaRepository<Soudure, Long> {
     
     /************************* Statistiques *******************/
     long countByDateBetweenAndZoneNotNull(String startDate, String endDate);
+    
+    @Query("SELECT s.userSoudure , COUNT(s.zone) AS nombreErreurs " +
+            "FROM Soudure s " +
+            "WHERE s.zone IS NOT NULL " +
+            "GROUP BY s.userSoudure " +
+            "ORDER BY nombreErreurs DESC")
+     List<Object[]> findTop3OperateursWithErrors();
+     
+     /******************* Statistiques principale  ***********************/
+     @Query("SELECT new rahma.backend.gestionPDEK.DTO.StatProcessus(" +
+    		  "'Soudure', s.sectionFil, p.numMachine, COUNT(DISTINCT p.id), " +
+    	       "SUM(CASE WHEN s.zone IS NOT NULL THEN 1 ELSE 0 END)) " +
+    	       "FROM Soudure s " +
+    	       "JOIN s.pdekSoudure p " +
+    	       "WHERE p.plant = :plant " +
+    	       "AND s.date LIKE CONCAT(:year, '%') " +
+    	       "GROUP BY s.sectionFil, p.numMachine")
+    	List<StatProcessus> getStatsSoudureByPlant(
+    	    @Param("plant") Plant plant,
+    	    @Param("year") String year
+    	);
+     /*********************** * Chef de ligne **********************************/
+
+     
+     @Query("""
+    		    SELECT new rahma.backend.gestionPDEK.DTO.StatProcessus(
+    		        'Soudure',
+    		        s.sectionFil,
+    		        p.numMachine,
+    		         COUNT(DISTINCT p.id),
+    		        SUM(CASE WHEN s.zone IS NOT NULL THEN 1 ELSE 0 END)
+    		    )
+    		    FROM Soudure s
+    		    JOIN s.pdekSoudure p     
+    		    WHERE p.plant = :plant
+    		      AND p.segment = :segment
+    		    GROUP BY s.sectionFil, p.numMachine
+    		    ORDER BY s.sectionFil, p.numMachine
+    		""")
+    		List<StatProcessus> findStatsByChefLigneSoudure(
+    		    @Param("plant") Plant plant,
+    		    @Param("segment") int segment
+    		);
+
 
 }
-

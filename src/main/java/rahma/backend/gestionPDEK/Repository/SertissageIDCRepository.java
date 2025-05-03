@@ -9,8 +9,10 @@ import org.springframework.stereotype.Repository;
 import jakarta.transaction.Transactional;
 import rahma.backend.gestionPDEK.DTO.SertissageIDC_DTO;
 import rahma.backend.gestionPDEK.DTO.SertissageNormal_DTO;
+import rahma.backend.gestionPDEK.DTO.StatProcessus;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.Entity.PagePDEK;
+import rahma.backend.gestionPDEK.Entity.Plant;
 import rahma.backend.gestionPDEK.Entity.SertissageIDC;
 import rahma.backend.gestionPDEK.Entity.SertissageNormal;
 import rahma.backend.gestionPDEK.Entity.User;
@@ -67,5 +69,40 @@ public interface SertissageIDCRepository extends JpaRepository<SertissageIDC, Lo
 	            "WHERE s.zone IS NOT NULL " +
 	            "GROUP BY s.userSertissageIDC " +
 	            "ORDER BY nombreErreurs DESC")
-	     List<Object[]> findTop5OperateursWithErrors();
-	}
+	     List<Object[]> findTop3OperateursWithErrors();
+	     
+	     /******************* Statistiques ***********************/
+	     @Query("SELECT new rahma.backend.gestionPDEK.DTO.StatProcessus(" +
+	    		  "'Sertissage IDC', s.sectionFil, p.numMachine, COUNT(DISTINCT p.id), " +
+	    	       "SUM(CASE WHEN s.zone IS NOT NULL THEN 1 ELSE 0 END)) " +
+	    	       "FROM SertissageIDC s " +
+	    	       "JOIN s.pdekSertissageIDC p " +
+	    	       "WHERE p.plant = :plant " +
+	    	       "AND s.date LIKE CONCAT(:year, '%') " +
+	    	       "GROUP BY s.sectionFil, p.numMachine")
+	    	List<StatProcessus> getStatsSertissageIDCByPlant(
+	    	    @Param("plant") Plant plant,
+	    	    @Param("year") String year
+	    	);
+/*********************** * Chef de ligne **********************************/
+
+	     @Query("""
+	    		    SELECT new rahma.backend.gestionPDEK.DTO.StatProcessus(
+	    		        'Sertissage IDC',
+	    		        s.sectionFil,
+	    		        p.numMachine,
+	    		        COUNT(DISTINCT p.id),
+	    		        SUM(CASE WHEN s.zone IS NOT NULL THEN 1 ELSE 0 END)
+	    		    )
+	    		    FROM SertissageIDC s
+	    		    JOIN s.pdekSertissageIDC p     
+	    		    WHERE p.plant = :plant
+	    		      AND p.segment = :segment
+	    		    GROUP BY s.sectionFil, p.numMachine
+	    		    ORDER BY s.sectionFil, p.numMachine
+	    		""")
+	    		List<StatProcessus> findStatsByChefLigneSertissageIDC(
+	    		    @Param("plant") Plant plant,
+	    		    @Param("segment") int segment
+	    		);
+}

@@ -9,7 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rahma.backend.gestionPDEK.DTO.AjoutTorsadageResultDTO;
 import rahma.backend.gestionPDEK.DTO.OperateurErreurDTO;
+import rahma.backend.gestionPDEK.DTO.OperateurErreurPistolet;
 import rahma.backend.gestionPDEK.DTO.PdekDTO;
+import rahma.backend.gestionPDEK.DTO.StatPistolet;
+import rahma.backend.gestionPDEK.DTO.StatProcessus;
 import rahma.backend.gestionPDEK.DTO.TorsadageDTO;
 import rahma.backend.gestionPDEK.DTO.UserDTO;
 import rahma.backend.gestionPDEK.Entity.*;
@@ -75,9 +78,67 @@ public class StatistiquesController {
     
     @GetMapping("/top5-operateurs-erreurs")
     public ResponseEntity<List<OperateurErreurDTO>> getTop5OperateursWithErrors() {
-        return ResponseEntity.ok(service.getTop5OperateursWithErrors());
+        return ResponseEntity.ok(service.getTopOperateursWithErrors());
     }
 
+    @GetMapping("/par-processus")
+    public List<StatProcessus> getStatistiques(@RequestParam("plant") Plant plant) {
+        return service.getStatsByPlant(plant); }
+   
+    @GetMapping("/chart-sertissage-idc")
+    public List<StatProcessus> statsSertissageIDC( @RequestParam("plant") Plant plant, @RequestParam("segment") int segment ) {
+        return service.getStatsChefLigneSertissageIDC(plant, segment);
+    }
+    
+    @GetMapping("/chart-sertissage-normal")
+    public List<StatProcessus> statsSertissageNormal( @RequestParam("plant") Plant plant, @RequestParam("segment") int segment ) {
+        return service.getStatsChefLigneSertissageNormal(plant, segment);
+    }
+    
+    @GetMapping("/chart-soudure")
+    public List<StatProcessus> statsSoudure( @RequestParam("plant") Plant plant, @RequestParam("segment") int segment ) {
+        return service.getStatsChefLigneSoudure(plant, segment);
+    }
+    
+    @GetMapping("/chart-torsadage")
+    public List<StatProcessus> statsTorsadage( @RequestParam("plant") Plant plant, @RequestParam("segment") int segment ) {
+        return service.getStatsChefLigneTorsadage(plant, segment);
+    }
+    
+    /***************** Partie Pistolet *******************/
+    
+    
+    @GetMapping("/pistolet/stats-par-couleur-et-categorie")
+    public ResponseEntity<List<StatPistolet>> getStatsPistoletsParCouleurEtCategorie() {
+        List<StatPistolet> stats = service.getNombrePdekPistoletsParCouleursPistoletsEtTypePistolet();
+        return ResponseEntity.ok(stats);
+    }
+    
+    @GetMapping("/planActionPistolet-by-year")
+    public ResponseEntity<Map<String, Long>> getPlanActionPistolets() {
+        Map<String, Long> stats = service.getNombrePlanActionPistoletsParCouleursPistoletsEtTypePistolet() ; 
+        return ResponseEntity.ok(stats);
+    }
+    
+    @GetMapping("/nombreErreursPistoletsCetteSemaine")
+    public long nombreErreursPistoletsCetteSemaine() {
+    	return service.nombreErreursPistoletsCetteSemaine() ;         
+    }
+
+    @GetMapping("/pourcentageErreursPistoletsCetteSemaine")
+    public double pourcentageErreursPistoletsCetteSemaine() {
+    	return service.calculerPourcentageErreursPistoletSemainePrecedente() ;         
+    }
+
+    
+    @GetMapping("/topOperateursPistolets")
+    public ResponseEntity<List<OperateurErreurPistolet>> getTop5OperateursPistoletsWithErrors() {
+    return ResponseEntity.ok(service.getTopAgentsQualitePistoletWithErrors());
+    	    }
+    
+    @GetMapping("/pistolet-statistiques-par-plant")
+    public List<StatProcessus> getStatistiquesPistoletsParPlant(@RequestParam("plant") Plant plant) {
+        return service.getStatsPistoletsByPlant(plant); }
  }
 
  

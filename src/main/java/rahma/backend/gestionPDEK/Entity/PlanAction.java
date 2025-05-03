@@ -28,8 +28,10 @@ public class PlanAction {
     private String  sectionFil ;
     private String poste;
     private String machine;
-
-
+    private int numeroPistolet ;
+    @Enumerated(EnumType.STRING)
+    private TypePistolet typePistolet;
+    private String categoriePistolet ; 
     // User qui a rempli le plan d'action
     @ManyToOne
     @JoinColumn(name = "user_id")  // La colonne de jointure dans la table PlanAction

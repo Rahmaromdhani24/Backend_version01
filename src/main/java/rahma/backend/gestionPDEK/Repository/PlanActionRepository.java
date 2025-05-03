@@ -25,12 +25,27 @@ public interface PlanActionRepository extends JpaRepository<PlanAction, Long> {
 	 
 	List<PlanAction> findAllByPagePDEK(PagePDEK pagePDEK);
 	
-	/************* Statistiques **************/
+	/************* Statistiques all process sauf pistolet  **************/
 	
-	@Query(value = "SELECT p.type_operation, COUNT(*) " +
-            "FROM plan_action p " +
-            "WHERE SUBSTRING(p.date_creation, 1, 4) = :year " +
-            "GROUP BY p.type_operation", nativeQuery = true)
-    List<Object[]> countPlanActionByTypeOperationForYear(@Param("year") String year);
+	@Query(value = """
+		    SELECT p.type_operation, COUNT(*)
+		    FROM plan_action p
+		    WHERE SUBSTRING(p.date_creation, 1, 4) = :year
+		      AND p.type_pistolet IS NULL
+		    GROUP BY p.type_operation
+		    """, nativeQuery = true)
+		List<Object[]> countPlanActionByTypeOperationForYear(@Param("year") String year);
+		
+		/************* Statistiques  pistolet  **************/
+		
+		@Query(value = """
+			    SELECT p.type_pistolet, p.categorie_pistolet, COUNT(*)
+			    FROM plan_action p
+			    WHERE SUBSTRING(p.date_creation, 1, 4) = :year
+			      AND p.type_pistolet IS NOT NULL
+			      AND p.type_operation IS NOT NULL
+			    GROUP BY p.type_pistolet, p.categorie_pistolet
+			    """, nativeQuery = true)
+			List<Object[]> countPlanActionByPistoletsForYear(@Param("year") String year);
 
 }

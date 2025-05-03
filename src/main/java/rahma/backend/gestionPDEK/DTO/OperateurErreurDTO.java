@@ -2,11 +2,14 @@ package rahma.backend.gestionPDEK.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import rahma.backend.gestionPDEK.Entity.Plant;
+import rahma.backend.gestionPDEK.Entity.Role;
 
 @Data
 @AllArgsConstructor
 public class OperateurErreurDTO {
-    private int matricule;
+ 
+	private int matricule;
     private String nomPrenom ; 
     private String poste;
     private String machine;
